@@ -1,2 +1,2 @@
 # BED_ASG_Group_1
-Note: Do not add anything to Main
+Pls put all your work in main pls
