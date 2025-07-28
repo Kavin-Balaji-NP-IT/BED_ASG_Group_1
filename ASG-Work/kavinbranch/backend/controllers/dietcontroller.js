@@ -1,15 +1,16 @@
 const dietModel = require("../models/dietmodel");
 
 // Get all diets
+// Rename this
 async function getAllDiets(req, res) {
   try {
     const diets = await dietModel.getAllDiets();
     res.json(diets);
   } catch (error) {
-    console.error("Controller error:", error);
-    res.status(500).json({ error: "Error retrieving diet plans" });
+    res.status(500).json({ error: "Failed to get diet plans" });
   }
 }
+
 
 // Get diet by ID
 async function getDietById(req, res) {

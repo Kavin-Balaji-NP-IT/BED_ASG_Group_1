@@ -8,7 +8,7 @@ async function getAllDiets() {
     connection = await sql.connect(dbConfig);
     const query = `
       SELECT 
-        DietPlanID, UserID, MealName, Calories, MealType, MealDate, Notes 
+        MealID, UserID, MealName, Calories, MealType, MealDate, Notes 
       FROM DietPlan
     `;
     const result = await connection.request().query(query);
@@ -34,7 +34,7 @@ async function getDietPlanById(id) {
     connection = await sql.connect(dbConfig);
     const query = `
       SELECT 
-        DietPlanID, UserID, MealName, Calories, MealType, MealDate, Notes 
+        MealID, UserID, MealName, Calories, MealType, MealDate, Notes 
       FROM DietPlan 
       WHERE DietPlanID = @id
     `;
