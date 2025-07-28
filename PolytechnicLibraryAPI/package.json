@@ -1,0 +1,20 @@
+{
+  "name": "bed_asg_group_1-3",
+  "version": "1.0.0",
+  "description": "Pls put all your work in main pls",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Kavin-Balaji-NP-IT/BED_ASG_Group_1.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Kavin-Balaji-NP-IT/BED_ASG_Group_1/issues"
+  },
+  "homepage": "https://github.com/Kavin-Balaji-NP-IT/BED_ASG_Group_1#readme"
+}
