@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Diet Plans List</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        margin: 20px;
+      }
+      #dietPlansList {
+        margin-top: 20px;
+      }
+      .diet-item {
+        border: 1px solid #ccc;
+        padding: 10px;
+        margin-bottom: 10px;
+        border-radius: 5px;
+      }
+      .diet-item h3 {
+        margin-top: 0;
+      }
+      .diet-item button {
+        margin-right: 5px;
+      }
+      #message {
+        margin-top: 15px;
+        font-weight: bold;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>All Diet Plans</h1>
+    <p><a href="create.html">Add New Diet Plan</a></p>
+    <button id="fetchDietBtn">Refresh Diet Plans List</button>
+    <div id="message"></div>
+    <div id="dietPlansList">Loading diet plans...</div>
+
+    <script src="JS/script.js"></script>
+  </body>
+</html>
