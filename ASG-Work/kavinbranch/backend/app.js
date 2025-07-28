@@ -2,7 +2,7 @@ const path = require("path");
 const express = require("express");
 const sql = require("mssql");
 const dotenv = require("dotenv");
-const cors = require("cors"); // ✅ CORS middleware
+const cors = require("cors");
 
 // Load environment variables
 dotenv.config();
@@ -14,31 +14,35 @@ const {
   validateDietPlanId,
 } = require("./middlewares/dietValidation");
 
-// Create Express app
 const app = express();
 const port = process.env.PORT || 3000;
 
 // ✅ Enable CORS
 app.use(cors());
 
-// Middleware for parsing
+// ✅ Parse JSON and URL-encoded data
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Serve static files from the 'public' folder
+// ✅ Serve static files (like index.html, script.js) from "public"
 app.use(express.static(path.join(__dirname, "public")));
 
-// Routes for diet plans
+// ✅ Serve index.html on the root route
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "index.html"));
+});
+
+// ✅ API routes
 app.get("/dietplan", dietController.getAllDiets);
 app.get("/dietplan/:id", validateDietPlanId, dietController.getDietById);
 app.post("/dietplan", validateDietPlan, dietController.createDiet);
 
-// Start server
+// ✅ Start the server
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
 
-// Graceful shutdown
+// ✅ Graceful shutdown
 process.on("SIGINT", async () => {
   console.log("Server is gracefully shutting down");
   await sql.close();
