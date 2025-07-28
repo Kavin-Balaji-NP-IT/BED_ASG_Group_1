@@ -1,5 +1,5 @@
 const bcrypt = require('bcrypt');
-const { sql, poolConnect } = require('./fitnessTrackerConfig');
+const { sql, poolConnect } = require('../fitnessTrackerConfig');
 
 const UserModel = {
   findByUsername: async (username) => {

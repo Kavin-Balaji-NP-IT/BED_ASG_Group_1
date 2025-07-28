@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 // --- THIS LINE HAS BEEN CORRECTED ---
-const { sql, poolConnect } = require('./fitnessTrackerConfig');
+const { sql, poolConnect } = require('../fitnessTrackerConfig');
 
 const formatDate = (date) => {
     if (!date) return null;
