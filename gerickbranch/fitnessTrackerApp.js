@@ -14,10 +14,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, '..', 'public')));
 
-const loginRoutes = require('./loginRoutes'); 
-const registerRoutes = require('./registerRoutes');
-const userRoutes = require('./userRoutes');
-const fitnessTrackerRoutes = require('./fitnessTrackerRoutes');
+const loginRoutes = require('./back-end/loginRoutes'); 
+const registerRoutes = require('./back-end/registerRoutes');
+const userRoutes = require('./back-end/userRoutes');
+const fitnessTrackerRoutes = require('./back-end/fitnessTrackerRoutes');
 
 poolConnect.then(() => {
     console.log('SQL Server database connection pool established successfully.');
