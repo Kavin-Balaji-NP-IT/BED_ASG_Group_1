@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <div class="header-title-container"> 
+    <title>SeniorsLah Fitness Tracker</title>
+    </div>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <header>
+        <button onclick="window.history.back()">⬅ Back</button>
+        <h1>SeniorsLah Fitness Tracker</h1>
+    </header>
+
+    <main>
+        <section class="card blood-sugar-section">
+            <h2>Blood Sugar levels for past 7 days</h2>
+            <div class="chart-container">
+                <canvas id="bloodSugarChart"></canvas>
+            </div>
+            <p>Date: <span id="latestBloodSugarDate">N/A</span></p>
+            <p>Time taken: <span id="latestBloodSugarTime">N/A</span></p>
+            <p>Blood Sugar level: <span id="latestBloodSugarLevel">N/A</span></p>
+            <p>Range: <span id="bloodSugarRangeStatus">N/A</span></p>
+        </section>
+
+                <section class="card blood-pressure-section">
+            <h2>Blood pressure</h2>
+            <p>SYS: <span id="bpSys">N/A</span> mmHg</p>
+            <p>DIA: <span id="bpDia">N/A</span> mmHg</p>
+            <p>Pulse: <span id="bpPulse">N/A</span> per min</p>
+            <p class="last-taken">Last taken: <span id="bpLastTaken">N/A</span></p>
+            <p><span id="bpStatus">N/A</span></p>
+        </section>
+
+        <section class="card heart-rate-section">
+            <div class="heart-rate-display">
+                <div class="heart-icon">❤</div>
+                <div class="heart-rate-value"><span id="latestHeartRate">0</span> beats per min</div>
+            </div>
+            <div class="chart-container-small">
+                <canvas id="heartRateChart"></canvas>
+            </div>
+            <div class="heart-rate-summary">
+                <p>Min: <span id="minHeartRate">N/A</span></p>
+                <p>Max: <span id="maxHeartRate">N/A</span></p>
+                <p>Avg: <span id="avgHeartRate">N/A</span></p>
+            </div>
+            <p class="last-taken">Last taken: <span id="heartRateLastTaken">N/A</span></p>
+        </section>
+    </main>
+
+    <!-- Link your script.js file AFTER the HTML elements and charting libraries -->
+    <script src="fitnessTrackerScript.js"></script>
+</body>
+</html>

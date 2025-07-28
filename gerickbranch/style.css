@@ -1,0 +1,138 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #ede7f6;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: #333;
+}
+
+header {
+    width: 100%;
+    background-color: #43968e;
+    color: white;
+    padding: 15px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+header h1 {
+    margin: 0 auto;
+    font-size: 1.5em;
+}
+
+header button {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.5em;
+    cursor: pointer;
+    padding: 5px 10px;
+}
+
+main {
+    width: 100%;
+    max-width: 1200px;
+    padding: 20px;
+    display: grid;
+    gap: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+    justify-content: center;
+}
+
+.card {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.blood-sugar-section {
+    grid-column: span 2;
+}
+
+.card h2 {
+    color: #43968e;
+    margin-top: 0;
+    font-size: 1.2em;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+}
+
+.chart-container {
+    position: relative;
+    height: 250px;
+    width: 100%; 
+    margin-bottom: 15px;
+}
+.chart-container-small {
+    position: relative;
+    height: 150px; 
+    width: 100%;
+    margin-bottom: 15px;
+}
+
+.heart-rate-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+.heart-rate-display {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+.heart-icon {
+    font-size: 3em;
+    color: #dc3545;
+    animation: pulse 1.5s infinite;
+}
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+.heart-rate-value {
+    font-size: 2.5em;
+    font-weight: bold;
+    color: #dc3545;
+}
+.heart-rate-summary {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+    font-size: 0.9em;
+    color: #555;
+}
+.heart-rate-summary p {
+    margin: 0;
+}
+
+.blood-pressure-section p {
+    margin: 5px 0;
+}
+.last-taken {
+    font-size: 0.8em;
+    color: #777;
+    text-align: right;
+    width: 100%;
+    padding-top: 10px;
+    border-top: 1px dashed #eee;
+}
+
+@media (max-width: 599px) {
+
+    .blood-sugar-section {
+        grid-column: span 1;
+    }
+}
