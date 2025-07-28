@@ -2,6 +2,7 @@ const path = require("path");
 const express = require("express");
 const sql = require("mssql");
 const dotenv = require("dotenv");
+const cors = require("cors"); // ✅ CORS middleware
 
 // Load environment variables
 dotenv.config();
@@ -16,6 +17,9 @@ const {
 // Create Express app
 const app = express();
 const port = process.env.PORT || 3000;
+
+// ✅ Enable CORS
+app.use(cors());
 
 // Middleware for parsing
 app.use(express.json());

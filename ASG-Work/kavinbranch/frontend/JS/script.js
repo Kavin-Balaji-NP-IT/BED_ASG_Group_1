@@ -1,79 +1,91 @@
-
-const dietListDiv = document.getElementById("dietPlansList"); 
+const dietListDiv = document.getElementById("dietPlansList");
 const fetchDietBtn = document.getElementById("fetchDietBtn");
 const messageDiv = document.getElementById("message");
 const apiBaseUrl = "http://localhost:3000";
 
-// Function to fetch diet plans from the API and display them
+// Fetch diet plans from API and display
 async function fetchDietPlans() {
   try {
     dietListDiv.innerHTML = "Loading diet plans...";
     messageDiv.textContent = "";
 
-    // GET request to API
-    const response = await fetch(`${apiBaseUrl}/dietplan`);
+    const response = await fetch(`${apiBaseUrl}/dietplan`, {
+      headers: {
+        "Content-Type": "application/json"
+      }
+    });
 
     if (!response.ok) {
-      const errorBody = response.headers
-        .get("content-type")
-        ?.includes("application/json")
-        ? await response.json()
-        : { message: response.statusText };
+      const contentType = response.headers.get("content-type");
+      let errorBody = {};
+
+      if (contentType && contentType.includes("application/json")) {
+        errorBody = await response.json();
+      } else {
+        errorBody.message = response.statusText;
+      }
+
       throw new Error(
-        `HTTP error! status: ${response.status}, message: ${errorBody.message || errorBody.message}`
+        `HTTP error! status: ${response.status}, message: ${errorBody.message}`
       );
     }
 
     const diets = await response.json();
+    console.log("Fetched diets:", diets);
 
-    // Clear and display results
     dietListDiv.innerHTML = "";
-    if (diets.length === 0) {
+
+    if (!Array.isArray(diets) || diets.length === 0) {
       dietListDiv.innerHTML = "<p>No diet plans found.</p>";
-    } else {
-      diets.forEach((diet) => {
-        const dietElement = document.createElement("div");
-        dietElement.classList.add("diet-item");
-        dietElement.setAttribute("data-diet-id", diet.ID || diet.id || diet.DietPlanID || "unknown"); 
-
-        dietElement.innerHTML = `
-          <h3>${diet.MealName} (${diet.MealType})</h3>
-          <p>User ID: ${diet.UserID}</p>
-          <p>Calories: ${diet.Calories}</p>
-          <p>Date: ${new Date(diet.MealDate).toLocaleDateString()}</p>
-          <p>Notes: ${diet.Notes || "None"}</p>
-          <button onclick="viewDietDetails('${diet.ID || diet.id || diet.DietPlanID}')">View Details</button>
-          <button onclick="editDiet('${diet.ID || diet.id || diet.DietPlanID}')">Edit</button>
-          <button class="delete-btn" data-id="${diet.ID || diet.id || diet.DietPlanID}">Delete</button>
-        `;
-        dietListDiv.appendChild(dietElement);
-      });
-
-      // Attach delete event handlers
-      document.querySelectorAll(".delete-btn").forEach((button) => {
-        button.addEventListener("click", handleDeleteClick);
-      });
+      return;
     }
+
+    diets.forEach((diet) => {
+      const id = diet.ID || diet.id || diet.DietPlanID || "unknown";
+      const dietElement = document.createElement("div");
+      dietElement.classList.add("diet-item");
+      dietElement.setAttribute("data-diet-id", id);
+
+      dietElement.innerHTML = `
+        <h3>${diet.MealName || "Unnamed"} (${diet.MealType || "Type N/A"})</h3>
+        <p>User ID: ${diet.UserID || "N/A"}</p>
+        <p>Calories: ${diet.Calories || "N/A"}</p>
+        <p>Date: ${diet.MealDate ? new Date(diet.MealDate).toLocaleDateString() : "Unknown"}</p>
+        <p>Notes: ${diet.Notes || "None"}</p>
+        <button onclick="viewDietDetails('${id}')">View Details</button>
+        <button onclick="editDiet('${id}')">Edit</button>
+        <button class="delete-btn" data-id="${id}">Delete</button>
+      `;
+      dietListDiv.appendChild(dietElement);
+    });
+
+    // Attach delete event handlers
+    document.querySelectorAll(".delete-btn").forEach((button) => {
+      button.addEventListener("click", handleDeleteClick);
+    });
+
   } catch (error) {
     console.error("Error fetching diet plans:", error);
     dietListDiv.innerHTML = `<p style="color: red;">Failed to load diet plans: ${error.message}</p>`;
   }
 }
 
-// Placeholder functions
+// Placeholder actions
 function viewDietDetails(dietId) {
   alert(`View details for DietPlan ID: ${dietId} (Not implemented yet)`);
 }
+
 function editDiet(dietId) {
   window.location.href = `edit.html?id=${dietId}`;
 }
+
 function handleDeleteClick(event) {
   const dietId = event.target.getAttribute("data-id");
   alert(`Attempting to delete DietPlan with ID: ${dietId} (Not implemented yet)`);
 }
 
-// Trigger fetch on button click
+// Event listeners
 fetchDietBtn.addEventListener("click", fetchDietPlans);
-
-// Fetch diets on page load
 window.addEventListener("load", fetchDietPlans);
+
+
