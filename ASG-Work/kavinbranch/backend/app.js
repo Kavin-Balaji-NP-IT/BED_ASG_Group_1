@@ -7,7 +7,7 @@ const dotenv = require("dotenv");
 dotenv.config();
 
 // Import controllers and middleware
-const dietController = require("./controllers/dietControllers");
+const dietController = require("./controllers/dietcontroller");
 const {
   validateDietPlan,
   validateDietPlanId,
