@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Edit Diet Plan</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>Edit Diet Plan</h1>
+  <form id="editForm">
+    <input type="number" name="MealID" placeholder="Meal ID to Edit" required />
+    <input type="text" name="MealName" placeholder="New Meal Name" required />
+    <input type="number" name="Calories" placeholder="New Calories" required />
+    <input type="text" name="MealType" placeholder="New Meal Type" required />
+    <input type="date" name="MealDate" required />
+    <input type="text" name="Notes" placeholder="New Notes" />
+    <button type="submit">Update</button>
+  </form>
+  <div id="editMessage"></div>
+  <script src="script.js"></script>
+</body>
+</html>

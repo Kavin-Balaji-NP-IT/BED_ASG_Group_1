@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Create Diet Plan</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>Create Diet Plan</h1>
+  <form id="createForm">
+    <input type="number" name="UserID" placeholder="User ID" required />
+    <input type="text" name="MealName" placeholder="Meal Name" required />
+    <input type="number" name="Calories" placeholder="Calories" required />
+    <input type="text" name="MealType" placeholder="Meal Type" required />
+    <input type="date" name="MealDate" required />
+    <input type="text" name="Notes" placeholder="Notes" />
+    <button type="submit">Create</button>
+  </form>
+  <div id="createMessage"></div>
+  <script src="script.js"></script>
+</body>
+</html>
