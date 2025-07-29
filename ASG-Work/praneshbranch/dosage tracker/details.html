@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Medicine Details</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <h1>Medicine Details</h1>
+    <div class="theme-toggle">
+  <label class="switch">
+    <input type="checkbox" id="darkToggle">
+    <span class="slider"></span>
+  </label>
+</div>
+
+</div>
+
+  </header>
+
+  <nav>
+    <a href="index.html">🏠 Home</a>
+    <a href="add.html">➕ Add</a>
+    <a href="details.html">✒️Details</a>
+  </nav>
+
+  <main class="details">
+    <p><strong>Dosage:</strong> <span id="dosageDetail"></span></p>
+
+    <label>
+      <input type="checkbox" id="takenCheckbox" />
+      Taken Today?
+    </label>
+
+    <p class="status-message" id="statusMessage"></p>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>

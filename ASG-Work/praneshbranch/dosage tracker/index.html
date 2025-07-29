@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Dosage Tracker</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <h1>Dosage Tracker</h1>
+   <div class="theme-toggle">
+  <label class="switch">
+    <input type="checkbox" id="darkToggle">
+    <span class="slider"></span>
+  </label>
+</div>
+  </header>
+<header class="navbar">
+  <div class="nav-left">
+    <span class="nav-brand">HealthTracker</span>
+    <nav>
+      <a href="index.html" class="nav-link">Dosage Tracker</a>
+      <a href="medical.html" class="nav-link">Medical Records</a>
+    </nav>
+  </div>
+  <div class="nav-right">
+    <label class="toggle-switch">
+      <input type="checkbox" id="darkModeToggle">
+      <span class="slider"></span>
+    </label>
+  </div>
+</header>
+
+  <nav>
+    <a href="index.html">🏠Home</a>
+    <a href="add.html">➕Add</a>
+    <a href="details.html">✒️Details</a>
+
+  </nav>
+
+  <main>
+    <section class="medicine-list" id="medicineList">
+      <!-- JS will fill this -->
+    </section>
+
+    <div class="add-button">
+      <a href="add.html">+ Add Medicine</a>
+    </div>
+  </main>
+
+  <script src="script.js"></script>
+  <script src="server.js"></script>
+  <script src="app.js"></script>
+
+</body>
+</html>

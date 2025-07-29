@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Medical Records</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1 class="page-title">Medical Records</h1>
+
+    <form id="recordForm" class="record-form">
+      <input type="text" id="diagnosis" placeholder="Diagnosis" required>
+      <input type="text" id="allergies" placeholder="Allergies" required>
+      <input type="text" id="treatments" placeholder="Treatments" required>
+      <button type="submit" class="btn-primary">Add Record</button>
+    </form>
+<header class="navbar">
+  <div class="nav-left">
+    <span class="nav-brand">HealthTracker</span>
+    <nav>
+      <a href="index.html" class="nav-link">Dosage Tracker</a>
+      <a href="medical.html" class="nav-link">Medical Records</a>
+    </nav>
+  </div>
+  <div class="nav-right">
+    <label class="toggle-switch">
+      <input type="checkbox" id="darkModeToggle">
+      <span class="slider"></span>
+    </label>
+  </div>
+</header>
+
+    <div id="recordsList" class="records-grid">
+      <!-- Records will appear here -->
+    </div>
+  </div>
+
+  <script src="medical.js"></script>
+  <script src="app.js"></script>
+  <script src="server1.js"></script>
+
+
+</body>
+</html>

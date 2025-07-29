@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Add Medicine</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <h1>Add New Medicine</h1>
+   <div class="theme-toggle">
+  <label class="switch">
+    <input type="checkbox" id="darkToggle">
+    <span class="slider"></span>
+  </label>
+</div>
+  </header>
+
+  <nav>
+    <a href="index.html">🏠 Home</a>
+    <a href="add.html">➕ Add</a>
+    <a href="details.html">✒️Details</a>
+  </nav>
+
+  <main>
+    <form class="medicine-form" id="addForm">
+      <label for="med-name">Medicine Name:</label>
+      <input type="text" id="med-name" required placeholder="e.g. Panadol" />
+
+      <label for="dosage">Dosage Instructions:</label>
+      <input type="text" id="dosage" required placeholder="e.g. 1 pill every 6 hours" />
+
+      <label for="time">Time to Take:</label>
+      <input type="time" id="time" required />
+
+      <button type="submit">Save</button>
+    </form>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
