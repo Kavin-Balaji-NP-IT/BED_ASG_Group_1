@@ -1,7 +1,6 @@
 const dietModel = require("../models/dietmodel");
 
-// Get all diets
-// Rename this
+
 async function getAllDiets(req, res) {
   try {
     const diets = await dietModel.getAllDiets();
