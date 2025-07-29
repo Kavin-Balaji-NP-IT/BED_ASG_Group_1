@@ -33,10 +33,10 @@ app.get("/", (req, res) => {
 });
 
 // ✅ API routes
-app.get("/dietplan", dietController.getAllDiets);
-app.get("/dietplan/:id", validateDietPlanId, dietController.getDietById);
-app.post("/dietplan", validateDietPlan, dietController.createDiet);
-app.delete("/dietplan/:id", validateDietPlanId, dietController.deleteDiet); 
+app.get('/dietplan', dietController.getAllDiets);
+app.get('/dietplan/:id', validateDietPlanId, dietController.getDietById);
+app.post('/dietplan', validateDietPlan, dietController.createDiet);
+app.delete('/dietplan/:id', validateDietPlanId, dietController.deleteDiet);
 
 
 // ✅ Start the server

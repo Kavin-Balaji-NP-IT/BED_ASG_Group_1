@@ -1,6 +1,5 @@
 const dietModel = require("../models/dietmodel");
 
-
 async function getAllDiets(req, res) {
   try {
     const diets = await dietModel.getAllDiets();
@@ -10,16 +9,14 @@ async function getAllDiets(req, res) {
   }
 }
 
-
 // Get diet by ID
 async function getDietById(req, res) {
   try {
     const id = parseInt(req.params.id);
-    const diet = await dietModel.getDietById(id);
+    const diet = await dietModel.getDietPlanById(id);
     if (!diet) {
       return res.status(404).json({ error: "Diet plan not found" });
     }
-
     res.json(diet);
   } catch (error) {
     console.error("Controller error:", error);
@@ -30,7 +27,7 @@ async function getDietById(req, res) {
 // Create new diet
 async function createDiet(req, res) {
   try {
-    const newDiet = await dietModel.createDiet(req.body);
+    const newDiet = await dietModel.createDietPlan(req.body);
     res.status(201).json(newDiet);
   } catch (error) {
     console.error("Controller error:", error);
@@ -38,13 +35,11 @@ async function createDiet(req, res) {
   }
 }
 
-
 // Delete diet by ID
 async function deleteDiet(req, res) {
   try {
     const id = parseInt(req.params.id);
-    const deleted = await dietModel.deleteDiet(id);
-
+    const deleted = await dietModel.deleteDietPlan(id);
     if (deleted) {
       res.json({ message: `Diet plan with ID ${id} deleted successfully.` });
     } else {
@@ -55,7 +50,6 @@ async function deleteDiet(req, res) {
     res.status(500).json({ error: "Error deleting diet plan" });
   }
 }
-
 
 module.exports = {
   getAllDiets,
