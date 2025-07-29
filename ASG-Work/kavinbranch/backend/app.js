@@ -36,6 +36,8 @@ app.get("/", (req, res) => {
 app.get("/dietplan", dietController.getAllDiets);
 app.get("/dietplan/:id", validateDietPlanId, dietController.getDietById);
 app.post("/dietplan", validateDietPlan, dietController.createDiet);
+app.delete("/dietplan/:id", validateDietPlanId, dietController.deleteDiet); 
+
 
 // ✅ Start the server
 app.listen(port, () => {

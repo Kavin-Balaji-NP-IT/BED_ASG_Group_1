@@ -41,7 +41,7 @@ async function fetchDietPlans() {
     }
 
     diets.forEach((diet) => {
-      const id = diet.ID || diet.id || diet.DietPlanID || "unknown";
+      const id = diet.MealID; // ✅ Use MealID directly
       const dietElement = document.createElement("div");
       dietElement.classList.add("diet-item");
       dietElement.setAttribute("data-diet-id", id);
@@ -79,13 +79,40 @@ function editDiet(dietId) {
   window.location.href = `edit.html?id=${dietId}`;
 }
 
-function handleDeleteClick(event) {
+// ✅ DELETE functionality
+async function handleDeleteClick(event) {
   const dietId = event.target.getAttribute("data-id");
-  alert(`Attempting to delete DietPlan with ID: ${dietId} (Not implemented yet)`);
+
+  const confirmDelete = confirm(`Are you sure you want to delete DietPlan ID: ${dietId}?`);
+  if (!confirmDelete) return;
+
+  try {
+    const response = await fetch(`${apiBaseUrl}/dietplan/${dietId}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json"
+      }
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || "Failed to delete diet plan");
+    }
+
+    messageDiv.textContent = `✅ DietPlan ID ${dietId} deleted successfully.`;
+    messageDiv.style.color = "green";
+
+    // Refresh the list after deletion
+    fetchDietPlans();
+
+  } catch (error) {
+    console.error("Delete error:", error);
+    messageDiv.textContent = `❌ Error deleting: ${error.message}`;
+    messageDiv.style.color = "red";
+  }
 }
 
 // Event listeners
 fetchDietBtn.addEventListener("click", fetchDietPlans);
 window.addEventListener("load", fetchDietPlans);
-
 

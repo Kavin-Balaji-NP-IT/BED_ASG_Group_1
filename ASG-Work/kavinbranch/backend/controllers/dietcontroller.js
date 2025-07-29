@@ -38,8 +38,28 @@ async function createDiet(req, res) {
   }
 }
 
+
+// Delete diet by ID
+async function deleteDiet(req, res) {
+  try {
+    const id = parseInt(req.params.id);
+    const deleted = await dietModel.deleteDiet(id);
+
+    if (deleted) {
+      res.json({ message: `Diet plan with ID ${id} deleted successfully.` });
+    } else {
+      res.status(404).json({ error: "Diet plan not found" });
+    }
+  } catch (error) {
+    console.error("Controller error:", error);
+    res.status(500).json({ error: "Error deleting diet plan" });
+  }
+}
+
+
 module.exports = {
   getAllDiets,
   getDietById,
   createDiet,
+  deleteDiet,
 };

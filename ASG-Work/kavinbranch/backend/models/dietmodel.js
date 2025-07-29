@@ -96,8 +96,39 @@ async function createDietPlan(dietData) {
   }
 }
 
+// Delete diet plan by ID
+async function deleteDietPlan(id) {
+  let connection;
+  try {
+    connection = await sql.connect(dbConfig);
+    const query = `
+    DELETE FROM DietPlan 
+    WHERE MealID = @id
+    `;
+    const request = connection.request();
+    request.input("id", sql.Int, id);
+
+    const result = await request.query(query);
+
+    return result.rowsAffected[0] > 0; // true if a row was deleted
+  } catch (error) {
+    console.error("Database error:", error);
+    throw error;
+  } finally {
+    if (connection) {
+      try {
+        await connection.close();
+      } catch (err) {
+        console.error("Error closing connection:", err);
+      }
+    }
+  }
+}
+
+
 module.exports = {
   getAllDiets,
   getDietPlanById,
   createDietPlan,
+  deleteDietPlan,
 };
