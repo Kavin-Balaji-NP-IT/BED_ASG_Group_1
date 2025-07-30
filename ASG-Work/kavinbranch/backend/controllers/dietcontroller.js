@@ -30,7 +30,7 @@ async function createDiet(req, res) {
     const newDiet = await dietModel.createDietPlan(req.body);
     res.status(201).json(newDiet);
   } catch (error) {
-    console.error("Controller error:", error);
+    console.error("Controller error in createDiet:", error);
     res.status(500).json({ error: "Error creating diet plan" });
   }
 }

@@ -7,12 +7,12 @@ form.addEventListener("submit", async function (e) {
 
   const formData = new FormData(form);
   const newDiet = {
-    UserID: parseInt(formData.get("userId")),       
-    MealName: formData.get("mealName"),             
-    Calories: parseInt(formData.get("calories")),   
-    MealType: formData.get("mealType"),             
-    MealDate: formData.get("mealDate"),             
-    Notes: formData.get("notes"),                   
+    UserID: parseInt(formData.get("userId")),      // PascalCase here!
+    MealName: formData.get("mealName"),
+    Calories: parseInt(formData.get("calories")),
+    MealType: formData.get("mealType"),
+    MealDate: formData.get("mealDate"),
+    Notes: formData.get("notes"),
   };
 
   try {

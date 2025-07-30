@@ -79,7 +79,6 @@ async function createDietPlan(dietData) {
       .query(`
         INSERT INTO DietPlan (UserID, MealName, Calories, MealType, MealDate, Notes)
         VALUES (@UserID, @MealName, @Calories, @MealType, @MealDate, @Notes);
-
         SELECT SCOPE_IDENTITY() AS MealID;
       `);
 
@@ -87,7 +86,7 @@ async function createDietPlan(dietData) {
     return { MealID: newId, ...dietData };
 
   } catch (error) {
-    console.error("Database error in createDiet:", error);
+    console.error("Database error in createDietPlan:", error);
     throw error;
   } finally {
     if (connection) {
@@ -95,6 +94,7 @@ async function createDietPlan(dietData) {
     }
   }
 }
+
 
 // Delete diet plan by ID
 async function deleteDietPlan(id) {
