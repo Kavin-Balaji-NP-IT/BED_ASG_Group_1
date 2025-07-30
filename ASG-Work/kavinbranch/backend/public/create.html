@@ -3,28 +3,138 @@
 <head>
   <meta charset="UTF-8" />
   <title>Create Diet Plan</title>
+  <style>
+    /* Basic Reset */
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f9fafb;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+    }
+    main {
+      background: white;
+      padding: 25px 30px;
+      border-radius: 8px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+      max-width: 450px;
+      width: 100%;
+    }
+    h1 {
+      text-align: center;
+      color: #2c3e50;
+      margin-bottom: 25px;
+    }
+    form label {
+      display: block;
+      margin-bottom: 15px;
+      color: #34495e;
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+    form input[type="number"],
+    form input[type="text"],
+    form input[type="date"],
+    form select,
+    form textarea {
+      width: 100%;
+      padding: 10px 12px;
+      margin-top: 5px;
+      border: 1.8px solid #bdc3c7;
+      border-radius: 5px;
+      font-size: 1rem;
+      transition: border-color 0.3s ease;
+      resize: vertical;
+      font-family: inherit;
+    }
+    form input[type="number"]:focus,
+    form input[type="text"]:focus,
+    form input[type="date"]:focus,
+    form select:focus,
+    form textarea:focus {
+      border-color: #3498db;
+      outline: none;
+    }
+    form textarea {
+      min-height: 80px;
+    }
+    button[type="submit"] {
+      background-color: #3498db;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      font-size: 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+      width: 100%;
+      font-weight: 700;
+      transition: background-color 0.3s ease;
+    }
+    button[type="submit"]:hover {
+      background-color: #2980b9;
+    }
+    #createMessage {
+      margin-top: 20px;
+      text-align: center;
+      font-weight: 600;
+      min-height: 24px;
+    }
+    .back-link {
+      display: inline-block;
+      margin-top: 25px;
+      text-decoration: none;
+      color: #3498db;
+      font-weight: 600;
+      transition: color 0.3s ease;
+      font-size: 0.95rem;
+      text-align: center;
+      width: 100%;
+    }
+    .back-link:hover {
+      color: #2980b9;
+    }
+  </style>
 </head>
 <body>
-  <h1>Create New Diet Plan</h1>
-  <form id="createDietForm">
-    <label>User ID: <input type="number" name="userId" required /></label><br />
-    <label>Meal Name: <input type="text" name="mealName" required /></label><br />
-    <label>Calories: <input type="number" name="calories" required /></label><br />
-    <label>Meal Type:
-      <select name="mealType" required>
-        <option value="">--Select--</option>
-        <option value="breakfast">Breakfast</option>
-        <option value="lunch">Lunch</option>
-        <option value="dinner">Dinner</option>
-        <option value="snack">Snack</option>
-      </select>
-    </label><br />
-    <label>Meal Date: <input type="date" name="mealDate" required /></label><br />
-    <label>Notes: <textarea name="notes"></textarea></label><br />
-    <button type="submit">Create</button>
-  </form>
+  <main>
+    <h1>Create New Diet Plan</h1>
+    <form id="createDietForm" autocomplete="off">
+      <label>User ID:
+        <input type="number" name="userId" required min="1" />
+      </label>
+      <label>Meal Name:
+        <input type="text" name="mealName" required maxlength="100" />
+      </label>
+      <label>Calories:
+        <input type="number" name="calories" required min="1" />
+      </label>
+      <label>Meal Type:
+        <select name="mealType" required>
+          <option value="" disabled selected>-- Select --</option>
+          <option value="breakfast">Breakfast</option>
+          <option value="lunch">Lunch</option>
+          <option value="dinner">Dinner</option>
+          <option value="snack">Snack</option>
+        </select>
+      </label>
+      <label>Meal Date:
+        <input type="date" name="mealDate" required />
+      </label>
+      <label>Notes:
+        <textarea name="notes" placeholder="Optional..."></textarea>
+      </label>
+      <button type="submit">Create</button>
+    </form>
 
-  <div id="createMessage"></div>
+    <div id="createMessage"></div>
+
+    <a href="index.html" class="back-link">← Back to Diet Plan List</a>
+  </main>
+
   <script src="create.js"></script>
 </body>
 </html>
