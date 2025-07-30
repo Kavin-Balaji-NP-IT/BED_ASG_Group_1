@@ -51,9 +51,28 @@ async function deleteDiet(req, res) {
   }
 }
 
+
+// Update diet by ID
+async function updateDiet(req, res) {
+  try {
+    const id = parseInt(req.params.id);
+    const updatedDiet = await dietModel.updateDietPlan(id, req.body);
+    if (updatedDiet) {
+      res.json({ message: `Diet plan with ID ${id} updated successfully.`, data: updatedDiet });
+    } else {
+      res.status(404).json({ error: "Diet plan not found" });
+    }
+  } catch (error) {
+    console.error("Controller error in updateDiet:", error);
+    res.status(500).json({ error: "Error updating diet plan" });
+  }
+}
+
+
 module.exports = {
   getAllDiets,
   getDietById,
   createDiet,
   deleteDiet,
+  updateDiet,
 };

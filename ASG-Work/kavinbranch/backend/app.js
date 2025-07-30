@@ -37,7 +37,7 @@ app.get('/dietplan', dietController.getAllDiets);
 app.get('/dietplan/:id', validateDietPlanId, dietController.getDietById);
 app.post("/dietplan", validateDietPlan, dietController.createDiet);
 app.delete('/dietplan/:id', validateDietPlanId, dietController.deleteDiet);
-
+app.put('/dietplan/:id', validateDietPlanId, validateDietPlan, dietController.updateDiet);
 
 
 

@@ -125,10 +125,58 @@ async function deleteDietPlan(id) {
   }
 }
 
+// Update diet plan by ID
+// Update diet plan by MealID
+async function updateDietPlan(MealID, dietData) {
+  const { UserID, MealName, Calories, MealType, MealDate, Notes } = dietData;
+  let connection;
+
+  try {
+    connection = await sql.connect(dbConfig);
+    const result = await connection
+      .request()
+      .input("MealID", sql.Int, MealID)
+      .input("UserID", sql.Int, UserID)
+      .input("MealName", sql.NVarChar(100), MealName)
+      .input("Calories", sql.Int, Calories)
+      .input("MealType", sql.NVarChar(50), MealType)
+      .input("MealDate", sql.Date, MealDate)
+      .input("Notes", sql.NVarChar(sql.MAX), Notes)
+      .query(`
+        UPDATE DietPlan
+        SET UserID = @UserID,
+            MealName = @MealName,
+            Calories = @Calories,
+            MealType = @MealType,
+            MealDate = @MealDate,
+            Notes = @Notes
+        WHERE MealID = @MealID;
+      `);
+
+    // You can check rowsAffected to confirm update succeeded
+    if (result.rowsAffected[0] === 0) {
+      return null; // no row updated, ID might not exist
+    }
+
+    // Return updated diet plan data (optional)
+    return { MealID, ...dietData };
+
+  } catch (error) {
+    console.error("Database error in updateDietPlan:", error);
+    throw error;
+  } finally {
+    if (connection) {
+      await connection.close();
+    }
+  }
+}
+
+
 
 module.exports = {
   getAllDiets,
   getDietPlanById,
   createDietPlan,
   deleteDietPlan,
+  updateDietPlan,
 };

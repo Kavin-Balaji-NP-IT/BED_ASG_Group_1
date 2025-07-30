@@ -1,39 +1,80 @@
-const form = document.getElementById("createDietForm");
-const messageDiv = document.getElementById("createMessage");
+const form = document.getElementById("editDietForm");
+const editMessage = document.getElementById("editMessage");
 const apiBaseUrl = "http://localhost:3000";
 
-form.addEventListener("submit", async function (e) {
+// Helper: get query param from URL
+function getQueryParam(param) {
+  const urlParams = new URLSearchParams(window.location.search);
+  return urlParams.get(param);
+}
+
+// Load diet plan data by MealID and fill the form
+async function loadDietPlan() {
+  const mealId = getQueryParam("id");
+  if (!mealId) {
+    editMessage.textContent = "No MealID provided in URL.";
+    editMessage.style.color = "red";
+    form.style.display = "none";
+    return;
+  }
+
+  try {
+    const response = await fetch(`${apiBaseUrl}/dietplan/${mealId}`);
+    if (!response.ok) {
+      throw new Error(`Failed to load diet plan. Status: ${response.status}`);
+    }
+    const diet = await response.json();
+
+    // Fill form inputs
+    form.mealId.value = diet.MealID || "";
+    form.userId.value = diet.UserID || "";
+    form.mealName.value = diet.MealName || "";
+    form.calories.value = diet.Calories || "";
+    form.mealType.value = diet.MealType || "";
+    // Format date as yyyy-mm-dd for input[type=date]
+    form.mealDate.value = diet.MealDate ? new Date(diet.MealDate).toISOString().slice(0,10) : "";
+    form.notes.value = diet.Notes || "";
+
+  } catch (error) {
+    editMessage.textContent = `❌ ${error.message}`;
+    editMessage.style.color = "red";
+    form.style.display = "none";
+  }
+}
+
+// Handle form submission for update
+form.addEventListener("submit", async (e) => {
   e.preventDefault();
 
-  const formData = new FormData(form);
-  const newDiet = {
-    UserID: parseInt(formData.get("userId")),      // PascalCase here!
-    MealName: formData.get("mealName"),
-    Calories: parseInt(formData.get("calories")),
-    MealType: formData.get("mealType"),
-    MealDate: formData.get("mealDate"),
-    Notes: formData.get("notes"),
+  const mealId = form.mealId.value;
+  const updatedDiet = {
+    UserID: parseInt(form.userId.value),
+    MealName: form.mealName.value.trim(),
+    Calories: parseInt(form.calories.value),
+    MealType: form.mealType.value,
+    MealDate: form.mealDate.value,
+    Notes: form.notes.value.trim(),
   };
 
   try {
-    const response = await fetch(`${apiBaseUrl}/dietplan`, {
-      method: "POST",
+    const response = await fetch(`${apiBaseUrl}/dietplan/${mealId}`, {
+      method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(newDiet),
+      body: JSON.stringify(updatedDiet),
     });
 
     if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error || "Failed to create diet plan");
+      const errData = await response.json();
+      throw new Error(errData.error || "Failed to update diet plan");
     }
 
-    const result = await response.json();
-    messageDiv.textContent = `✅ Created successfully with MealID: ${result.MealID || "N/A"}`;
-    messageDiv.style.color = "green";
-    form.reset();
-  } catch (err) {
-    console.error("Create error:", err);
-    messageDiv.textContent = `❌ Error: ${err.message}`;
-    messageDiv.style.color = "red";
+    editMessage.textContent = `✅ Updated successfully!`;
+    editMessage.style.color = "green";
+  } catch (error) {
+    editMessage.textContent = `❌ Error: ${error.message}`;
+    editMessage.style.color = "red";
   }
 });
+
+// Load data on page load
+window.addEventListener("load", loadDietPlan);
