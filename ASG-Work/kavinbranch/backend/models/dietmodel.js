@@ -125,7 +125,7 @@ async function deleteDietPlan(id) {
   }
 }
 
-// Update diet plan by ID
+
 // Update diet plan by MealID
 async function updateDietPlan(MealID, dietData) {
   const { UserID, MealName, Calories, MealType, MealDate, Notes } = dietData;
