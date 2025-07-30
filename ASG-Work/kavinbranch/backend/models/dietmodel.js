@@ -62,36 +62,36 @@ async function getDietPlanById(id) {
 }
 
 // Create new diet plan
-async function createDietPlan(dietData) {
+async function createDiet(dietData) {
+  const { UserID, MealName, Calories, MealType, MealDate, Notes } = dietData;
   let connection;
+
   try {
     connection = await sql.connect(dbConfig);
-    const query = `
-      INSERT INTO DietPlan (UserID, MealName, Calories, MealType, MealDate, Notes) 
-      VALUES (@UserID, @MealName, @Calories, @MealType, @MealDate, @Notes); 
-      SELECT SCOPE_IDENTITY() AS id;
-    `;
-    const request = connection.request();
-    request.input("UserID", dietData.UserID);
-    request.input("MealName", dietData.MealName);
-    request.input("Calories", dietData.Calories);
-    request.input("MealType", dietData.MealType);
-    request.input("MealDate", dietData.MealDate);
-    request.input("Notes", dietData.Notes);
+    const result = await connection
+      .request()
+      .input("UserID", sql.Int, UserID)
+      .input("MealName", sql.NVarChar(100), MealName)
+      .input("Calories", sql.Int, Calories)
+      .input("MealType", sql.NVarChar(50), MealType)
+      .input("MealDate", sql.Date, MealDate)
+      .input("Notes", sql.NVarChar(sql.MAX), Notes)
+      .query(`
+        INSERT INTO DietPlan (UserID, MealName, Calories, MealType, MealDate, Notes)
+        VALUES (@UserID, @MealName, @Calories, @MealType, @MealDate, @Notes);
 
-    const result = await request.query(query);
-    const newDietId = result.recordset[0].id;
-    return await getDietPlanById(newDietId);
+        SELECT SCOPE_IDENTITY() AS MealID;
+      `);
+
+    const newId = result.recordset[0].MealID;
+    return { MealID: newId, ...dietData };
+
   } catch (error) {
-    console.error("Database error:", error);
+    console.error("Database error in createDiet:", error);
     throw error;
   } finally {
     if (connection) {
-      try {
-        await connection.close();
-      } catch (err) {
-        console.error("Error closing connection:", err);
-      }
+      await connection.close();
     }
   }
 }
