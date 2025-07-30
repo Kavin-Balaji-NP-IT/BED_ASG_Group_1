@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Register</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 2rem; }
+    .error { color: red; }
+    .success { color: green; }
+  </style>
+</head>
+<body>
+  <h1>Register</h1>
+  <form id="registerForm">
+    <label>Username: <input type="text" name="username" required /></label><br /><br />
+    <label>Password: <input type="password" name="password" required /></label><br /><br />
+    <label>Role (optional, default "user"): <input type="text" name="role" /></label><br /><br />
+    <button type="submit">Register</button>
+  </form>
+  <div id="message"></div>
+  <p><a href="/login.html">Back to Login</a></p>
+
+  <script src="js/register.js" defer></script>
+</body>
+</html>

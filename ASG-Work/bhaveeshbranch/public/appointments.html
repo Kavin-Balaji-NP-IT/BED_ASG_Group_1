@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>My Medical Appointments</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 2rem; }
+    .error { color: red; }
+    .success { color: green; }
+    .appointment-card {
+      border: 1px solid #ccc;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+  <h1>My Medical Appointments</h1>
+
+  <form id="appointmentForm">
+    <label>Date & Time: <input type="datetime-local" name="appointmentDate" required></label><br><br>
+    <label>Description: <input type="text" name="description" required></label><br><br>
+    <button type="submit">Add Appointment</button>
+  </form>
+
+  <div id="message"></div>
+
+  <h2>Upcoming Appointments</h2>
+  <div id="appointmentsList"></div>
+
+  <p>
+    <button onclick="window.location.href='update-appointment.html'">Update Appointment</button>
+    <button onclick="window.location.href='delete-appointment.html'">Delete Appointment</button>
+  </p>
+
+  <p><button onclick="logout()">Logout</button></p>
+
+  <script src="js/appointments.js" defer></script>
+</body>
+</html>

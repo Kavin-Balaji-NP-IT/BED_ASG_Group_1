@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Login</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 2rem; }
+    .error { color: red; }
+    .success { color: green; }
+  </style>
+</head>
+<body>
+  <h1>Login</h1>
+  <form id="loginForm">
+    <label>Username: <input type="text" name="username" required /></label><br /><br />
+    <label>Password: <input type="password" name="password" required /></label><br /><br />
+    <button type="submit">Login</button>
+  </form>
+  <div id="message"></div>
+  <p><a href="/register.html">Register Here</a></p>
+  <button id="adminChangePasswordBtn" type="button">Admin Change Password</button>
+
+  <script src="js/login.js" defer></script>
+</body>
+</html>
