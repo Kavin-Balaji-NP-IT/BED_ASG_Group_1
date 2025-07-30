@@ -62,7 +62,7 @@ async function getDietPlanById(id) {
 }
 
 // Create new diet plan
-async function createDiet(dietData) {
+async function createDietPlan(dietData) {
   const { UserID, MealName, Calories, MealType, MealDate, Notes } = dietData;
   let connection;
 
