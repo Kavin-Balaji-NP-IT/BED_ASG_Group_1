@@ -153,9 +153,9 @@ async function updateDietPlan(MealID, dietData) {
         WHERE MealID = @MealID;
       `);
 
-    // You can check rowsAffected to confirm update succeeded
+
     if (result.rowsAffected[0] === 0) {
-      return null; // no row updated, ID might not exist
+      return null;
     }
 
     // Return updated diet plan data (optional)
