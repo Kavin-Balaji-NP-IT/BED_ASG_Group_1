@@ -52,7 +52,28 @@ const UserController = {
     }
   },
 
-  
+  // --- NEW FUNCTION ADDED HERE ---
+  getCurrentUser: async (req, res) => {
+    try {
+      // The verifyToken middleware should add the userId to the request object
+      const userId = req.userId;
+      
+      const user = await UserModel.findById(userId); 
+      if (!user) {
+          return res.status(404).json({ message: 'User not found' });
+      }
+
+      // Don't send the password back!
+      const { password, ...userDetails } = user;
+
+      return res.status(200).json(userDetails);
+
+    } catch (error) {
+      console.error('Error fetching current user:', error);
+      return res.status(500).json({ message: 'Internal server error' });
+    }
+  },
+  // --- END OF NEW FUNCTION ---
 
   deleteUser: async (req, res) => {
     const userId = parseInt(req.params.id, 10);
