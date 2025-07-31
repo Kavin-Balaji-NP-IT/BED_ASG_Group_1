@@ -36,10 +36,11 @@ async function getDietPlanById(id) {
       SELECT 
         MealID, UserID, MealName, Calories, MealType, MealDate, Notes 
       FROM DietPlan 
-      WHERE DietPlanID = @id
+      WHERE MealID = @id
     `;
     const request = connection.request();
-    request.input("id", id);
+    request.input("id", sql.Int, id); // ensure type is correct
+
     const result = await request.query(query);
 
     if (result.recordset.length === 0) {
