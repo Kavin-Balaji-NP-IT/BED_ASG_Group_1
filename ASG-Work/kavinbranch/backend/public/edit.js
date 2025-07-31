@@ -38,3 +38,37 @@ window.addEventListener("DOMContentLoaded", async () => {
     messageDiv.style.color = "red";
   }
 });
+
+// Handle form submission to update diet plan
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const updatedDiet = {
+    UserID: parseInt(document.getElementById("userId").value),
+    MealName: document.getElementById("mealName").value.trim(),
+    Calories: parseInt(document.getElementById("calories").value),
+    MealType: document.getElementById("mealType").value,
+    MealDate: document.getElementById("mealDate").value,
+    Notes: document.getElementById("notes").value.trim(),
+  };
+
+  try {
+    const mealId = document.getElementById("mealId").value;
+    const res = await fetch(`${apiBaseUrl}/dietplan/${mealId}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(updatedDiet),
+    });
+
+    if (!res.ok) {
+      const errData = await res.json();
+      throw new Error(errData.error || "Failed to update diet plan");
+    }
+
+    messageDiv.textContent = "✅ Updated successfully!";
+    messageDiv.style.color = "green";
+  } catch (err) {
+    messageDiv.textContent = `❌ Error updating diet plan: ${err.message}`;
+    messageDiv.style.color = "red";
+  }
+});
