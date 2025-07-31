@@ -1,23 +1,130 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8" />
   <title>Edit Diet Plan</title>
-  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f0f8ff;
+      padding: 30px;
+      max-width: 600px;
+      margin: auto;
+    }
+
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+
+    form {
+      background-color: #ffffff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    label {
+      display: block;
+      margin-top: 12px;
+      font-weight: bold;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    input[type="date"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      box-sizing: border-box;
+    }
+
+    button {
+      margin-top: 20px;
+      width: 100%;
+      padding: 12px;
+      background-color: #007bff;
+      color: white;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    #editMessage {
+      margin-top: 20px;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    .back-link {
+      display: block;
+      margin-top: 25px;
+      text-align: center;
+      color: #007bff;
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    .back-link:hover {
+      text-decoration: underline;
+    }
+  </style>
 </head>
 <body>
+
   <h1>Edit Diet Plan</h1>
-  <form id="editForm">
-    <input type="number" name="MealID" placeholder="Meal ID to Edit" required />
-    <input type="text" name="MealName" placeholder="New Meal Name" required />
-    <input type="number" name="Calories" placeholder="New Calories" required />
-    <input type="text" name="MealType" placeholder="New Meal Type" required />
-    <input type="date" name="MealDate" required />
-    <input type="text" name="Notes" placeholder="New Notes" />
+
+  <form id="editDietForm">
+    <label>Meal ID:
+      <input type="number" name="mealId" id="mealId" required readonly />
+    </label>
+
+    <label>User ID:
+      <input type="number" name="userId" id="userId" required readonly />
+    </label>
+    
+    <label>Meal Name:
+      <input type="text" name="mealName" id="mealName" required />
+    </label>
+
+    <label>Calories:
+      <input type="number" name="calories" id="calories" required />
+    </label>
+
+    <label>Meal Type:
+      <select name="mealType" id="mealType" required>
+        <option value="">--Select--</option>
+        <option value="breakfast">Breakfast</option>
+        <option value="lunch">Lunch</option>
+        <option value="dinner">Dinner</option>
+        <option value="snack">Snack</option>
+      </select>
+    </label>
+
+    <label>Meal Date:
+      <input type="date" name="mealDate" id="mealDate" required />
+    </label>
+
+    <label>Notes:
+      <textarea name="notes" id="notes"></textarea>
+    </label>
+
     <button type="submit">Update</button>
   </form>
+
   <div id="editMessage"></div>
-  <script src="script.js"></script>
+
+  <a href="index.html" class="back-link">← Back to List</a>
+
+  <script src="edit.js"></script>
 </body>
 </html>

@@ -36,10 +36,11 @@ async function getDietPlanById(id) {
       SELECT 
         MealID, UserID, MealName, Calories, MealType, MealDate, Notes 
       FROM DietPlan 
-      WHERE DietPlanID = @id
+      WHERE MealID = @id
     `;
     const request = connection.request();
-    request.input("id", id);
+    request.input("id", sql.Int, id); // ensure type is correct
+
     const result = await request.query(query);
 
     if (result.recordset.length === 0) {
@@ -126,9 +127,57 @@ async function deleteDietPlan(id) {
 }
 
 
+// Update diet plan by MealID
+async function updateDietPlan(MealID, dietData) {
+  const { UserID, MealName, Calories, MealType, MealDate, Notes } = dietData;
+  let connection;
+
+  try {
+    connection = await sql.connect(dbConfig);
+    const result = await connection
+      .request()
+      .input("MealID", sql.Int, MealID)
+      .input("UserID", sql.Int, UserID)
+      .input("MealName", sql.NVarChar(100), MealName)
+      .input("Calories", sql.Int, Calories)
+      .input("MealType", sql.NVarChar(50), MealType)
+      .input("MealDate", sql.Date, MealDate)
+      .input("Notes", sql.NVarChar(sql.MAX), Notes)
+      .query(`
+        UPDATE DietPlan
+        SET UserID = @UserID,
+            MealName = @MealName,
+            Calories = @Calories,
+            MealType = @MealType,
+            MealDate = @MealDate,
+            Notes = @Notes
+        WHERE MealID = @MealID;
+      `);
+
+
+    if (result.rowsAffected[0] === 0) {
+      return null;
+    }
+
+    // Return updated diet plan data (optional)
+    return { MealID, ...dietData };
+
+  } catch (error) {
+    console.error("Database error in updateDietPlan:", error);
+    throw error;
+  } finally {
+    if (connection) {
+      await connection.close();
+    }
+  }
+}
+
+
+
 module.exports = {
   getAllDiets,
   getDietPlanById,
   createDietPlan,
   deleteDietPlan,
+  updateDietPlan,
 };

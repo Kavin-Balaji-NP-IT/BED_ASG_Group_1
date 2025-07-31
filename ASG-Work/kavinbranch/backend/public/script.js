@@ -52,7 +52,6 @@ async function fetchDietPlans() {
         <p>Calories: ${diet.Calories || "N/A"}</p>
         <p>Date: ${diet.MealDate ? new Date(diet.MealDate).toLocaleDateString() : "Unknown"}</p>
         <p>Notes: ${diet.Notes || "None"}</p>
-        <button onclick="viewDietDetails('${id}')">View Details</button>
         <button onclick="editDiet('${id}')">Edit</button>
         <button class="delete-btn" data-id="${id}">Delete</button>
       `;
@@ -70,10 +69,7 @@ async function fetchDietPlans() {
   }
 }
 
-// Placeholder actions
-function viewDietDetails(dietId) {
-  alert(`View details for DietPlan ID: ${dietId} (Not implemented yet)`);
-}
+// Removed viewDietDetails function
 
 function editDiet(dietId) {
   window.location.href = `edit.html?id=${dietId}`;
@@ -115,4 +111,3 @@ async function handleDeleteClick(event) {
 // Event listeners
 fetchDietBtn.addEventListener("click", fetchDietPlans);
 window.addEventListener("load", fetchDietPlans);
-
