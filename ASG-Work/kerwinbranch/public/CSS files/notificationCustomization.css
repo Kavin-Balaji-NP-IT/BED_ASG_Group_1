@@ -1,0 +1,441 @@
+
+
+.body {
+    margin: 0;
+    padding: 0;
+    width: 100vw;
+    height: 100vw;
+
+}
+
+/* Font imports */
+
+.jaro {
+  font-family: "Jaro", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
+
+
+.inter {
+  font-family: "Inter", sans-serif;
+  font-optical-sizing: auto;
+  font-style: normal;
+}
+
+/* Main content */
+
+.container {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.back-button-container {
+    display: flex;
+    flex-direction: row;
+    height : 40px;
+    border: 1px solid black;
+    align-items: center;
+    gap: 38vw;
+    margin-top: 20px;
+    background-color: white;
+    border-radius: 10px;
+    
+} .back-button-container div {
+    font-size: 25px;
+}
+
+#back-button {
+  background-color: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  line-height: 0;        
+  display: inline-block; 
+} #back-button i {
+    height: inherit;
+    font-size:48px;
+    color: black;
+} #back-button i:hover {
+    color: #000;
+    transform: scale(1.1);
+}
+
+.company-name-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 80px;
+    position: relative;
+    border-radius: 10px;
+    margin-top: 5vh;
+}
+
+.company-name-logo img {
+    height: 100%;
+    border: 1px solid black;
+    position: absolute;
+    left: 23vw;
+}
+
+.company-name-logo h1 {
+    color: black;
+}
+
+.main-container {
+    display: flex;
+    flex-direction: column;
+    margin-top: 15px;
+    justify-content: center;
+    align-items: center;
+}   
+
+.date-selected {
+    display: flex;
+    align-items: center;
+    height: 30px;
+    border: 1px solid black;
+    margin-top: 20px;
+    width: 60vw;
+    background-color: white;
+    border-radius: 5px;
+    padding: 5px 5px 5px 5px;
+}  #date-display, .date-display-title {
+    font-size: 25px;
+    margin-right: 10px;
+} .date-display-title {
+    padding: 5px;
+}
+
+.saved-notification-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 15vh;
+    padding: 0;
+    margin: 0;
+    width: 60vw;
+    margin-top: 20px;
+    border-radius: 20px;
+    background-color: #f4bc7c;  
+    border: 3px solid black;  
+} 
+
+.layer1-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+    height: inherit;
+    padding: 10px;
+} .layer1-container div {
+    font-size: 20px;
+    position: relative;
+    margin-left: 20px;
+} .layer1-container button {
+    position: relative;
+    margin-left: auto;
+    margin-right: 10px;
+}
+
+.add-medication-container {
+    text-align: center;
+    margin-top: 13px;
+} .add-medication-container h3 {
+    padding: 2px;
+    margin: 0;
+    font-size: medium;
+}
+
+#add-container-button {
+    background-color: rgb(255, 140, 0);
+    border: 1px solid black;
+    width: 4vw;
+    color: white;
+    font-size: 40px;
+    border-radius: 40px;
+} #add-container-button:hover {
+    cursor: pointer;
+    transform: translateX(1.5px);
+    background-color: blue;
+}
+
+.delete-notification-container {
+    position: relative;
+    right: 24.5em;
+    top: 10px;
+    border: none;
+    background:none;
+    font-weight: bolder;
+    font-size: 15px;
+} .delete-notification-container:hover {
+    cursor: pointer;
+    color: darkred;
+}
+
+.layer2-container {
+    display: flex;
+    flex-direction: row;
+    width: 100%;     
+    align-items: center;
+    border: 1px solid black;
+    height: 40px;
+    margin-bottom: 4px;
+    gap: 10px;
+}
+
+.notes-wrapper {
+    display: flex;  
+    flex-direction: row;
+    overflow-x: auto;
+    overflow-y: hidden;
+    border: none;
+    height: 100%;
+    flex: 1; /* take all space except for + button */
+    scroll-behavior: smooth;
+    scrollbar-width: thin;
+    scrollbar-color: #888 transparent;
+}
+
+/* Optional for WebKit-based browsers (Chrome/Safari) */
+.notes-wrapper::-webkit-scrollbar {
+    height: 6px;
+}
+.notes-wrapper::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 10px;
+}
+.notes-wrapper::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.prompt-info {
+    margin-left: 10px;
+    font-size: 14px;
+    color: white;
+    background-color: red;
+    border-radius: 20px;
+    padding: 6px 10px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    height: fit-content;
+    text-align: center;
+    border: 1px solid black;
+}
+
+.prompt-info::placeholder {
+    color: white;
+}
+
+.note-div-delete {
+    display: flex;
+    align-items: center;    /* vertically center */
+    justify-content: center; /* horizontally center */
+    position: relative;
+    left: 9px;
+    border-radius: 15px;
+    font-weight: 600;
+    height: 90%;
+    border: 1.5px solid grey;
+    top: .5px;
+    background-color: rgb(255, 91, 32);
+    color: white;
+    padding: 8px 8px 8px 8px;
+} .note-div-delete:hover {
+    cursor: pointer;
+    color: grey;
+    background-color: white;
+}
+
+.add-button {
+    background-color: orange;
+    border: 1px solid black;
+    height: 95%;
+    width: 3vw;
+    color: white;
+    font-size: 29px;
+    border-radius: 40px;
+    position: relative;
+    right: 10px;
+    margin-left: auto;
+    position: relative;
+    bottom: 2px;
+} .add-button:hover {
+    background-color: orange;
+    color: black;
+    transform: scale(1.05);
+    cursor: pointer;
+} .add-button {
+    text-align: center;
+    align-items: center;
+}
+
+.edit-box-container {
+    display: flex;
+    align-items: start;
+    width: 80vw;
+    height: 15vw;
+    border: 3px solid orangered;
+    border-radius: 20px;
+    padding: 10px;
+    margin-top: 20px;
+    flex-direction: column;
+    overflow-y: scroll;
+    background-color: orange;
+    color: white;
+} .edit-box-container .title {
+    width: 100%;
+    text-align: center;
+    display: flex;
+    justify-content: start;
+    align-items: center;
+} .edit-box-container h3 {
+    margin: 0;
+    font-size: 24px;
+}
+
+
+
+.edit-features {
+    display: flex;
+    flex-direction: column;
+    width: inherit;
+    height: 20vh;
+} .edit-features h3 {
+    margin-left: 30px;
+    font-size: 18px;
+    margin-top: 5px;
+} 
+
+.add-box-container { /* Later add this to the .edit-box-container */
+    position: fixed; 
+    bottom: 0; 
+    width: 80vw; 
+    left: 100px; 
+    height: 15vw;
+    border-radius: 20px;
+    border: 1px solid black;
+    padding: 10px;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow-y: scroll;
+    background-color: orange;
+} .add-box-container .title {
+    width: 100%;
+    text-align: center;
+} .add-box-container h3 {
+    margin: 0;
+    font-size: 24px;
+    color: white;
+}
+
+.add-features {
+    display: flex;
+    flex-direction: column;
+    width: inherit;
+    height: 20vh;
+} .add-features h3 {
+    margin-left: 30px;
+    font-size: 18px;
+    margin-top: 5px;
+} 
+
+#close-add-window {
+    background: none;
+    border: none;
+} #close-add-window:hover {
+    cursor: pointer;
+    color: red;
+}
+
+
+.edit-button {
+    border: 1px solid black;
+    width: 50px;
+    border-radius: 10px;
+    padding: 5px 5px 5px 5px;
+    font-size: medium;
+    background-color: orange;
+    color: white;
+    font-size: 15px;
+    
+}.edit-button:hover {
+    cursor: pointer;
+    color: red;
+    transform: translateY(1px);
+}
+
+.title {
+    display: flex;
+    flex-direction: row;
+    gap: 45%;
+} 
+
+.close-edit-window {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 20px;
+    margin-left: 10px;
+} .close-edit-window:hover {
+    color: red;
+    transform: scale(1.1);
+    cursor: pointer;
+}
+
+
+.general-info {
+    margin-left: 30px;
+    width: 50vw;
+    padding: 10px 10px 10px 10px;
+    border-radius: 10px;
+    border: 2px solid grey;
+    font-size: medium;
+}
+
+.day-on-repeat {
+    display: flex;
+    flex-direction: row;
+    height: inherit;
+} 
+
+.hour-range-container {
+    display: flex;
+    flex-direction: row;
+    height: inherit;
+}
+
+.arrow {
+  font-size: 30px;
+  align-content: center;
+  transform: scaleX(2);
+  margin-left: 20px;
+  
+}
+
+.routine_option-and-schedule {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+} .routine_option-and-schedule button {
+    border-radius: 10px;
+    border: 2px solid grey;
+} .routine_option-and-schedule button:hover {
+    cursor: pointer;
+    transform: scale(1.05);
+    background-color: orange;
+}
+
+hr {
+  border: 1px solid black;
+  width: 100%; /* Or any specific width you want */
+  margin: 10px 0; /* Optional spacing */
+}
+
