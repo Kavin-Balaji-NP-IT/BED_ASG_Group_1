@@ -21,6 +21,9 @@
     font-family: Arial, sans-serif;
 }
 
+.fa::before {
+  color: black;
+}
 
 .audio-item {
   background-color: hsl(210, 50%, 98%);

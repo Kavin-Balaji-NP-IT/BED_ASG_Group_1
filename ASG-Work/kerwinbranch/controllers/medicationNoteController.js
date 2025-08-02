@@ -36,6 +36,7 @@ async function retrieveNote(req, res) {
     }
 }
 
+// getAutoNoteFields function model
 async function getAutoNoteFieldsController(req, res) {
     const id = parseInt(req.params.id);
 
@@ -69,6 +70,8 @@ async function getAutoNoteFieldsController(req, res) {
     }
 }
 
+
+// deleteSpecificNote model function 
 async function deleteSpecificNoteController (req, res) {
     const { medication_id, note_text } = req.body;
 

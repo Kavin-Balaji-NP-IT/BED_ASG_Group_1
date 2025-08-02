@@ -38,7 +38,7 @@
     height : 40px;
     border: 1px solid black;
     align-items: center;
-    gap: 38vw;
+    gap: 38%;
     margin-top: 20px;
     background-color: white;
     border-radius: 10px;
@@ -46,6 +46,7 @@
 } .back-button-container div {
     font-size: 25px;
 }
+
 
 #back-button {
   background-color: transparent;
@@ -92,6 +93,11 @@
     justify-content: center;
     align-items: center;
 }   
+
+.back-to-calendar-title {
+    font-weight: 500;
+}
+
 
 .date-selected {
     display: flex;
@@ -213,6 +219,9 @@
     background: transparent;
 }
 
+body, html {
+    background-color: #43968e;;
+}
 .prompt-info {
     margin-left: 10px;
     font-size: 14px;

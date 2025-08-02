@@ -6,6 +6,7 @@ document.getElementById("back-button").addEventListener("click", function() {
     savedDate.remove();
 });
 
+// Display the date by creating and displaying div, retrieval from the local storage
 function displayDate() {
     const dateDiv = document.createElement("div");
     dateDiv.className = "date-display"
@@ -29,7 +30,7 @@ function formatTime(time) {
   return `${hours}:${minutes}`;
 }
 
-
+// Fetch the notification through the date
 async function fetchAndDisplayNotifications() {
     if (!savedDate) {
         return;
@@ -66,6 +67,8 @@ async function fetchAndDisplayNotifications() {
 
 document.addEventListener("DOMContentLoaded", fetchAndDisplayNotifications);
 
+
+// Validate the medication
 function validateMedicationInput(data) {
     if (!data.name || data.name.trim() === "") {
         alert("Name is required.");
@@ -110,6 +113,8 @@ function validateMedicationInput(data) {
     return true;
 }
 
+
+// Add medication container 
 async function addMedicationContainer() {
   const addBtn = document.getElementById('add-container-button');
   const mainContainer = document.querySelector('.main-container');
@@ -242,6 +247,7 @@ function parseToMinutes(timeStr) {
   return hour * 60 + minute;
 }
 
+
 function validateDurationAndRepeat(medications) {
     console.log(`medications: ${JSON.stringify(medications)}`);
     const startMin = parseToMinutes(medications.start_hour);
@@ -271,7 +277,7 @@ function validateDurationAndRepeat(medications) {
 }
 
 
-// Add container based on notifications
+// Add the container and the edit box 
 async function ModifyMedicationContainer() {
     if (!savedDate) return;
 
@@ -701,6 +707,8 @@ async function deleteSpecificNoteById(medId, noteText, noteDiv, deleteButton) {
     }
 }
 
+
+// Fetch medications
 async function fetchMedications() {
   const dateInput = document.getElementById("date");
   if (!dateInput || !dateInput.value) {

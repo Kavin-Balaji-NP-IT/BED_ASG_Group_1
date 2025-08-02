@@ -79,7 +79,7 @@ async function addMedication(req, res) {
     
   } = req.body;
 
-  // Basic presence check
+  // Basic json data check
   if (!name || !schedule_date || !frequency_type) {
     return res.status(400).json({ message: "Missing required fields: name, date, or frequency_type" });
   }
@@ -140,7 +140,7 @@ async function addMedication(req, res) {
 }
 
 
-// Update medication
+// updateMedication function from model 
 async function updateMedicationController(req, res) {
   const medicationId = req.params.id;
   const medicationData = req.body;
@@ -204,7 +204,7 @@ async function updateMedicationController(req, res) {
   }
 }
 
-
+// Get the medication Occurrences getAllMedicationOccurrences
 async function getMedicationOccurrencesController(req, res) {
   try {
     const selectedDate = req.query.date; 
@@ -242,7 +242,7 @@ async function getMedicationOccurrencesController(req, res) {
   }
 }
 
-
+// getOccurrencesByMedIdAndDate function model
 async function getOccurrencesByMedIdAndDateController(req, res) {
   const { medication_id, date } = req.query;
 
@@ -259,6 +259,8 @@ async function getOccurrencesByMedIdAndDateController(req, res) {
   }
 }
 
+
+// getOccurrencesByMedicationId function model
 async function getOccurrencesByMedicationIdController(req, res) {
   const medicationId = req.params.medicationId;
 
@@ -271,6 +273,7 @@ async function getOccurrencesByMedicationIdController(req, res) {
   }
 }
 
+// deleteOccurrencesByMedicationId function model
 async function deleteOccurrencesController(req, res) {
   const medicationId = req.params.medicationId;
 

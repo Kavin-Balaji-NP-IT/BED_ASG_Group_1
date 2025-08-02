@@ -31,6 +31,12 @@ body, html{
   flex-direction: column;
   padding: 20px;
   row-gap: 20px;
+  background-color: rgb(190, 190, 190);
+}
+
+.main-container {
+  background-color: white;
+  border-radius: 10px;
 }
 
 .company-name-logo {
@@ -39,7 +45,7 @@ body, html{
   justify-content: center;
   flex-direction: column;
   border: 1px solid black;
-  background-color: #43968e;
+  background: linear-gradient(90deg, #2ecc71, #27ae60);;
   color: white;
   padding: 5px 5px 5px 5px;
   } 
@@ -179,7 +185,6 @@ body, html{
   background-color: rgb(3, 90, 29);
   width: 50%;
 }
-
 .alert-ringtone-text {
   font-size: large;
   color: rgb(255, 255, 255);
@@ -193,10 +198,10 @@ body, html{
   padding: 10px;
   border-radius: 10px;
   justify-content: center;
-  background-color: #43968e;
+  background-color: red;
   font-size: large;
   border: 2px solid rgb(87, 84, 84);
-  color: rgb(218, 218, 218);
+  color: white;
   width: 100%;
 } .notification:hover {
   background-color: lightblue;
@@ -213,6 +218,13 @@ body, html{
   border: 1px solid black;
 }
 
+.play-ringtone:hover {
+  cursor: pointer;
+  color: white;
+  background-color: grey;
+  border: 1px solid black;
+
+}
 
 .calendar-checkbox {
   appearance: none;
@@ -272,10 +284,10 @@ body, html{
 .navbar {
   display: flex;
   justify-content: center;
+  align-items: center;
   padding: 1rem 2rem;
   gap: 40px;
-  background-color: hsl(210, 50%, 98%);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  background-color: rgb(215, 208, 208);
   border-radius: 1.25rem;
   margin: 1rem auto;
   flex-wrap: wrap;

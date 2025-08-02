@@ -1,4 +1,8 @@
-async function playRingtone() {
+
+
+// Play the ringtone for the medications retrieved from the database through the date
+// and then matching the date and timing for the current -> the database startTiming and the date
+async function playRingtone() { 
   const selectedDate = localStorage.getItem("selectedDate");
   if (!selectedDate) return;
 
@@ -67,6 +71,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 let currentAudio = null; // global reference
 
+// Show what medication to take today, then allow muting of the alarm
 function showMedicationPopup(name, audio) {
   currentAudio = audio;
 
@@ -85,7 +90,7 @@ function showMedicationPopup(name, audio) {
       font-family: sans-serif;
       text-align: center;
     ">
-      🔔 It's time to take: <strong>${name}</strong><br><br>
+      It's time to take: <strong>${name}</strong><br><br>
       <button id="mute-btn" style="padding: 6px 12px; background: #007bff; color: white; border: none; border-radius: 6px; cursor: pointer;">
         Mute
       </button>

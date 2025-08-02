@@ -2,7 +2,7 @@
 const dbConfig = require("../dbConfig");
 const sql = require("mssql");
 
-
+// createNote function from model
 async function addNote (medication_id, note_text, is_deleted = 0, note_type = 'manual') { // createNote in controller
     let connection;
 
@@ -31,27 +31,6 @@ async function addNote (medication_id, note_text, is_deleted = 0, note_type = 'm
 }
 
 
-async function noteExists(medicationId, noteText) {
-    try {
-        const pool = await sql.connect(dbConfig);
-        const result = await pool.request()
-            .input('medication_id', sql.Int, medicationId)
-            .input('note_text', sql.NVarChar(255), noteText)
-            .query(`
-                SELECT 1 FROM MedicationNotes 
-                WHERE medication_id = @medication_id 
-                AND note_text = @note_text 
-                AND is_deleted = 0
-            `);
-
-        return result.recordset.length > 0;
-    } catch (err) {
-        console.error("Error checking note existence:", err);
-        return false;
-    }
-}
-
-
 async function getNote(medication_id) { //  retrieveNote controller
     const pool = await sql.connect(dbConfig);
     const result = await pool.request()
@@ -65,6 +44,7 @@ async function getNote(medication_id) { //  retrieveNote controller
     return result.recordset;
 }
 
+// Get the auto notes like the startTime, endTime etc
 async function getAutoNoteFields(id) { // getAutoFieldsController
     const pool = await sql.connect(dbConfig);
     const result = await pool.request()
@@ -81,8 +61,8 @@ async function getAutoNoteFields(id) { // getAutoFieldsController
         return result.recordset;
 }
 
-
-async function deleteSpecificNote(medicationId, noteText) { // deleteSpecificNoteController 
+// delete a specific note with the note text and from a medication id
+async function deleteSpecificNote(medicationId, noteText) {
     try {
         const pool = await sql.connect(dbConfig);
       await pool.request()
@@ -108,5 +88,5 @@ module.exports = {
     getNote,
     getAutoNoteFields,
     deleteSpecificNote,
-    noteExists
+    
 };

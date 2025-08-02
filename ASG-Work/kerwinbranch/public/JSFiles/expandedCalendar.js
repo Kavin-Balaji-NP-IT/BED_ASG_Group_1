@@ -9,6 +9,8 @@ const times = [
 let startTimeIndex = times.indexOf("9am");
 let endTimeIndex = times.indexOf("9pm");
 
+
+// Change the start time using the up arrow
 function increaseStart() {
   if (startTimeIndex < times.length - 1) {
     startTimeIndex++;
@@ -17,6 +19,8 @@ function increaseStart() {
   }
 }
 
+
+// Decrease the end time using the down arrow 
 function decreaseStart() {
   if (startTimeIndex > 0) {
     startTimeIndex--;
@@ -25,6 +29,7 @@ function decreaseStart() {
   }
 }
 
+// Changes the end time using the up arrow
 function increaseEnd() {
   if (endTimeIndex < times.length - 1) {
     endTimeIndex++;
@@ -33,6 +38,8 @@ function increaseEnd() {
   }
 }
 
+
+// Changes the end time using the down arrow
 function decreaseEnd() {
   if (endTimeIndex > 0) {
     endTimeIndex--;
@@ -41,6 +48,7 @@ function decreaseEnd() {
   }
 }
 
+// changes the timing to 24-hour time string formatted for the start and end timing
 function indexToTimeString(index) {
   const hour = index % 12 === 0 ? 12 : index % 12;
   const ampm = index < 12 ? "AM" : "PM";
@@ -55,19 +63,7 @@ document.getElementById("play-ringtone").addEventListener("click", function(){
 });
 
 
-function formatTo12HourTimeLocal(isoTimeString) {
-  const date = new Date(isoTimeString); // Uses local timezone by default
-  let hours = date.getHours();
-  const minutes = date.getMinutes();
-
-  const ampm = hours >= 12 ? 'PM' : 'AM';
-  hours = hours % 12 || 12; // Convert 0 to 12 for 12 AM
-  const minutesStr = minutes.toString().padStart(2, '0');
-
-  return `${hours}:${minutesStr} ${ampm}`;
-}
-
-
+// Fetch the medications using the date and start time to end time
 async function fetchMedications() {
   const date = document.getElementById("date").value;
   if (!date) {
@@ -110,7 +106,7 @@ document.getElementById("play-ringtone").addEventListener("click", function(){
 });
 
 
-
+// Main function to display the medications in the frontend UI
 function displayMedications(medications, medicationOccurrences) {
   console.log("📦 Medications:", medications);
   console.log("📦 Occurrences:", medicationOccurrences);
@@ -134,7 +130,7 @@ function displayMedications(medications, medicationOccurrences) {
 
   const medicationMap = {};
 
-  // ✅ Step 1: Load medications for the selected date
+  // Load medications for the selected date
   medications.forEach(med => {
     if (!med.start_hour || !med.schedule_date) return;
 
@@ -160,7 +156,7 @@ function displayMedications(medications, medicationOccurrences) {
     }
   });
 
-  // ✅ Step 2: Load occurrences for the selected date using schedule_hour
+  // Load occurrences for the selected date using schedule_hour
   medicationOccurrences.forEach(occ => {
     const occDateStr = new Date(occ.schedule_date).toISOString().split("T")[0];
     if (occDateStr !== selectedDateStr) return;
@@ -180,7 +176,7 @@ function displayMedications(medications, medicationOccurrences) {
     });
   });
 
-  // ✅ Step 3: Render from start to end hour
+  // Render from start to end hour
   for (let i = startTimeIndex; i <= endTimeIndex; i++) {
     const hourLabel = times[i];
     const medsAtHour = medicationMap[i];
@@ -220,7 +216,7 @@ function displayMedications(medications, medicationOccurrences) {
   }
 }
 
-
+// format the timing to become 12 hours
 function formatTo12HourTimeLocal(isoTimeString) {
   const date = new Date(isoTimeString); // Uses local timezone by default
   let hours = date.getHours();
