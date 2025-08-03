@@ -1,0 +1,38 @@
+CREATE TABLE Medications (
+    id INT PRIMARY KEY NOT NULL,
+    name VARCHAR(255) NULL,
+    repeat_times INT NULL,
+    is_deleted BIT NULL,
+    user_id INT NULL,
+    repeat_duration INT NULL,
+    actual_time TIME(7) NULL,
+    schedule_date DATE NULL,
+    schedule_hour INT NULL,
+    start_hour TIME(7) NULL,
+    end_hour TIME(7) NULL,
+    frequency_type VARCHAR(50) NULL,
+    audio_link VARCHAR(255) NULL
+);
+
+
+CREATE TABLE MedicationOccurrences (
+    id INT PRIMARY KEY NOT NULL,
+    medication_id INT NOT NULL,
+    audio_link NVARCHAR(255) NULL,
+    name VARCHAR(255) NULL,
+    schedule_date DATE NULL,
+    occurrence_time TIME(7) NULL,
+    schedule_hour INT NULL,
+    FOREIGN KEY (medication_id) REFERENCES Medications(id)
+);
+
+
+CREATE TABLE MedicationNotes (
+    id INT PRIMARY KEY NOT NULL,
+    medication_id INT NOT NULL,
+    note_text NVARCHAR(500) NOT NULL,
+    note_type VARCHAR(50) NULL,
+    is_deleted BIT NULL,
+    created_at DATETIME NULL,
+    FOREIGN KEY (medication_id) REFERENCES Medications(id)
+);
