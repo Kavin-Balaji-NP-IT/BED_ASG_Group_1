@@ -1,4 +1,3 @@
-// public/js/appointments.js
 
 const token = localStorage.getItem('token');
 const messageDiv = document.getElementById('message');
@@ -11,7 +10,7 @@ if (!token) {
   window.location.href = '/login.html';
 }
 
-// Fetch and display appointments
+// Load all appointments
 async function loadAppointments() {
   try {
     const res = await fetch('/appointments', {
@@ -19,6 +18,7 @@ async function loadAppointments() {
         Authorization: `Bearer ${token}`
       }
     });
+
     const appointments = await res.json();
     appointmentsList.innerHTML = '';
 
@@ -32,12 +32,72 @@ async function loadAppointments() {
           <strong>Date:</strong> ${new Date(app.appointmentDate).toLocaleString()}<br>
           <strong>Description:</strong> ${app.description}<br>
           <button onclick="deleteAppointment(${app.appointmentId})">Delete</button>
+          <button onclick="showUpdateForm(${app.appointmentId}, '${app.appointmentDate}', '${app.description.replace(/'/g, "\\'")}')">Update</button>
+          <div id="update-form-${app.appointmentId}" class="update-form" style="display: none; margin-top: 10px;">
+            <form onsubmit="submitUpdate(event, ${app.appointmentId})">
+              <label>New Date & Time: <input type="datetime-local" name="newDate" required></label><br>
+              <label>New Description: <input type="text" name="newDescription" required></label><br>
+              <button type="submit">Save</button>
+              <button type="button" onclick="hideUpdateForm(${app.appointmentId})">Cancel</button>
+            </form>
+          </div>
         `;
         appointmentsList.appendChild(card);
       });
     }
   } catch (err) {
     messageDiv.textContent = 'Failed to load appointments.';
+    messageDiv.className = 'error';
+  }
+}
+
+function showUpdateForm(id, date, description) {
+  const updateDiv = document.getElementById(`update-form-${id}`);
+  updateDiv.style.display = 'block';
+
+  // Format date for datetime-local input
+  const localDate = new Date(date);
+  const formatted = localDate.toISOString().slice(0, 16);
+
+  updateDiv.querySelector('input[name="newDate"]').value = formatted;
+  updateDiv.querySelector('input[name="newDescription"]').value = description;
+}
+
+function hideUpdateForm(id) {
+  const updateDiv = document.getElementById(`update-form-${id}`);
+  updateDiv.style.display = 'none';
+}
+
+async function submitUpdate(event, id) {
+  event.preventDefault();
+  const form = event.target;
+  const newDate = form.newDate.value;
+  const newDescription = form.newDescription.value;
+
+  try {
+    const res = await fetch(`/appointments/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        appointmentDate: newDate,
+        description: newDescription
+      })
+    });
+
+    const data = await res.json();
+    if (res.ok) {
+      messageDiv.textContent = 'Appointment updated successfully.';
+      messageDiv.className = 'success';
+      loadAppointments();
+    } else {
+      messageDiv.textContent = data.message || 'Failed to update appointment.';
+      messageDiv.className = 'error';
+    }
+  } catch (err) {
+    messageDiv.textContent = 'An error occurred.';
     messageDiv.className = 'error';
   }
 }

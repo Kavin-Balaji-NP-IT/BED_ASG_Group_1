@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Event Calendar</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 2rem; max-width: 600px; margin: auto; }
+    .error { color: red; }
+    .success { color: green; }
+    .event-item { border-bottom: 1px solid #ccc; padding: 10px 0; }
+    label { display: block; margin-top: 10px; }
+    input, textarea { width: 100%; padding: 8px; box-sizing: border-box; }
+    button { margin-top: 10px; padding: 8px 16px; }
+  </style>
+</head>
+<body>
+  <h1>My Event Calendar</h1>
+
+  <button id="logoutBtn" style="float: right; margin-bottom: 1rem;">Logout</button>
+
+  <form id="eventForm">
+    <label for="title">Event Title *</label>
+    <input type="text" id="title" name="title" required />
+
+    <label for="description">Description</label>
+    <textarea id="description" name="description" rows="3"></textarea>
+
+    <label for="date">Date & Time *</label>
+    <input type="datetime-local" id="date" name="date" required />
+
+    <label for="location">Location</label>
+    <input type="text" id="location" name="location" />
+
+    <button type="submit">Add Event</button>
+  </form>
+
+  <div id="message"></div>
+
+  <h2>Events</h2>
+  <div id="eventList">
+    <!-- Events will be rendered here -->
+  </div>
+
+  <script src="js/eventCalendar.js" defer></script>
+</body>
+</html>
