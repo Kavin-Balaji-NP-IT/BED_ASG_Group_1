@@ -235,19 +235,6 @@ document.getElementById("play-ringtone").addEventListener("click", function(){
 });
 
 
-function formatTo12HourTimeLocal(isoTimeString) {
-  const date = new Date(isoTimeString); // Uses local timezone by default
-  let hours = date.getHours();
-  const minutes = date.getMinutes();
-
-  const ampm = hours >= 12 ? 'PM' : 'AM';
-  hours = hours % 12 || 12; // Convert 0 to 12 for 12 AM
-  const minutesStr = minutes.toString().padStart(2, '0');
-
-  return `${hours}:${minutesStr} ${ampm}`;
-}
-
-
 // Detect if the dynamic checkbox is selected
 document.addEventListener("change", function(event) {
   if (event.target.classList.contains("calendar-checkbox")) {

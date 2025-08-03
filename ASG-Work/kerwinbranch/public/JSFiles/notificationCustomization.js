@@ -228,14 +228,14 @@ async function addMedicationContainer() {
     }
 
     document.querySelectorAll('.edit-box-container').forEach(editBox => {
-    editBox.style.display = 'none';
-    document.querySelectorAll('.saved-notification-container').forEach(container => {
-        container.style.display = 'flex';
-    });
-    });
+        editBox.style.display = 'none';
+        document.querySelectorAll('.saved-notification-container').forEach(container => {
+            container.style.display = 'flex';
+        });
+        });
 
     // Toggle show/hide
-    addBoxContainer.style.display = (addBoxContainer.style.display === 'none') ? 'flex' : 'none';
+        addBoxContainer.style.display = (addBoxContainer.style.display === 'none') ? 'flex' : 'none';
   });
 }
 
