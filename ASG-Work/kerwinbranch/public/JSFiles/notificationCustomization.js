@@ -522,27 +522,27 @@ async function ModifyMedicationContainer() {
             // Edit button click
            editButton.addEventListener('click', () => {
   // Hide other saved containers
-  document.querySelectorAll(".saved-notification-container").forEach(container => {
-    if (container !== mainDiv) {
-      container.style.display = 'none';
-    }
-  });
+            document.querySelectorAll(".saved-notification-container").forEach(container => {
+                if (container !== mainDiv) {
+                container.style.display = 'none';
+                }
+            });
 
-  // Hide add container if it's open
-  const openAddBox = document.querySelector('.add-box-container');
-  if (openAddBox && openAddBox.style.display !== 'none') {
-    openAddBox.style.display = 'none';
-  }
+            // Hide add container if it's open
+            const openAddBox = document.querySelector('.add-box-container');
+            if (openAddBox && openAddBox.style.display !== 'none') {
+                openAddBox.style.display = 'none';
+            }
 
-  // Toggle edit box
-  if (editBoxContainer.style.display == 'none') {
-    editBoxContainer.style.display = 'flex';
-  } else {
-    editBoxContainer.style.display = 'none';
-    document.querySelectorAll(".saved-notification-container").forEach(container => {
-      container.style.display = 'flex';
-    });
-  }
+            // Toggle edit box
+            if (editBoxContainer.style.display == 'none') {
+                editBoxContainer.style.display = 'flex';
+            } else {
+                editBoxContainer.style.display = 'none';
+                document.querySelectorAll(".saved-notification-container").forEach(container => {
+                container.style.display = 'flex';
+                });
+            }
 });
 
 
