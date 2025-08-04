@@ -7,6 +7,7 @@ const verifyToken = require('../kerwinbranch/middleware/auth');
 
 dotenv.config();
 
+
 const {
     getFilteredMedications,
     getMedicationById,
@@ -62,6 +63,8 @@ app.delete("/medication-occurrences/:medicationId", verifyToken, deleteOccurrenc
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
 });
+
+
 
 
 // Graceful shutdown
