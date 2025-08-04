@@ -21,8 +21,7 @@ router.put('/admin/change-password', verifyToken, UserController.adminChangePass
 // 🔐 Only admin should be allowed to delete a user
 router.delete('/:username', verifyToken, UserController.deleteUserByUsername);
 
-// This endpoint will be called by other services
-router.get('/me', verifyToken, UserController.getCurrentUser);
+
 
 
 module.exports = router;

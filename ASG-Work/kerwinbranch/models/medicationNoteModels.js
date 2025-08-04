@@ -83,10 +83,31 @@ async function deleteSpecificNote(medicationId, noteText) {
 }
 
 
+async function noteExists(medicationId, noteText) {
+    try {
+        const pool = await sql.connect(dbConfig);
+        const result = await pool.request()
+            .input('medication_id', sql.Int, medicationId)
+            .input('note_text', sql.NVarChar(255), noteText)
+            .query(`
+                SELECT 1 FROM MedicationNotes 
+                WHERE medication_id = @medication_id 
+                AND note_text = @note_text 
+                AND is_deleted = 0
+            `);
+
+        return result.recordset.length > 0;
+    } catch (err) {
+        console.error("Error checking note existence:", err);
+        return false;
+    }
+}
+
+
 module.exports = {
     addNote, 
     getNote,
     getAutoNoteFields,
     deleteSpecificNote,
-    
+    noteExists
 };

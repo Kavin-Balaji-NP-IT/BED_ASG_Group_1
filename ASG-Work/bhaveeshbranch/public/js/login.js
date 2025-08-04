@@ -28,7 +28,7 @@ loginForm.addEventListener('submit', async (e) => {
       messageDiv.textContent = 'Login successful!';
       messageDiv.className = 'success';
       localStorage.setItem('token', data.token);
-      setTimeout(() => window.location.href = '/appointments.html', 1000);
+      setTimeout(() => window.location.href = '/index.html', 1000);
     } else {
       messageDiv.textContent = data.message || 'Login failed.';
       messageDiv.className = 'error';

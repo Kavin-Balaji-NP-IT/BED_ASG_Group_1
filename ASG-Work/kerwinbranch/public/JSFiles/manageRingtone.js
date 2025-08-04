@@ -40,11 +40,12 @@ async function playRingtone() {
       console.log(`Start time: ${startTimeSimple}`);
       console.log(`Current time: ${currentTimeSimple}`);
 
-      if (formattedDate === medDate && currentTimeSimple === startTimeSimple) {
+      let count = 0; 
+      if (formattedDate === medDate && currentTimeSimple === startTimeSimple && count === 0) {
         const audio = new Audio(meds.audio_link);
         audio.play().catch(err => console.error("Audio play failed:", err));
+        count++;
         showMedicationPopup(meds.name, audio);
-
       }
     });
 

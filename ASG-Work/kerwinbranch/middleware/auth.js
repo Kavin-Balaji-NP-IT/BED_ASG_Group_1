@@ -14,8 +14,6 @@ function verifyToken(req, res, next) {
       return res.status(403).json({ message: 'Invalid or expired token' });
     }
 
-    console.log('[Decoded JWT]', decoded); // ✅ Safe to use decoded here to get the user id
-
     req.user = decoded; // Store decoded token info in req.user
     next(); // Continue to the next middleware or route handler
   });
