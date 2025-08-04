@@ -647,7 +647,10 @@
   // Load and apply settings
   function loadSettings() {
     // Load from localStorage
-    const savedSettings = localStorage.getItem('userSettings');
+    const userData = localStorage.getItem('currentUser');
+    const userEmail = userData ? JSON.parse(userData).email : 'default';
+    const savedSettings = localStorage.getItem(`userSettings_${userEmail}`);
+ 
     if (savedSettings) {
       currentSettings = { ...currentSettings, ...JSON.parse(savedSettings) };
     }
@@ -871,13 +874,6 @@
     }
   }
 
-  // Listen for settings changes from other tabs/windows
-  window.addEventListener('storage', function(e) {
-    if (e.key === 'userSettings') {
-      console.log('🔄 Settings changed in another tab, reloading...');
-      loadSettings();
-    }
-  });
 
   // Check authentication on page load
   window.addEventListener('DOMContentLoaded', function() {
