@@ -5,6 +5,7 @@ const dotenv = require('dotenv');
 
 dotenv.config();
 
+
 const {
     getFilteredMedications,
     getMedicationById,
@@ -60,6 +61,8 @@ app.delete("/medication-occurrences/:medicationId", deleteOccurrencesByMedicatio
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
 });
+
+
 
 
 // Graceful shutdown
