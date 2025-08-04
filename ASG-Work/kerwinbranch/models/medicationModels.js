@@ -11,14 +11,16 @@ function toSqlTime(timeStr) {
 }
 
 
-async function getMedicationsByDateAndTime(date) {
+async function getMedicationsByDateAndTime(date, userId) {
   const pool = await sql.connect(dbConfig);
 
   const result = await pool.request()
     .input('date', sql.Date, date)
+    .input('user_id', sql.Int, userId)
     .query(`
       SELECT * FROM Medications
       WHERE schedule_date = @date
+        AND user_id = @user_id
         AND is_deleted = 0
       ORDER BY schedule_hour
     `);
@@ -27,32 +29,36 @@ async function getMedicationsByDateAndTime(date) {
 }
 
 
-async function getAllMedicationsByDate(date) {
+async function getAllMedicationsByDate(date, userId) {
   const pool = await sql.connect(dbConfig);
   const result = await pool.request()
     .input('date', sql.Date, date)
+    .input('user_id', sql.Int, userId)
     .query(`
      SELECT * FROM Medications
      WHERE schedule_date = @date 
      AND is_deleted = 0
+     AND user_id = @user_id
      ORDER BY id;
     `);
   return result.recordset;
 }
 
 
-async function getMedicationById(id) {
+async function getMedicationById(id, userId) {
   const pool = await sql.connect(dbConfig);
   const result = await pool.request()
     .input('id', sql.Int, id)
+    .input('user_id', sql.Int, userId)
     .query(`
       SELECT * FROM Medications
       WHERE id = @id
+        AND user_id = @user_id
     `);
   return result.recordset[0] || null;
 }
 
-async function deleteMedicationById(id) {
+async function deleteMedicationById(id, userId) {
   const pool = await sql.connect(dbConfig);
 
   try {
@@ -64,16 +70,19 @@ async function deleteMedicationById(id) {
     // Delete medication occurrences
     await pool.request() 
       .input('medication_id', sql.Int, medication_id)
-      .query(`DELETE FROM MedicationOccurrences WHERE medication_id = @medication_id`)
+      .input('user_id', sql.Int, userId)
+      .query(`DELETE FROM MedicationOccurrences WHERE medication_id = @medication_id AND user_id = @user_id`);
 
     // Delete notes by medication_id
     await pool.request()
       .input('medication_id', sql.Int, medication_id)
-      .query(`DELETE FROM MedicationNotes WHERE medication_id = @medication_id`);
+      .input('user_id', sql.Int, userId)
+      .query(`DELETE FROM MedicationNotes WHERE medication_id = @medication_id AND user_id = @user_id`);
 
     const result = await pool.request()
       .input('id', sql.Int, medication_id)  // Use medication_id here
-      .query(`DELETE FROM Medications WHERE id = @id`);
+      .input('user_id', sql.Int, userId)
+      .query(`DELETE FROM Medications WHERE id = @id AND user_id = @user_id`);
 
     if (result.rowsAffected[0] > 0) {
       return { success: true };
@@ -86,7 +95,7 @@ async function deleteMedicationById(id) {
   }
 }
 
-async function addMedication(medicationData) {
+async function addMedication(medicationData, userId) {
   const pool = await sql.connect(dbConfig);
 
   try {
@@ -101,15 +110,16 @@ async function addMedication(medicationData) {
       .input('end_hour', sql.Time, toSqlTime(medicationData.end_hour))
       .input('schedule_hour', sql.Int, medicationData.schedule_hour)
       .input('is_deleted', sql.Bit, 0)
+      .input('user_id', sql.Int, userId)
       .query(`
         INSERT INTO Medications (
           name, schedule_date, frequency_type, repeat_times,
-          repeat_duration, start_hour, end_hour, is_deleted, schedule_hour
+          repeat_duration, start_hour, end_hour, is_deleted, schedule_hour, user_id
         )
         OUTPUT INSERTED.id 
         VALUES (
           @name, @schedule_date, @frequency_type, @repeat_times,
-          @repeat_duration, @start_hour, @end_hour, @is_deleted, @schedule_hour
+          @repeat_duration, @start_hour, @end_hour, @is_deleted, @schedule_hour, @user_id
         )
       `);
 
@@ -148,9 +158,10 @@ for (let i = 0; i < medicationData.repeat_times; ++i) {
     .input('occurrence_time', sql.Time, sqlTime)
     .input('schedule_hour', sql.Int, timeObj.getHours())
     .input('audio_link', sql.NVarChar(255), null)
+    .input('user_id', sql.Int, userId)
     .query(`
-      INSERT INTO MedicationOccurrences (name, medication_id, schedule_date, occurrence_time, schedule_hour, audio_link)
-      VALUES (@name, @medication_id, @schedule_date, @occurrence_time, @schedule_hour, @audio_link)
+      INSERT INTO MedicationOccurrences (name, medication_id, schedule_date, occurrence_time, schedule_hour, audio_link, user_id)
+      VALUES (@name, @medication_id, @schedule_date, @occurrence_time, @schedule_hour, @audio_link, @user_id)
     `);
 }
 
@@ -179,7 +190,7 @@ function toSqlTimeFromDate(d) {
   return new Date(1970, 0, 1, h, m, s, ms);
 }
 
-async function updateMedication(id, medicationData) {
+async function updateMedication(id, medicationData, userId) {
   const pool = await sql.connect(dbConfig);
 
   try {
@@ -194,6 +205,7 @@ async function updateMedication(id, medicationData) {
       .input('start_hour', sql.Time, toSqlTime(medicationData.start_hour))
       .input('end_hour', sql.Time, toSqlTime(medicationData.end_hour))
       .input('schedule_hour', sql.Int, parseInt(medicationData.start_hour.split(":")[0], 10))
+      .input('user_id', sql.Int, userId)
       .query(`
         UPDATE Medications SET
           name = @name,
@@ -204,7 +216,7 @@ async function updateMedication(id, medicationData) {
           start_hour = @start_hour,
           end_hour = @end_hour,
           schedule_hour = @schedule_hour
-        WHERE id = @id
+        WHERE id = @id AND user_id = @user_id
       `);
 
     if (result.rowsAffected[0] === 0) {
@@ -232,9 +244,10 @@ async function updateMedication(id, medicationData) {
         .input('occurrence_time', sql.Time, sqlTime)
         .input('schedule_hour', sql.Int, timeObj.getHours())
         .input('audio_link', sql.NVarChar(255), null)
+        .input('user_id', sql.Int, userId)
         .query(`
-          INSERT INTO MedicationOccurrences (name, medication_id, schedule_date, occurrence_time, schedule_hour, audio_link)
-          VALUES (@name, @medication_id, @schedule_date, @occurrence_time, @schedule_hour, @audio_link)
+          INSERT INTO MedicationOccurrences (name, medication_id, schedule_date, occurrence_time, schedule_hour, audio_link, user_id)
+          VALUES (@name, @medication_id, @schedule_date, @occurrence_time, @schedule_hour, @audio_link, @user_id)
         `);
     }
 
@@ -250,7 +263,9 @@ async function updateMedication(id, medicationData) {
 
 async function getAllMedicationOccurrences() {
   const pool = await sql.connect(dbConfig);
-  const result = await pool.request().query(`
+  const result = await pool.request()
+  .input('user_id', sql.Int, userId)
+  .query(`
     SELECT 
       mo.medication_id,
       mo.schedule_date,
@@ -258,21 +273,23 @@ async function getAllMedicationOccurrences() {
       mo.audio_link,
       mo.name,
       mo.schedule_hour,
-      m.name AS medication_name
+      m.name AS medication_name,
+      mo.user_id
     FROM MedicationOccurrences mo
-    JOIN Medications m ON mo.medication_id = m.id
+    JOIN Medications m ON mo.medication_id = m.id AND mo.user_id = m.user_id
     ORDER BY mo.schedule_date, mo.occurrence_time
   `);
   return result.recordset;
 }
 
 
-async function getOccurrencesByMedIdAndDate(medication_id, selectedDate) {
+async function getOccurrencesByMedIdAndDate(medication_id, selectedDate, userId) {
   const pool = await sql.connect(dbConfig);
 
   const result = await pool.request()
     .input("medication_id", sql.Int, medication_id)
     .input("schedule_date", sql.Date, selectedDate)
+    .input("user_id", sql.Int, userId)
     .query(`
       SELECT 
         mo.id,
@@ -284,7 +301,7 @@ async function getOccurrencesByMedIdAndDate(medication_id, selectedDate) {
         mo.name,
         m.name AS medication_name
       FROM MedicationOccurrences mo
-      JOIN Medications m ON mo.medication_id = m.id
+      JOIN Medications m ON mo.medication_id = m.id AND mo.user_id = m.user_id
       WHERE mo.medication_id = @medication_id AND mo.schedule_date = @schedule_date
       ORDER BY mo.schedule_hour
     `);
@@ -293,11 +310,12 @@ async function getOccurrencesByMedIdAndDate(medication_id, selectedDate) {
 }
 
 
-async function getOccurrencesByMedicationId(medicationId) {
+async function getOccurrencesByMedicationId(medicationId, userId) {
   const pool = await sql.connect(dbConfig);
 
   const result = await pool.request()
     .input("medication_id", sql.Int, medicationId)
+    .input("user_id", sql.Int, userId)
     .query(`
       SELECT 
         mo.id,
@@ -311,21 +329,24 @@ async function getOccurrencesByMedicationId(medicationId) {
       FROM MedicationOccurrences mo
       JOIN Medications m ON mo.medication_id = m.id
       WHERE mo.medication_id = @medication_id
+      AND m.user_id = @user_id
       ORDER BY mo.schedule_date, mo.schedule_hour
     `);
 
   return result.recordset;
 }
 
-async function deleteOccurrencesByMedicationId(medicationId) {
+async function deleteOccurrencesByMedicationId(medicationId, userId) {
   const pool = await sql.connect(dbConfig);
 
   try {
     await pool.request()
       .input("medication_id", sql.Int, medicationId)
+      .input("user_id", sql.Int, userId)
       .query(`
         DELETE FROM MedicationOccurrences
         WHERE medication_id = @medication_id
+        AND user_id = @user_id
       `);
 
     return { success: true };

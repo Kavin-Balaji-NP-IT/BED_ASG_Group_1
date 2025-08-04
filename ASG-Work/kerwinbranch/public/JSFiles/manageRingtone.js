@@ -1,4 +1,9 @@
 
+if (!localStorage.getItem("authToken")) {
+  window.location.href = "/ASG-Work/bhaveeshbranch/public/login.html";
+}
+
+
 
 // Play the ringtone for the medications retrieved from the database through the date
 // and then matching the date and timing for the current -> the database startTiming and the date
@@ -22,11 +27,26 @@ async function playRingtone() {
 
   // Fetch medications for selectedDate
   try {
-    const response = await fetch(`http://localhost:3000/medications/by-date?date=${selectedDate}`);
-    if (!response.ok) throw new Error('Network response was not ok in script.js');
+    const token = localStorage.getItem("authToken"); // Retrieve token from localStorage
+    const headers = {
+      "Authorization": `Bearer ${token}`
+    };
+
+  const response = await fetch(`http://localhost:3000/medications/by-date?date=${selectedDate}`, { headers });
+
+  if (response.status === 401 || response.status === 403) {
+    alert("Your session has expired. Please log in again.");
+    localStorage.removeItem("authToken");
+    window.location.href = "/ASG-Work/bhaveeshbranch/public/login.html";
+    return;
+  }
+
+  if (!response.ok) throw new Error('Network response was not ok in playRingtone.js');
+
 
     const medications = await response.json();
-
+    let count = 0; 
+    
     medications.forEach(meds => {
       if (!meds.start_hour || !meds.schedule_date || !meds.audio_link) return;
 
@@ -40,7 +60,6 @@ async function playRingtone() {
       console.log(`Start time: ${startTimeSimple}`);
       console.log(`Current time: ${currentTimeSimple}`);
 
-      let count = 0; 
       if (formattedDate === medDate && currentTimeSimple === startTimeSimple && count === 0) {
         const audio = new Audio(meds.audio_link);
         audio.play().catch(err => console.error("Audio play failed:", err));
@@ -61,8 +80,6 @@ function isTimeWithinOneMinute(timeA, timeB) {
   const totalMinB = h2 * 60 + m2;
   return Math.abs(totalMinA - totalMinB) <= 1;
 }
-
-
 
 // Attach to DOMContentLoaded
 document.addEventListener('DOMContentLoaded', () => {

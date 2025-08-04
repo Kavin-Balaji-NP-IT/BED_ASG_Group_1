@@ -3,6 +3,8 @@ const cors = require('cors');
 const sql = require('mssql');
 const dotenv = require('dotenv');
 
+const verifyToken = require('../kerwinbranch/middleware/auth');
+
 dotenv.config();
 
 const {
@@ -29,32 +31,32 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
 // Medication routes
-app.get('/medications', getFilteredMedications);
-app.get('/medications/by-date', getAllMedicationByDate);
-app.get('/medications/:id', getMedicationById);
-app.delete('/medications/:id', deleteMedicationById);
-app.post('/medications', addMedication);
-app.put('/medications/:id', updateMedicationController);
+app.get('/medications', verifyToken, getFilteredMedications);
+app.get('/medications/by-date', verifyToken, getAllMedicationByDate);
+app.get('/medications/:id', verifyToken, getMedicationById);
+app.delete('/medications/:id', verifyToken, deleteMedicationById);
+app.post('/medications', verifyToken, addMedication);
+app.put('/medications/:id', verifyToken, updateMedicationController);
 
 // Medication notes routes
-app.post('/medication-notes', notificationController.createNote);
-app.get('/medication-notes', notificationController.retrieveNote);
-app.get('/medications/:id/notes/auto', notificationController.getAutoNoteFieldsController);
+app.post('/medication-notes', verifyToken, notificationController.createNote);
+app.get('/medication-notes', verifyToken, notificationController.retrieveNote);
+app.get('/medications/:id/notes/auto', verifyToken, notificationController.getAutoNoteFieldsController);
 
 // Deletes specific medications so no DELETE route
-app.post("/medications/delete/notes/by-details", notificationController.deleteSpecificNoteController);
+app.post("/medications/delete/notes/by-details", verifyToken, notificationController.deleteSpecificNoteController);
 
 // Post ringtone
-app.put("/medications/:id/ringtone", ringtoneController.postRingtoneByIdController);
-app.put('/medication-occurrences/:id/ringtone', ringtoneController.postRingtoneOccurrenceByIdController);
+app.put("/medications/:id/ringtone", verifyToken, ringtoneController.postRingtoneByIdController);
+app.put('/medication-occurrences/:id/ringtone', verifyToken, ringtoneController.postRingtoneOccurrenceByIdController);
 
 // Retrieve from MedicationOccurences Database
-app.get('/medication-occurrences', getMedicationOccurrencesController);
-app.get('/medication-occurrences-by-date', getOccurrencesByMedIdAndDateController);
-app.get('/medication-occurrences/by-medication/:medicationId', getOccurrencesByMedicationIdController);
+app.get('/medication-occurrences', verifyToken, getMedicationOccurrencesController);
+app.get('/medication-occurrences-by-date', verifyToken, getOccurrencesByMedIdAndDateController);
+app.get('/medication-occurrences/by-medication/:medicationId', verifyToken, getOccurrencesByMedicationIdController);
 
 // Delete occurrence and edit occurrence
-app.delete("/medication-occurrences/:medicationId", deleteOccurrencesByMedicationId);
+app.delete("/medication-occurrences/:medicationId", verifyToken, deleteOccurrencesByMedicationId);
 
 
 app.listen(port, () => {

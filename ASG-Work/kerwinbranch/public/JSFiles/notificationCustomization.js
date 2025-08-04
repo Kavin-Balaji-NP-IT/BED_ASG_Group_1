@@ -37,7 +37,19 @@ async function fetchAndDisplayNotifications() {
     }
 
     try {
-        const response = await fetch(`http://localhost:3000/medications?date=${savedDate}`);
+        const response = await fetch(`http://localhost:3000/medications?date=${savedDate}`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        if (response.status === 401 || response.status === 403) {
+            alert("Your session has expired. Please log in again.");
+            localStorage.removeItem("authToken");
+            window.location.href = "/ASG-Work/bhaveeshbranch/public/login.html";
+            return;
+        }
+        
         if (!response.ok) {
             throw new Error('Network response was not ok');
         }
@@ -52,7 +64,7 @@ async function fetchAndDisplayNotifications() {
         medication.forEach(med => {
             const createDiv = document.createElement("div");
             createDiv.className = "notification-item";
-            item.innerHTML = `
+            createDiv.innerHTML = `
                 <span class="medication-name">${med.name}</span>
                 <span class="schedule-hour">${med.schedule_hour}</span>
                 <span class="schedule-minute">${med.schedule_minute}</span>
@@ -200,11 +212,19 @@ async function addMedicationContainer() {
         if(!validateDurationAndRepeat(medicationData)) return;
 
         try {
-          const response = await fetch('http://localhost:3000/medications', {
+            
+          const token = localStorage.getItem("authToken");
+            if (!token) return window.location.href = "/ASG-Work/bhaveeshbranch/public/login.html";
+
+            const response = await fetch('http://localhost:3000/medications', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
             body: JSON.stringify(medicationData)
-          });
+            }); 
+
 
           const result = await response.json();
 
@@ -282,7 +302,17 @@ async function ModifyMedicationContainer() {
     if (!savedDate) return;
 
     try {
-        const response = await fetch(`http://localhost:3000/medications/by-date?date=${savedDate}`);
+
+        const token = localStorage.getItem("authToken");
+        if (!token) {
+            window.location.href = "/ASG-Work/bhaveeshbranch/public/login.html";
+            return;
+        }
+
+
+        const response = await fetch(`http://localhost:3000/medications/by-date?date=${savedDate}`, {
+            headers: { "Authorization": `Bearer ${token}` }
+        });
         const medications = await response.json(); // Retrieve the medication json
 
         const parentContainer = document.getElementById("saved-notification-container");
@@ -331,7 +361,10 @@ async function ModifyMedicationContainer() {
 
          // Retrieve text data for the notes
           try {
-            const noteRes = await fetch(`http://localhost:3000/medications/${med.id}/notes/auto`);
+          
+            const noteRes = await fetch(`http://localhost:3000/medications/${med.id}/notes/auto`, {
+                 headers: { "Authorization": `Bearer ${token}` }
+            });     
             const notes = await noteRes.json();
 
             notesWrapper.innerHTML = '';
@@ -495,8 +528,14 @@ async function ModifyMedicationContainer() {
             // Delete object Container
           deleteNotificationContainer.addEventListener("click", async function() {
             try {
+                const token = localStorage.getItem("authToken");
+                if (!token) return window.location.href = "/ASG-Work/bhaveeshbranch/public/login.html";
+             
                 const response = await fetch(`http://localhost:3000/medications/${med.id}`, {
-                    method: 'DELETE'
+                    method: 'DELETE',
+                    headers: {
+                        "Authorization": `Bearer ${token}`
+                    }
                 });
 
                 const result = await response.json();
@@ -520,8 +559,8 @@ async function ModifyMedicationContainer() {
             parentContainer.appendChild(editBoxContainer);
 
             // Edit button click
-           editButton.addEventListener('click', () => {
-  // Hide other saved containers
+            editButton.addEventListener('click', () => {
+            // Hide other saved containers
             document.querySelectorAll(".saved-notification-container").forEach(container => {
                 if (container !== mainDiv) {
                 container.style.display = 'none';
@@ -543,7 +582,7 @@ async function ModifyMedicationContainer() {
                 container.style.display = 'flex';
                 });
             }
-});
+        });
 
 
         // Close button click
@@ -584,11 +623,18 @@ async function ModifyMedicationContainer() {
 
     // validateDurationAndRepeat(medicationData)
     try {
+        const token = localStorage.getItem("authToken");
+        if (!token) return window.location.href = "/ASG-Work/bhaveeshbranch/public/login.html";
+
         const response = await fetch(`http://localhost:3000/medications/${med.id}`, {
             method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
             body: JSON.stringify(medicationData)
         });
+
 
         const result = await response.json();
 
@@ -621,14 +667,19 @@ document.addEventListener('DOMContentLoaded', ModifyMedicationContainer);
 
 
 // Post notes into the sql
-
 async function postNotes(medicationId, value) {
+    const token = localStorage.getItem("authToken");
+    if (!token) {
+        window.location.href = "/ASG-Work/bhaveeshbranch/public/login.html";
+        return;
+    }
 
     try {
         const response = await fetch("http://localhost:3000/medication-notes", {
             method: 'POST',
             headers: {
-                'Content-type' : 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
             },
             body: JSON.stringify({
                 medicationId: medicationId,
@@ -649,10 +700,25 @@ async function postNotes(medicationId, value) {
     }
 }
 
-// Load manual notes
+
 async function loadManualNotes(medId, notesWrapper) {
+    const token = localStorage.getItem("authToken");
+    if (!token) {
+        window.location.href = "/ASG-Work/bhaveeshbranch/public/login.html";
+        return;
+    }
+
     try {
-        const manualNoteRes = await fetch(`http://localhost:3000/medication-notes?medicationId=${medId}`);
+        const manualNoteRes = await fetch(`http://localhost:3000/medication-notes?medicationId=${medId}`, {
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        });
+
+        if (!manualNoteRes.ok) {
+            throw new Error(`Failed to fetch notes: ${manualNoteRes.status}`);
+        }
+
         const manualNotes = await manualNoteRes.json();
 
         manualNotes.forEach(note => {
@@ -679,13 +745,19 @@ async function loadManualNotes(medId, notesWrapper) {
 
 
 
-// Delete specific notes
 async function deleteSpecificNoteById(medId, noteText, noteDiv, deleteButton) {
+    const token = localStorage.getItem("authToken");
+    if (!token) {
+        window.location.href = "/ASG-Work/bhaveeshbranch/public/login.html";
+        return;
+    }
+
     try {
         const res = await fetch(`http://localhost:3000/medications/delete/notes/by-details`, {
             method: "POST",
             headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}` 
             },
             body: JSON.stringify({
                 medication_id: medId,
@@ -708,6 +780,7 @@ async function deleteSpecificNoteById(medId, noteText, noteDiv, deleteButton) {
 }
 
 
+
 // Fetch medications
 async function fetchMedications() {
   const dateInput = document.getElementById("date");
@@ -718,15 +791,31 @@ async function fetchMedications() {
 
   const selectedDate = dateInput.value;
 
+  const token = localStorage.getItem("authToken");
+  if (!token) {
+    window.location.href = "/ASG-Work/bhaveeshbranch/public/login.html";
+    return;
+  }
+
+  const headers = {
+    "Authorization": `Bearer ${token}`
+  };
+
   try {
     // 1. Fetch medications by date
-    const medRes = await fetch(`http://localhost:3000/medications?date=${selectedDate}`);
+    const medRes = await fetch(`http://localhost:3000/medications?date=${selectedDate}`, { headers });
+    if (medRes.status === 401 || medRes.status === 403) {
+      alert("Your session has expired. Please log in again.");
+      localStorage.removeItem("authToken");
+      window.location.href = "/ASG-Work/bhaveeshbranch/public/login.html";
+      return;
+    }
     if (!medRes.ok) throw new Error("Failed to fetch medications");
 
     const medications = await medRes.json();
 
     // 2. Fetch all occurrences
-    const occRes = await fetch(`http://localhost:3000/medication-occurrences`);
+    const occRes = await fetch(`http://localhost:3000/medication-occurrences`, { headers });
     if (!occRes.ok) throw new Error("Failed to fetch occurrences");
 
     const medicationOccurrences = await occRes.json();
@@ -739,6 +828,5 @@ async function fetchMedications() {
   }
 }
 
-
-
+// Still fine:
 window.addEventListener("DOMContentLoaded", displayDate);
