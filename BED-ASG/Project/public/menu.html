@@ -787,6 +787,8 @@
       
       localStorage.setItem('authToken', loginData.token);
       localStorage.setItem('currentUser', JSON.stringify(loginData.user));
+
+      loadSettings();
       
       showMessage('login', 'Login successful!', true);
       this.reset();
