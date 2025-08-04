@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Medications</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 30px;
+            text-align: center;
+            color: white;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .nav-buttons {
+            padding: 20px 30px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background: #e2e8f0;
+            color: #4a5568;
+        }
+        
+        .btn-secondary:hover {
+            background: #cbd5e0;
+        }
+        
+        .btn-success {
+            background: #48bb78;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #38a169;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .filter-section {
+            margin-bottom: 30px;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .filter-toggle {
+            display: flex;
+            background: #f7fafc;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .filter-toggle label {
+            padding: 10px 20px;
+            cursor: pointer;
+            background: #f7fafc;
+            border: none;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        
+        .filter-toggle input[type="radio"] {
+            display: none;
+        }
+        
+        .filter-toggle input[type="radio"]:checked + label {
+            background: #667eea;
+            color: white;
+        }
+        
+        .medications-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+        }
+        
+        .medication-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            border-left: 4px solid #667eea;
+            transition: all 0.3s ease;
+        }
+        
+        .medication-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+        
+        .medication-card h3 {
+            color: #2d3748;
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .medication-info {
+            margin-bottom: 20px;
+        }
+        
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        .info-label {
+            font-weight: 600;
+            color: #4a5568;
+        }
+        
+        .info-value {
+            color: #2d3748;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .status-active {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+        
+        .status-expired {
+            background: #fed7d7;
+            color: #742a2a;
+        }
+        
+        .medication-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .btn-sm {
+            padding: 8px 16px;
+            font-size: 13px;
+        }
+        
+        .btn-edit {
+            background: #ed8936;
+            color: white;
+        }
+        
+        .btn-edit:hover {
+            background: #dd6b20;
+        }
+        
+        .btn-delete {
+            background: #e53e3e;
+            color: white;
+        }
+        
+        .btn-delete:hover {
+            background: #c53030;
+        }
+        
+        .no-medications {
+            text-align: center;
+            padding: 60px 20px;
+            color: #718096;
+        }
+        
+        .no-medications h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 60px;
+            font-size: 1.2rem;
+            color: #667eea;
+        }
+        
+        .error {
+            background: #fed7d7;
+            color: #742a2a;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .medications-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .nav-buttons {
+                justify-content: center;
+            }
+            
+            .filter-section {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>💊 My Medications</h1>
+            <p>Manage and track your medication schedule</p>
+        </div>
+        
+        <div class="nav-buttons">
+            <a href="add-medication.html" class="btn btn-primary">
+                ➕ Add New Medication
+            </a>
+            <a href="dosage-tracker.html" class="btn btn-success">
+                📋 Today's Tracker
+            </a>
+            <a href="menu.html" class="btn btn-secondary">
+                🏠 Back to Dashboard
+            </a>
+        </div>
+        
+        <div class="content">
+            <div class="filter-section">
+                <span style="font-weight: 600; color: #4a5568;">Show:</span>
+                <div class="filter-toggle">
+                    <input type="radio" id="all" name="filter" value="all" checked>
+                    <label for="all">All Medications</label>
+                    <input type="radio" id="active" name="filter" value="active">
+                    <label for="active">Active Only</label>
+                </div>
+            </div>
+            
+            <div id="error-message" class="error" style="display: none;"></div>
+            <div id="loading" class="loading">Loading medications...</div>
+            <div id="medications-container" class="medications-grid" style="display: none;"></div>
+            <div id="no-medications" class="no-medications" style="display: none;">
+                <h3>No medications found</h3>
+                <p>Start by adding your first medication to track your health journey.</p>
+                <br>
+                <a href="add-medication.html" class="btn btn-primary">Add Your First Medication</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let allMedications = [];
+        
+        // Load medications on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadMedications();
+            
+            // Add filter event listeners
+            document.querySelectorAll('input[name="filter"]').forEach(radio => {
+                radio.addEventListener('change', filterMedications);
+            });
+        });
+        
+        async function loadMedications() {
+            try {
+                const token = localStorage.getItem('authToken');
+                if (!token) {
+                    window.location.href = 'menu.html';
+                    return;
+                }
+                
+                const response = await fetch('http://localhost:3000/api/medications', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (response.status === 401) {
+                    localStorage.removeItem('authToken');
+                    localStorage.removeItem('currentUser');
+                    window.location.href = 'menu.html';
+                    return;
+                }
+                
+                if (!response.ok) {
+                    throw new Error('Failed to load medications');
+                }
+                
+                allMedications = await response.json();
+                displayMedications(allMedications);
+                
+            } catch (error) {
+                console.error('Error loading medications:', error);
+                showError('Failed to load medications. Please try again.');
+            } finally {
+                document.getElementById('loading').style.display = 'none';
+            }
+        }
+        
+        function filterMedications() {
+            const selectedFilter = document.querySelector('input[name="filter"]:checked').value;
+            let filteredMedications;
+            
+            if (selectedFilter === 'active') {
+                const today = new Date();
+                filteredMedications = allMedications.filter(med => {
+                    return !med.EndDate || new Date(med.EndDate) >= today;
+                });
+            } else {
+                filteredMedications = allMedications;
+            }
+            
+            displayMedications(filteredMedications);
+        }
+        
+        function displayMedications(medications) {
+            const container = document.getElementById('medications-container');
+            const noMedicationsDiv = document.getElementById('no-medications');
+            
+            if (medications.length === 0) {
+                container.style.display = 'none';
+                noMedicationsDiv.style.display = 'block';
+                return;
+            }
+            
+            container.style.display = 'grid';
+            noMedicationsDiv.style.display = 'none';
+            
+            container.innerHTML = medications.map(med => `
+                <div class="medication-card">
+                    <h3>
+                        💊 ${med.Name}
+                        ${getStatusBadge(med)}
+                    </h3>
+                    <div class="medication-info">
+                        <div class="info-row">
+                            <span class="info-label">Dosage:</span>
+                            <span class="info-value">${med.Dosage}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Frequency:</span>
+                            <span class="info-value">${med.Frequency}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Start Date:</span>
+                            <span class="info-value">${formatDate(med.StartDate)}</span>
+                        </div>
+                        ${med.EndDate ? `
+                        <div class="info-row">
+                            <span class="info-label">End Date:</span>
+                            <span class="info-value">${formatDate(med.EndDate)}</span>
+                        </div>
+                        ` : ''}
+                        ${med.Notes ? `
+                        <div class="info-row">
+                            <span class="info-label">Notes:</span>
+                            <span class="info-value">${med.Notes}</span>
+                        </div>
+                        ` : ''}
+                    </div>
+                    <div class="medication-actions">
+                        <a href="edit-medication.html?id=${med.MedicationID}" class="btn btn-edit btn-sm">
+                            ✏️ Edit
+                        </a>
+                        <button onclick="deleteMedication(${med.MedicationID})" class="btn btn-delete btn-sm">
+                            🗑️ Delete
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function getStatusBadge(medication) {
+            const today = new Date();
+            const endDate = medication.EndDate ? new Date(medication.EndDate) : null;
+            
+            if (!endDate || endDate >= today) {
+                return '<span class="status-badge status-active">Active</span>';
+            } else {
+                return '<span class="status-badge status-expired">Expired</span>';
+            }
+        }
+        
+        function formatDate(dateString) {
+            return new Date(dateString).toLocaleDateString();
+        }
+        
+        async function deleteMedication(medicationId) {
+            if (!confirm('Are you sure you want to delete this medication? This action cannot be undone.')) {
+                return;
+            }
+            
+            try {
+                const token = localStorage.getItem('authToken');
+                const response = await fetch(`http://localhost:3000/api/medications/${medicationId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (response.ok) {
+                    // Remove from local array and refresh display
+                    allMedications = allMedications.filter(med => med.MedicationID !== medicationId);
+                    filterMedications();
+                } else {
+                    throw new Error('Failed to delete medication');
+                }
+            } catch (error) {
+                console.error('Error deleting medication:', error);
+                showError('Failed to delete medication. Please try again.');
+            }
+        }
+        
+        function showError(message) {
+            const errorDiv = document.getElementById('error-message');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+            setTimeout(() => {
+                errorDiv.style.display = 'none';
+            }, 5000);
+        }
+    </script>
+</body>
+</html>

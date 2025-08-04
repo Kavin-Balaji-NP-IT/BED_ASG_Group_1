@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>🔍 Settings Debug Tool</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .debug-section { 
+            margin: 20px 0; 
+            padding: 20px; 
+            background: white; 
+            border-radius: 8px; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
+        }
+        .success { color: #28a745; font-weight: bold; }
+        .error { color: #dc3545; font-weight: bold; }
+        .warning { color: #ffc107; font-weight: bold; }
+        .info { color: #17a2b8; }
+        button { 
+            margin: 5px; 
+            padding: 12px 20px; 
+            background: #007bff; 
+            color: white; 
+            border: none; 
+            border-radius: 4px; 
+            cursor: pointer; 
+            font-size: 14px;
+        }
+        button:hover { background: #0056b3; }
+        button.danger { background: #dc3545; }
+        button.success { background: #28a745; }
+        button.warning { background: #ffc107; color: #000; }
+        pre { 
+            background: #f8f9fa; 
+            padding: 15px; 
+            overflow-x: auto; 
+            border-radius: 4px; 
+            border-left: 4px solid #007bff;
+            margin: 10px 0;
+        }
+        .log { 
+            max-height: 400px; 
+            overflow-y: auto; 
+            background: #f8f9fa; 
+            padding: 15px; 
+            border: 1px solid #dee2e6; 
+            border-radius: 4px; 
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+        }
+        input, select { 
+            margin: 5px; 
+            padding: 8px 12px; 
+            border: 1px solid #ced4da; 
+            border-radius: 4px; 
+            font-size: 14px;
+        }
+        .step { 
+            background: #e9ecef; 
+            padding: 10px; 
+            margin: 10px 0; 
+            border-radius: 4px; 
+            border-left: 4px solid #6c757d;
+        }
+        .status-indicator { 
+            display: inline-block; 
+            width: 12px; 
+            height: 12px; 
+            border-radius: 50%; 
+            margin-right: 8px; 
+        }
+        .status-ok { background: #28a745; }
+        .status-error { background: #dc3545; }
+        .status-warning { background: #ffc107; }
+        .status-unknown { background: #6c757d; }
+        h1, h2, h3 { color: #343a40; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        @media (max-width: 768px) { .grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Settings Debug Tool</h1>
+        <p>This tool will help us identify exactly why your settings aren't saving.</p>
+        
+        <div class="debug-section">
+            <h3>🚀 Quick Start</h3>
+            <button onclick="runFullDiagnostic()" class="success">Run Full Diagnostic</button>
+            <button onclick="clearAllLogs()" class="warning">Clear All Logs</button>
+        </div>
+
+        <div class="grid">
+            <div class="debug-section">
+                <h3>Step 1: Authentication Check</h3>
+                <div class="step">
+                    <span id="authStatus" class="status-indicator status-unknown"></span>
+                    <strong>Authentication Status</strong>
+                </div>
+                <div>
+                    <input type="email" id="email" placeholder="Email" value="test@example.com">
+                    <input type="password" id="password" placeholder="Password" value="password123">
+                </div>
+                <button onclick="testAuth()">Test Auth</button>
+                <button onclick="quickLogin()">Quick Login</button>
+                <div id="authLog" class="log"></div>
+            </div>
+
+            <div class="debug-section">
+                <h3>Step 2: Server Health Check</h3>
+                <div class="step">
+                    <span id="serverStatus" class="status-indicator status-unknown"></span>
+                    <strong>Server Status</strong>
+                </div>
+                <div class="step">
+                    <span id="dbStatus" class="status-indicator status-unknown"></span>
+                    <strong>Database Status</strong>
+                </div>
+                <button onclick="testServerHealth()">Test Server</button>
+                <button onclick="testDatabase()">Test Database</button>
+                <div id="serverLog" class="log"></div>
+            </div>
+        </div>
+
+        <div class="debug-section">
+            <h3>Step 3: Routes & Middleware Check</h3>
+            <div class="step">
+                <span id="routesStatus" class="status-indicator status-unknown"></span>
+                <strong>Settings Routes Status</strong>
+            </div>
+            <button onclick="testRoutes()">Test Routes</button>
+            <button onclick="testSettingsEndpoint()">Test Settings Endpoint</button>
+            <button onclick="testWithRawFetch()">Test Raw API Call</button>
+            <div id="routesLog" class="log"></div>
+        </div>
+
+        <div class="debug-section">
+            <h3>Step 4: Settings API Tests</h3>
+            <div class="step">
+                <span id="settingsStatus" class="status-indicator status-unknown"></span>
+                <strong>Settings API Status</strong>
+            </div>
+            
+            <h4>Test Settings:</h4>
+            <div>
+                <label>Theme: <select id="testTheme"><option value="light">Light</option><option value="dark">Dark</option></select></label>
+                <label>Font: <select id="testFont"><option value="medium">Medium</option><option value="large">Large</option></select></label>
+                <label>Sound: <select id="testSound"><option value="classic-bell">Bell</option><option value="gentle-ping">Ping</option></select></label>
+            </div>
+            
+            <button onclick="testGetSettings()">GET Settings</button>
+            <button onclick="testMinimalSettings()">PUT Minimal Settings</button>
+            <button onclick="testFullSettings()">PUT Full Settings</button>
+            <button onclick="testInvalidSettings()">Test Invalid Data</button>
+            <div id="settingsLog" class="log"></div>
+        </div>
+
+        <div class="debug-section">
+            <h3>Step 5: Raw Network Analysis</h3>
+            <button onclick="analyzeNetworkRequest()">Analyze Network Request</button>
+            <button onclick="testCORS()">Test CORS</button>
+            <button onclick="testHeaders()">Test Headers</button>
+            <div id="networkLog" class="log"></div>
+        </div>
+
+        <div class="debug-section">
+            <h3>📊 Diagnostic Summary</h3>
+            <div id="summaryLog" class="log"></div>
+        </div>
+    </div>
+
+    <script>
+        const apiBaseUrl = "http://localhost:3000";
+        
+        // Status tracking
+        let diagnosticResults = {
+            auth: false,
+            server: false,
+            database: false,
+            routes: false,
+            settings: false
+        };
+
+        function updateStatus(elementId, status) {
+            const element = document.getElementById(elementId);
+            element.className = `status-indicator status-${status}`;
+        }
+
+        function log(elementId, message, type = 'info') {
+            const element = document.getElementById(elementId);
+            const timestamp = new Date().toLocaleTimeString();
+            const icon = type === 'error' ? '❌' : type === 'success' ? '✅' : type === 'warning' ? '⚠️' : 'ℹ️';
+            const colorClass = type === 'error' ? 'error' : (type === 'success' ? 'success' : type === 'warning' ? 'warning' : 'info');
+            element.innerHTML += `<div class="${colorClass}">${icon} [${timestamp}] ${message}</div>`;
+            element.scrollTop = element.scrollHeight;
+        }
+
+        function clearLog(elementId) {
+            document.getElementById(elementId).innerHTML = '';
+        }
+
+        function clearAllLogs() {
+            ['authLog', 'serverLog', 'routesLog', 'settingsLog', 'networkLog', 'summaryLog'].forEach(clearLog);
+            Object.keys(diagnosticResults).forEach(key => {
+                diagnosticResults[key] = false;
+                updateStatus(key + 'Status', 'unknown');
+            });
+        }
+
+        // Step 1: Authentication Tests
+        async function testAuth() {
+            clearLog('authLog');
+            log('authLog', 'Testing authentication status...', 'info');
+            
+            const token = localStorage.getItem('authToken');
+            const user = localStorage.getItem('currentUser');
+            
+            if (token) {
+                log('authLog', `✅ Token found: ${token.substring(0, 30)}...`, 'success');
+                try {
+                    const payload = JSON.parse(atob(token.split('.')[1]));
+                    log('authLog', `Token payload: ${JSON.stringify(payload, null, 2)}`, 'info');
+                    log('authLog', `Token expires: ${new Date(payload.exp * 1000).toLocaleString()}`, 'info');
+                    
+                    if (payload.exp * 1000 < Date.now()) {
+                        log('authLog', '⚠️ Token is expired!', 'warning');
+                        diagnosticResults.auth = false;
+                        updateStatus('authStatus', 'error');
+                    } else {
+                        diagnosticResults.auth = true;
+                        updateStatus('authStatus', 'ok');
+                    }
+                } catch (e) {
+                    log('authLog', '⚠️ Could not decode token', 'warning');
+                    diagnosticResults.auth = false;
+                    updateStatus('authStatus', 'warning');
+                }
+            } else {
+                log('authLog', '❌ No auth token found', 'error');
+                diagnosticResults.auth = false;
+                updateStatus('authStatus', 'error');
+            }
+            
+            if (user) {
+                log('authLog', `✅ User data: ${user}`, 'success');
+            } else {
+                log('authLog', '⚠️ No user data found', 'warning');
+            }
+        }
+
+        async function quickLogin() {
+            clearLog('authLog');
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            log('authLog', `Attempting login for: ${email}`, 'info');
+            
+            try {
+                const response = await fetch(`${apiBaseUrl}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    localStorage.setItem('authToken', data.token);
+                    localStorage.setItem('currentUser', JSON.stringify(data.user));
+                    log('authLog', '✅ Login successful!', 'success');
+                    log('authLog', `User: ${JSON.stringify(data.user, null, 2)}`, 'info');
+                    diagnosticResults.auth = true;
+                    updateStatus('authStatus', 'ok');
+                } else {
+                    log('authLog', `❌ Login failed: ${data.message}`, 'error');
+                    log('authLog', 'Try creating a user first if this is a new setup', 'warning');
+                    diagnosticResults.auth = false;
+                    updateStatus('authStatus', 'error');
+                }
+            } catch (error) {
+                log('authLog', `❌ Login error: ${error.message}`, 'error');
+                diagnosticResults.auth = false;
+                updateStatus('authStatus', 'error');
+            }
+        }
+
+        // Step 2: Server Health Tests
+        async function testServerHealth() {
+            clearLog('serverLog');
+            log('serverLog', 'Testing server health...', 'info');
+            
+            try {
+                const response = await fetch(`${apiBaseUrl}/health`);
+                const data = await response.json();
+                
+                if (response.ok) {
+                    log('serverLog', '✅ Server is healthy!', 'success');
+                    log('serverLog', `Status: ${data.status}`, 'info');
+                    log('serverLog', `Database: ${data.database}`, data.database === 'Connected' ? 'success' : 'error');
+                    log('serverLog', `Uptime: ${Math.floor(data.uptime / 60)} minutes`, 'info');
+                    diagnosticResults.server = true;
+                    updateStatus('serverStatus', 'ok');
+                } else {
+                    log('serverLog', '❌ Server health check failed', 'error');
+                    diagnosticResults.server = false;
+                    updateStatus('serverStatus', 'error');
+                }
+                
+                log('serverLog', `Full response: ${JSON.stringify(data, null, 2)}`, 'info');
+            } catch (error) {
+                log('serverLog', `❌ Server unreachable: ${error.message}`, 'error');
+                log('serverLog', 'Make sure your server is running on port 3000', 'warning');
+                diagnosticResults.server = false;
+                updateStatus('serverStatus', 'error');
+            }
+        }
+
+        async function testDatabase() {
+            clearLog('serverLog');
+            log('serverLog', 'Testing database connection...', 'info');
+            
+            try {
+                const response = await fetch(`${apiBaseUrl}/debug/database`);
+                const data = await response.json();
+                
+                if (response.ok) {
+                    log('serverLog', `Database connected: ${data.connected}`, data.connected ? 'success' : 'error');
+                    log('serverLog', `Pool exists: ${data.poolExists}`, data.poolExists ? 'success' : 'warning');
+                    log('serverLog', `Server: ${data.config?.server}`, 'info');
+                    log('serverLog', `Database: ${data.config?.database}`, 'info');
+                    
+                    diagnosticResults.database = data.connected;
+                    updateStatus('dbStatus', data.connected ? 'ok' : 'error');
+                } else {
+                    log('serverLog', '❌ Database test failed', 'error');
+                    diagnosticResults.database = false;
+                    updateStatus('dbStatus', 'error');
+                }
+                
+                log('serverLog', `Full response: ${JSON.stringify(data, null, 2)}`, 'info');
+            } catch (error) {
+                log('serverLog', `❌ Database test error: ${error.message}`, 'error');
+                diagnosticResults.database = false;
+                updateStatus('dbStatus', 'error');
+            }
+        }
+
+        // Step 3: Routes Tests
+        async function testRoutes() {
+            clearLog('routesLog');
+            log('routesLog', 'Testing route availability...', 'info');
+            
+            try {
+                const response = await fetch(`${apiBaseUrl}/debug/routes`);
+                const data = await response.json();
+                
+                if (response.ok) {
+                    log('routesLog', `Settings routes loaded: ${data.settingsRoutesLoaded}`, data.settingsRoutesLoaded ? 'success' : 'error');
+                    
+                    log('routesLog', 'Available routes:', 'info');
+                    data.availableRoutes.forEach(route => {
+                        if (route.includes('settings')) {
+                            log('routesLog', `  ${route}`, 'success');
+                        }
+                    });
+                    
+                    diagnosticResults.routes = data.settingsRoutesLoaded;
+                    updateStatus('routesStatus', data.settingsRoutesLoaded ? 'ok' : 'error');
+                } else {
+                    log('routesLog', '❌ Routes test failed', 'error');
+                    diagnosticResults.routes = false;
+                    updateStatus('routesStatus', 'error');
+                }
+            } catch (error) {
+                log('routesLog', `❌ Routes test error: ${error.message}`, 'error');
+                diagnosticResults.routes = false;
+                updateStatus('routesStatus', 'error');
+            }
+        }
+
+        async function testSettingsEndpoint() {
+            clearLog('routesLog');
+            log('routesLog', 'Testing settings endpoint availability...', 'info');
+            
+            try {
+                const response = await fetch(`${apiBaseUrl}/api/settings/test`);
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    log('routesLog', '✅ Settings test endpoint working!', 'success');
+                    log('routesLog', `Response: ${JSON.stringify(data, null, 2)}`, 'info');
+                } else {
+                    log('routesLog', `❌ Settings test endpoint failed: ${response.status}`, 'error');
+                    const text = await response.text();
+                    log('routesLog', `Response: ${text}`, 'error');
+                }
+            } catch (error) {
+                log('routesLog', `❌ Settings endpoint test error: ${error.message}`, 'error');
+            }
+        }
+
+        async function testWithRawFetch() {
+            clearLog('routesLog');
+            const token = localStorage.getItem('authToken');
+            
+            if (!token) {
+                log('routesLog', '❌ No auth token for raw test', 'error');
+                return;
+            }
+            
+            log('routesLog', 'Testing raw API call to /api/settings...', 'info');
+            
+            try {
+                const response = await fetch(`${apiBaseUrl}/api/settings`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                log('routesLog', `Response status: ${response.status}`, response.ok ? 'success' : 'error');
+                log('routesLog', `Response headers: ${JSON.stringify([...response.headers.entries()])}`, 'info');
+                
+                const responseText = await response.text();
+                log('routesLog', `Response body: ${responseText}`, response.ok ? 'success' : 'error');
+                
+                if (response.ok) {
+                    try {
+                        const data = JSON.parse(responseText);
+                        log('routesLog', '✅ Settings API working!', 'success');
+                    } catch (e) {
+                        log('routesLog', '⚠️ Invalid JSON response', 'warning');
+                    }
+                }
+            } catch (error) {
+                log('routesLog', `❌ Raw API test error: ${error.message}`, 'error');
+            }
+        }
+
+        // Step 4: Settings API Tests
+        async function testGetSettings() {
+            clearLog('settingsLog');
+            const token = localStorage.getItem('authToken');
+            
+            if (!token) {
+                log('settingsLog', '❌ No auth token. Please login first.', 'error');
+                return;
+            }
+
+            log('settingsLog', 'Testing GET /api/settings...', 'info');
+            
+            try {
+                const response = await fetch(`${apiBaseUrl}/api/settings`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                log('settingsLog', `Response status: ${response.status}`, response.ok ? 'success' : 'error');
+                
+                const responseText = await response.text();
+                log('settingsLog', `Response body: ${responseText}`, 'info');
+
+                if (response.ok) {
+                    const data = JSON.parse(responseText);
+                    log('settingsLog', '✅ GET settings successful!', 'success');
+                    log('settingsLog', `Settings: ${JSON.stringify(data, null, 2)}`, 'success');
+                    diagnosticResults.settings = true;
+                    updateStatus('settingsStatus', 'ok');
+                } else {
+                    log('settingsLog', `❌ GET settings failed with status ${response.status}`, 'error');
+                    diagnosticResults.settings = false;
+                    updateStatus('settingsStatus', 'error');
+                    
+                    try {
+                        const errorData = JSON.parse(responseText);
+                        log('settingsLog', `Error details: ${JSON.stringify(errorData, null, 2)}`, 'error');
+                    } catch (e) {
+                        log('settingsLog', `Raw error: ${responseText}`, 'error');
+                    }
+                }
+            } catch (error) {
+                log('settingsLog', `❌ GET settings error: ${error.message}`, 'error');
+                log('settingsLog', `Error stack: ${error.stack}`, 'error');
+                diagnosticResults.settings = false;
+                updateStatus('settingsStatus', 'error');
+            }
+        }
+
+        async function testMinimalSettings() {
+            clearLog('settingsLog');
+            const token = localStorage.getItem('authToken');
+            
+            if (!token) {
+                log('settingsLog', '❌ No auth token. Please login first.', 'error');
+                return;
+            }
+
+            const minimalSettings = { theme: 'dark' };
+
+            log('settingsLog', 'Testing minimal PUT /api/settings...', 'info');
+            log('settingsLog', `Sending: ${JSON.stringify(minimalSettings, null, 2)}`, 'info');
+            
+            try {
+                const response = await fetch(`${apiBaseUrl}/api/settings`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(minimalSettings)
+                });
+
+                log('settingsLog', `Response status: ${response.status}`, response.ok ? 'success' : 'error');
+                
+                const responseText = await response.text();
+                log('settingsLog', `Response body: ${responseText}`, 'info');
+
+                if (response.ok) {
+                    const data = JSON.parse(responseText);
+                    log('settingsLog', '✅ Minimal PUT settings successful!', 'success');
+                    log('settingsLog', `Result: ${JSON.stringify(data, null, 2)}`, 'success');
+                } else {
+                    log('settingsLog', `❌ PUT settings failed with status ${response.status}`, 'error');
+                    
+                    try {
+                        const errorData = JSON.parse(responseText);
+                        log('settingsLog', `Error details: ${JSON.stringify(errorData, null, 2)}`, 'error');
+                    } catch (e) {
+                        log('settingsLog', `Raw error: ${responseText}`, 'error');
+                    }
+                }
+            } catch (error) {
+                log('settingsLog', `❌ PUT settings error: ${error.message}`, 'error');
+                log('settingsLog', `Error stack: ${error.stack}`, 'error');
+            }
+        }
+
+        async function testFullSettings() {
+            clearLog('settingsLog');
+            const token = localStorage.getItem('authToken');
+            
+            if (!token) {
+                log('settingsLog', '❌ No auth token. Please login first.', 'error');
+                return;
+            }
+
+            const fullSettings = {
+                theme: document.getElementById('testTheme').value,
+                fontSize: document.getElementById('testFont').value,
+                notificationSound: document.getElementById('testSound').value,
+                medicationReminders: true,
+                appointmentReminders: false
+            };
+
+            log('settingsLog', 'Testing full PUT /api/settings...', 'info');
+            log('settingsLog', `Sending: ${JSON.stringify(fullSettings, null, 2)}`, 'info');
+            
+            try {
+                const response = await fetch(`${apiBaseUrl}/api/settings`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(fullSettings)
+                });
+
+                log('settingsLog', `Response status: ${response.status}`, response.ok ? 'success' : 'error');
+                
+                const responseText = await response.text();
+                log('settingsLog', `Response body: ${responseText}`, 'info');
+
+                if (response.ok) {
+                    const data = JSON.parse(responseText);
+                    log('settingsLog', '✅ Full PUT settings successful!', 'success');
+                    log('settingsLog', `Result: ${JSON.stringify(data, null, 2)}`, 'success');
+                } else {
+                    log('settingsLog', `❌ PUT settings failed with status ${response.status}`, 'error');
+                    
+                    try {
+                        const errorData = JSON.parse(responseText);
+                        log('settingsLog', `Error details: ${JSON.stringify(errorData, null, 2)}`, 'error');
+                    } catch (e) {
+                        log('settingsLog', `Raw error: ${responseText}`, 'error');
+                    }
+                }
+            } catch (error) {
+                log('settingsLog', `❌ PUT settings error: ${error.message}`, 'error');
+                log('settingsLog', `Error stack: ${error.stack}`, 'error');
+            }
+        }
+
+        async function testInvalidSettings() {
+            clearLog('settingsLog');
+            const token = localStorage.getItem('authToken');
+            
+            if (!token) {
+                log('settingsLog', '❌ No auth token. Please login first.', 'error');
+                return;
+            }
+
+            const invalidSettings = {
+                theme: 'invalid-theme',
+                fontSize: 'invalid-size',
+                medicationReminders: 'not-boolean'
+            };
+
+            log('settingsLog', 'Testing invalid PUT /api/settings (should fail validation)...', 'info');
+            log('settingsLog', `Sending: ${JSON.stringify(invalidSettings, null, 2)}`, 'info');
+            
+            try {
+                const response = await fetch(`${apiBaseUrl}/api/settings`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(invalidSettings)
+                });
+
+                const responseText = await response.text();
+                
+                if (response.status === 400) {
+                    log('settingsLog', '✅ Validation correctly rejected invalid data!', 'success');
+                    try {
+                        const errorData = JSON.parse(responseText);
+                        log('settingsLog', `Validation errors: ${JSON.stringify(errorData, null, 2)}`, 'info');
+                    } catch (e) {
+                        log('settingsLog', `Raw validation response: ${responseText}`, 'info');
+                    }
+                } else {
+                    log('settingsLog', `⚠️ Expected 400 validation error, got ${response.status}`, 'warning');
+                    log('settingsLog', `Response: ${responseText}`, 'warning');
+                }
+            } catch (error) {
+                log('settingsLog', `❌ Invalid settings test error: ${error.message}`, 'error');
+            }
+        }
+
+        // Step 5: Network Analysis
+        async function analyzeNetworkRequest() {
+            clearLog('networkLog');
+            log('networkLog', 'Analyzing network request details...', 'info');
+            
+            const token = localStorage.getItem('authToken');
+            if (!token) {
+                log('networkLog', '❌ No token for network analysis', 'error');
+                return;
+            }
+            
+            log('networkLog', `API Base URL: ${apiBaseUrl}`, 'info');
+            log('networkLog', `Full URL: ${apiBaseUrl}/api/settings`, 'info');
+            log('networkLog', `Token length: ${token.length}`, 'info');
+            log('networkLog', `Token starts with: ${token.substring(0, 20)}...`, 'info');
+            
+            // Test if we can reach the base URL
+            try {
+                const baseResponse = await fetch(apiBaseUrl);
+                const baseData = await baseResponse.json();
+                log('networkLog', '✅ Base URL reachable', 'success');
+                log('networkLog', `Server message: ${baseData.message}`, 'info');
+            } catch (error) {
+                log('networkLog', `❌ Cannot reach base URL: ${error.message}`, 'error');
+            }
+            
+            // Test CORS
+            try {
+                log('networkLog', 'Testing CORS preflight...', 'info');
+                const corsResponse = await fetch(`${apiBaseUrl}/api/settings`, {
+                    method: 'OPTIONS',
+                    headers: {
+                        'Origin': window.location.origin,
+                        'Access-Control-Request-Method': 'PUT',
+                        'Access-Control-Request-Headers': 'Authorization, Content-Type'
+                    }
+                });
+                log('networkLog', `CORS preflight status: ${corsResponse.status}`, corsResponse.ok ? 'success' : 'warning');
+            } catch (error) {
+                log('networkLog', `CORS test error: ${error.message}`, 'warning');
+            }
+        }
+
+        async function testCORS() {
+            clearLog('networkLog');
+            log('networkLog', 'Testing CORS configuration...', 'info');
+            
+            try {
+                const response = await fetch(`${apiBaseUrl}/api/settings`, {
+                    method: 'OPTIONS'
+                });
+                
+                log('networkLog', `OPTIONS response status: ${response.status}`, 'info');
+                
+                const corsHeaders = [
+                    'Access-Control-Allow-Origin',
+                    'Access-Control-Allow-Methods',
+                    'Access-Control-Allow-Headers',
+                    'Access-Control-Allow-Credentials'
+                ];
+                
+                corsHeaders.forEach(header => {
+                    const value = response.headers.get(header);
+                    log('networkLog', `${header}: ${value || 'Not set'}`, value ? 'success' : 'warning');
+                });
+                
+            } catch (error) {
+                log('networkLog', `❌ CORS test error: ${error.message}`, 'error');
+            }
+        }
+
+        async function testHeaders() {
+            clearLog('networkLog');
+            const token = localStorage.getItem('authToken');
+            
+            log('networkLog', 'Testing request headers...', 'info');
+            
+            const headers = {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            };
+            
+            Object.entries(headers).forEach(([key, value]) => {
+                log('networkLog', `${key}: ${value}`, 'info');
+            });
+            
+            log('networkLog', 'Testing header validation...', 'info');
+            
+            // Test with missing Authorization
+            try {
+                const response = await fetch(`${apiBaseUrl}/api/settings`, {
+                    method: 'GET',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                
+                if (response.status === 401) {
+                    log('networkLog', '✅ Authorization correctly required', 'success');
+                } else {
+                    log('networkLog', `⚠️ Expected 401 without auth, got ${response.status}`, 'warning');
+                }
+            } catch (error) {
+                log('networkLog', `Header test error: ${error.message}`, 'error');
+            }
+        }
+
+        // Full Diagnostic
+        async function runFullDiagnostic() {
+            clearAllLogs();
+            
+            log('summaryLog', '🚀 Starting full diagnostic...', 'info');
+            
+            // Run all tests in sequence
+            await testAuth();
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            await testServerHealth();
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            await testDatabase();
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            await testRoutes();
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            await testSettingsEndpoint();
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            if (diagnosticResults.auth) {
+                await testGetSettings();
+                await new Promise(resolve => setTimeout(resolve, 500));
+                
+                await testMinimalSettings();
+            }
+            
+            // Generate summary
+            log('summaryLog', '📊 DIAGNOSTIC SUMMARY:', 'info');
+            log('summaryLog', '==================', 'info');
+            
+            Object.entries(diagnosticResults).forEach(([test, result]) => {
+                log('summaryLog', `${test.toUpperCase()}: ${result ? '✅ PASS' : '❌ FAIL'}`, result ? 'success' : 'error');
+            });
+            
+            const passedTests = Object.values(diagnosticResults).filter(r => r).length;
+            const totalTests = Object.keys(diagnosticResults).length;
+            
+            log('summaryLog', `\nOVERALL: ${passedTests}/${totalTests} tests passed`, passedTests === totalTests ? 'success' : 'error');
+            
+            if (passedTests === totalTests) {
+                log('summaryLog', '\n🎉 All tests passed! Settings should be working.', 'success');
+            } else {
+                log('summaryLog', '\n🔧 Issues found. Check the failed tests above.', 'error');
+                
+                if (!diagnosticResults.auth) {
+                    log('summaryLog', '• Fix authentication first', 'error');
+                }
+                if (!diagnosticResults.server) {
+                    log('summaryLog', '• Check if server is running', 'error');
+                }
+                if (!diagnosticResults.database) {
+                    log('summaryLog', '• Check database connection', 'error');
+                }
+                if (!diagnosticResults.routes) {
+                    log('summaryLog', '• Check if settings routes are loaded', 'error');
+                }
+                if (!diagnosticResults.settings) {
+                    log('summaryLog', '• Check settings API implementation', 'error');
+                }
+            }
+        }
+
+        // Auto-run auth test on page load
+        window.onload = function() {
+            testAuth();
+        };
+    </script>
+</body>
+</html>

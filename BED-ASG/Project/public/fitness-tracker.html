@@ -1,0 +1,1590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fitness Tracker - SeniorsLah</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            color: #333;
+        }
+
+        header {
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(10px);
+            color: #333;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .back-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .back-btn:hover {
+            background: #5a6fd8;
+            transform: translateY(-2px);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 1.8em;
+            color: #333;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #666;
+        }
+
+        main {
+            padding: 30px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            padding: 30px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+        }
+
+        .card h2 {
+            color: #333;
+            margin: 0 0 20px 0;
+            font-size: 1.4em;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-icon {
+            font-size: 1.5em;
+        }
+
+        .blood-sugar-section {
+            grid-column: span 2;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin: 20px 0;
+        }
+
+        .chart-container-small {
+            position: relative;
+            height: 200px;
+            margin: 15px 0;
+        }
+
+        .vitals-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .vital-item {
+            background: rgba(102, 126, 234, 0.1);
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .vital-item:hover {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.2);
+        }
+
+        .vital-label {
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .vital-value {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .heart-rate-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .heart-rate-display {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+            padding: 20px;
+            background: rgba(220, 53, 69, 0.1);
+            border-radius: 15px;
+            border: 2px solid rgba(220, 53, 69, 0.2);
+        }
+
+        .heart-icon {
+            font-size: 3em;
+            color: #dc3545;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .heart-rate-value {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #dc3545;
+        }
+
+        .heart-rate-summary {
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+            margin: 15px 0;
+        }
+
+        .heart-rate-summary .vital-item {
+            margin: 0;
+            flex: 1;
+        }
+
+        .blood-pressure-section {
+            background: linear-gradient(135deg, rgba(255, 193, 7, 0.1), rgba(255, 193, 7, 0.05));
+        }
+
+        .bp-reading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            margin: 20px 0;
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        .bp-value {
+            background: white;
+            padding: 15px 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            min-width: 80px;
+            text-align: center;
+        }
+
+        .status-indicator {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            text-align: center;
+            margin: 10px 0;
+        }
+
+        .status-normal { background: #d4edda; color: #155724; }
+        .status-elevated { background: #fff3cd; color: #856404; }
+        .status-high { background: #f8d7da; color: #721c24; }
+        .status-crisis { background: #e2e3e5; color: #383d41; }
+
+        .last-taken {
+            font-size: 0.85em;
+            color: #666;
+            text-align: center;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px dashed #ddd;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: white;
+            font-size: 1.2em;
+        }
+
+        .spinner {
+            border: 4px solid rgba(255,255,255,0.3);
+            border-top: 4px solid white;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error-message {
+            background: rgba(248, 215, 218, 0.9);
+            color: #721c24;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            margin: 20px 0;
+            border: 1px solid #f5c6cb;
+        }
+
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .action-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        /* Vitals History Section */
+        .vitals-history-section {
+            grid-column: span 2;
+            margin-top: 30px;
+        }
+
+        .vitals-table-container {
+            max-height: 400px;
+            overflow-y: auto;
+            border-radius: 12px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .vitals-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        .vitals-table th {
+            background: #667eea;
+            color: white;
+            padding: 15px 10px;
+            text-align: left;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .vitals-table td {
+            padding: 12px 10px;
+            border-bottom: 1px solid #e0e0e0;
+            vertical-align: middle;
+        }
+
+        .vitals-table tbody tr:hover {
+            background: rgba(102, 126, 234, 0.1);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .edit-btn, .delete-btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .edit-btn {
+            background: #28a745;
+            color: white;
+        }
+
+        .edit-btn:hover {
+            background: #218838;
+            transform: translateY(-1px);
+        }
+
+        .delete-btn {
+            background: #dc3545;
+            color: white;
+        }
+
+        .delete-btn:hover {
+            background: #c82333;
+            transform: translateY(-1px);
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background: white;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            position: relative;
+            animation: modalSlideIn 0.3s ease;
+        }
+
+        @keyframes modalSlideIn {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #667eea;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            color: #333;
+            font-size: 1.5em;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .close-btn:hover {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: flex-end;
+            margin-top: 30px;
+        }
+
+        .btn-primary, .btn-secondary {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5a6fd8;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+        }
+
+        .btn-primary:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Success/Error Messages */
+        .message {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        @media (max-width: 1024px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .blood-sugar-section, .vitals-history-section {
+                grid-column: span 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            main {
+                padding: 20px;
+            }
+
+            .vitals-info {
+                grid-template-columns: 1fr;
+            }
+
+            .heart-rate-display {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .bp-reading {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .modal-content {
+                margin: 10% auto;
+                width: 95%;
+                padding: 20px;
+            }
+
+            .vitals-table {
+                font-size: 14px;
+            }
+
+            .vitals-table th, .vitals-table td {
+                padding: 8px 6px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-left">
+            <button class="back-btn" onclick="goBack()">
+                ← Back
+            </button>
+            <h1>Fitness Tracker</h1>
+        </div>
+        <div class="user-info">
+            <span>Welcome, <span id="userName">User</span></span>
+        </div>
+    </header>
+
+    <main>
+        <div id="loadingDiv" class="loading">
+            <div class="spinner"></div>
+            Loading your health data...
+        </div>
+
+        <div id="errorDiv" class="error-message" style="display: none;">
+            <strong>Error loading data:</strong> <span id="errorMessage"></span>
+        </div>
+
+        <div id="dashboardContent" style="display: none;">
+            <div class="dashboard-grid">
+                <!-- Blood Sugar Section -->
+                <section class="card blood-sugar-section">
+                    <h2>
+                        <span class="card-icon">🩸</span>
+                        Blood Sugar Levels (Past 7 Days)
+                    </h2>
+                    <div class="chart-container">
+                        <canvas id="bloodSugarChart"></canvas>
+                    </div>
+                    <div class="vitals-info">
+                        <div class="vital-item">
+                            <div class="vital-label">Latest Reading</div>
+                            <div class="vital-value" id="latestBloodSugarLevel">N/A</div>
+                        </div>
+                        <div class="vital-item">
+                            <div class="vital-label">Date</div>
+                            <div class="vital-value" id="latestBloodSugarDate">N/A</div>
+                        </div>
+                        <div class="vital-item">
+                            <div class="vital-label">Time</div>
+                            <div class="vital-value" id="latestBloodSugarTime">N/A</div>
+                        </div>
+                        <div class="vital-item">
+                            <div class="vital-label">Status</div>
+                            <div class="vital-value" id="bloodSugarRangeStatus">N/A</div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Heart Rate Section -->
+                <section class="card heart-rate-section">
+                    <h2>
+                        <span class="card-icon">❤️</span>
+                        Heart Rate Monitor
+                    </h2>
+                    <div class="heart-rate-display">
+                        <div class="heart-icon">❤</div>
+                        <div class="heart-rate-value">
+                            <span id="latestHeartRate">0</span>
+                            <div style="font-size: 0.4em; color: #666;">beats/min</div>
+                        </div>
+                    </div>
+                    <div class="chart-container-small">
+                        <canvas id="heartRateChart"></canvas>
+                    </div>
+                    <div class="heart-rate-summary">
+                        <div class="vital-item">
+                            <div class="vital-label">Min</div>
+                            <div class="vital-value" id="minHeartRate">N/A</div>
+                        </div>
+                        <div class="vital-item">
+                            <div class="vital-label">Max</div>
+                            <div class="vital-value" id="maxHeartRate">N/A</div>
+                        </div>
+                        <div class="vital-item">
+                            <div class="vital-label">Avg</div>
+                            <div class="vital-value" id="avgHeartRate">N/A</div>
+                        </div>
+                    </div>
+                    <div class="last-taken">
+                        Last reading: <span id="heartRateLastTaken">N/A</span>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Blood Pressure Section -->
+            <section class="card blood-pressure-section">
+                <h2>
+                    <span class="card-icon">🩺</span>
+                    Blood Pressure Monitor
+                </h2>
+                <div class="bp-reading">
+                    <div>
+                        <div style="font-size: 0.8em; color: #666; margin-bottom: 5px;">SYSTOLIC</div>
+                        <div class="bp-value" id="bpSys">N/A</div>
+                    </div>
+                    <div style="font-size: 2em; color: #666;">/</div>
+                    <div>
+                        <div style="font-size: 0.8em; color: #666; margin-bottom: 5px;">DIASTOLIC</div>
+                        <div class="bp-value" id="bpDia">N/A</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 0.8em; color: #666; margin-bottom: 5px;">PULSE</div>
+                        <div class="bp-value" id="bpPulse">N/A</div>
+                    </div>
+                </div>
+                <div class="status-indicator" id="bpStatus">Blood Pressure Status: N/A</div>
+                <div class="last-taken">
+                    Last reading: <span id="bpLastTaken">N/A</span>
+                </div>
+            </section>
+
+            <!-- Vitals History Section -->
+            <section class="card vitals-history-section">
+                <h2>
+                    <span class="card-icon">📊</span>
+                    Recent Vitals History
+                </h2>
+                <div id="vitalsHistoryLoading" class="loading" style="display: none;">
+                    <div class="spinner"></div>
+                    Loading vitals history...
+                </div>
+                <div class="vitals-table-container">
+                    <table class="vitals-table">
+                        <thead>
+                            <tr>
+                                <th>Date & Time</th>
+                                <th>Heart Rate</th>
+                                <th>Blood Pressure</th>
+                                <th>Blood Sugar</th>
+                                <th>Sleep Hours</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="vitalsHistoryBody">
+                            <!-- Data will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Quick Actions -->
+            <div class="quick-actions">
+                <button class="action-btn" onclick="addNewReading()">
+                    📊 Add New Reading
+                </button>
+                <button class="action-btn" onclick="exportData()">
+                    📤 Export Data
+                </button>
+                <button class="action-btn" onclick="refreshData()">
+                    🔄 Refresh Data
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Edit Modal -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Edit Vitals Reading</h3>
+                <button class="close-btn" onclick="closeEditModal()">&times;</button>
+            </div>
+            <div id="editModalMessage"></div>
+            <form id="editVitalsForm">
+                <div class="form-group">
+                    <label for="editHeartRate">Heart Rate (bpm)</label>
+                    <input type="number" id="editHeartRate" name="heartRate" min="30" max="220">
+                </div>
+                <div class="form-group">
+                    <label for="editBloodPressureSYS">Systolic Blood Pressure (mmHg)</label>
+                    <input type="number" id="editBloodPressureSYS" name="bloodPressureSYS" min="70" max="250">
+                </div>
+                <div class="form-group">
+                    <label for="editBloodPressureDIA">Diastolic Blood Pressure (mmHg)</label>
+                    <input type="number" id="editBloodPressureDIA" name="bloodPressureDIA" min="40" max="150">
+                </div>
+                <div class="form-group">
+                    <label for="editBloodSugar">Blood Sugar (mmol/L)</label>
+                    <input type="number" id="editBloodSugar" name="bloodSugar" min="2" max="30" step="0.1">
+                </div>
+                <div class="form-group">
+                    <label for="editSleepHours">Sleep Hours</label>
+                    <input type="number" id="editSleepHours" name="sleepHours" min="0" max="24" step="0.5">
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-secondary" onclick="closeEditModal()">Cancel</button>
+                    <button type="submit" class="btn-primary" id="saveEditBtn">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Confirm Delete</h3>
+                <button class="close-btn" onclick="closeDeleteModal()">&times;</button>
+            </div>
+            <div id="deleteModalMessage"></div>
+            <p>Are you sure you want to delete this vitals reading? This action cannot be undone.</p>
+            <div class="modal-actions">
+                <button type="button" class="btn-secondary" onclick="closeDeleteModal()">Cancel</button>
+                <button type="button" class="btn-primary" id="confirmDeleteBtn" style="background: #dc3545;" onclick="confirmDelete()">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const BASE_API_URL = 'http://localhost:3000/api';
+        let bloodSugarChartInstance = null;
+        let heartRateChartInstance = null;
+        let currentUser = null;
+        let currentEditingVitalId = null;
+        let currentDeletingVitalId = null;
+
+        // Get authentication token and user info
+        function getAuthData() {
+            const token = sessionStorage.getItem("authToken") || localStorage.getItem("authToken");
+            const userData = sessionStorage.getItem("currentUser") || localStorage.getItem("currentUser");
+            
+            if (!token || !userData) {
+                window.location.href = "menu.html";
+                return null;
+            }
+            
+            try {
+                return {
+                    token: token,
+                    user: JSON.parse(userData)
+                };
+            } catch (error) {
+                console.error("Error parsing user data:", error);
+                window.location.href = "menu.html";
+                return null;
+            }
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', () => {
+            const authData = getAuthData();
+            if (!authData) return;
+            
+            currentUser = authData.user;
+            document.getElementById('userName').textContent = currentUser.name || currentUser.email || 'User';
+            
+            fetchFitnessData(authData.token);
+        });
+
+        // Back button functionality
+        function goBack() {
+            window.location.href = "menu.html";
+        }
+
+        // Fetch fitness data from API
+        async function fetchFitnessData(token) {
+            try {
+                showLoading(true);
+                hideError();
+
+                const response = await fetch(`${BASE_API_URL}/fitness-tracker`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        throw new Error("Authentication failed. Please log in again.");
+                    }
+                    const errorText = await response.text();
+                    throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+                }
+
+                const data = await response.json();
+                console.log("Fetched Fitness Data:", data);
+
+                updateBloodSugarDisplay(data.bloodSugarData, data.bloodPressure);
+                updateHeartRateDisplay(data.heartRate);
+                updateBloodPressureDisplay(data.bloodPressure);
+
+                // Load vitals history
+                await loadVitalsHistory(token);
+
+                showLoading(false);
+                document.getElementById('dashboardContent').style.display = 'block';
+
+            } catch (error) {
+                console.error("Error fetching fitness data:", error);
+                showError(error.message);
+                showLoading(false);
+                
+                if (error.message.includes("Authentication failed")) {
+                    setTimeout(() => {
+                        window.location.href = "menu.html";
+                    }, 2000);
+                }
+            }
+        }
+
+        // Load vitals history
+        async function loadVitalsHistory(token) {
+            try {
+                document.getElementById('vitalsHistoryLoading').style.display = 'block';
+
+                const response = await fetch(`${BASE_API_URL}/fitness-tracker/vitals?limit=20`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch vitals history');
+                }
+
+                const result = await response.json();
+                populateVitalsHistory(result.data || []);
+
+            } catch (error) {
+                console.error("Error loading vitals history:", error);
+                document.getElementById('vitalsHistoryBody').innerHTML = '<tr><td colspan="6" style="text-align: center; color: #666;">Error loading vitals history</td></tr>';
+            } finally {
+                document.getElementById('vitalsHistoryLoading').style.display = 'none';
+            }
+        }
+
+        // Populate vitals history table
+        function populateVitalsHistory(vitals) {
+            const tbody = document.getElementById('vitalsHistoryBody');
+            
+            if (!vitals || vitals.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #666;">No vitals data available</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = vitals.map(vital => {
+                const date = new Date(vital.ReadingDateTime);
+                const heartRate = vital.HeartRate ? `${vital.HeartRate} bpm` : '-';
+                const bloodPressure = (vital.BloodPressureSYS && vital.BloodPressureDIA) 
+                    ? `${vital.BloodPressureSYS}/${vital.BloodPressureDIA}` 
+                    : '-';
+                const bloodSugar = vital.BloodSugar ? `${parseFloat(vital.BloodSugar).toFixed(1)} mmol/L` : '-';
+                const sleepHours = vital.SleepHours ? `${parseFloat(vital.SleepHours).toFixed(1)}h` : '-';
+
+                return `
+                    <tr>
+                        <td>
+                            <div>${date.toLocaleDateString()}</div>
+                            <div style="font-size: 0.8em; color: #666;">${date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>
+                        </td>
+                        <td>${heartRate}</td>
+                        <td>${bloodPressure}</td>
+                        <td>${bloodSugar}</td>
+                        <td>${sleepHours}</td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="edit-btn" onclick="editVital(${vital.VitalID})">Edit</button>
+                                <button class="delete-btn" onclick="deleteVital(${vital.VitalID})">Delete</button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Edit vital function
+        async function editVital(vitalId) {
+            try {
+                const authData = getAuthData();
+                if (!authData) return;
+
+                // First, get the current data for this vital
+                const response = await fetch(`${BASE_API_URL}/fitness-tracker/vitals`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${authData.token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch vital data');
+                }
+
+                const result = await response.json();
+                const vital = result.data.find(v => v.VitalID === vitalId);
+
+                if (!vital) {
+                    throw new Error('Vital record not found');
+                }
+
+                // Populate the edit form
+                document.getElementById('editHeartRate').value = vital.HeartRate || '';
+                document.getElementById('editBloodPressureSYS').value = vital.BloodPressureSYS || '';
+                document.getElementById('editBloodPressureDIA').value = vital.BloodPressureDIA || '';
+                document.getElementById('editBloodSugar').value = vital.BloodSugar || '';
+                document.getElementById('editSleepHours').value = vital.SleepHours || '';
+
+                currentEditingVitalId = vitalId;
+                document.getElementById('editModal').style.display = 'block';
+                document.getElementById('editModalMessage').innerHTML = '';
+
+            } catch (error) {
+                console.error('Error loading vital for editing:', error);
+                alert('Failed to load vital data for editing. Please try again.');
+            }
+        }
+
+        // Delete vital function
+        function deleteVital(vitalId) {
+            currentDeletingVitalId = vitalId;
+            document.getElementById('deleteModal').style.display = 'block';
+            document.getElementById('deleteModalMessage').innerHTML = '';
+        }
+
+        // Close edit modal
+        function closeEditModal() {
+            document.getElementById('editModal').style.display = 'none';
+            currentEditingVitalId = null;
+            document.getElementById('editVitalsForm').reset();
+            document.getElementById('editModalMessage').innerHTML = '';
+        }
+
+        // Close delete modal
+        function closeDeleteModal() {
+            document.getElementById('deleteModal').style.display = 'none';
+            currentDeletingVitalId = null;
+            document.getElementById('deleteModalMessage').innerHTML = '';
+        }
+
+        // Handle edit form submission
+        document.getElementById('editVitalsForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            if (!currentEditingVitalId) return;
+
+            const saveBtn = document.getElementById('saveEditBtn');
+            const originalText = saveBtn.textContent;
+            
+            try {
+                saveBtn.disabled = true;
+                saveBtn.textContent = 'Saving...';
+
+                const authData = getAuthData();
+                if (!authData) return;
+
+                const formData = new FormData(this);
+                const vitalsData = {};
+
+                // Only include non-empty values
+                if (formData.get('heartRate')) vitalsData.HeartRate = parseInt(formData.get('heartRate'));
+                if (formData.get('bloodPressureSYS')) vitalsData.BloodPressureSYS = parseInt(formData.get('bloodPressureSYS'));
+                if (formData.get('bloodPressureDIA')) vitalsData.BloodPressureDIA = parseInt(formData.get('bloodPressureDIA'));
+                if (formData.get('bloodSugar')) vitalsData.BloodSugar = parseFloat(formData.get('bloodSugar'));
+                if (formData.get('sleepHours')) vitalsData.SleepHours = parseFloat(formData.get('sleepHours'));
+
+                const response = await fetch(`${BASE_API_URL}/fitness-tracker/vitals/${currentEditingVitalId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${authData.token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(vitalsData)
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || 'Failed to update vital record');
+                }
+
+                // Show success message
+                document.getElementById('editModalMessage').innerHTML = 
+                    '<div class="message success">Vital record updated successfully!</div>';
+
+                // Refresh data after a short delay
+                setTimeout(async () => {
+                    closeEditModal();
+                    await refreshData();
+                }, 1500);
+
+            } catch (error) {
+                console.error('Error updating vital:', error);
+                document.getElementById('editModalMessage').innerHTML = 
+                    `<div class="message error">Error: ${error.message}</div>`;
+            } finally {
+                saveBtn.disabled = false;
+                saveBtn.textContent = originalText;
+            }
+        });
+
+        // Confirm delete function
+        async function confirmDelete() {
+            if (!currentDeletingVitalId) return;
+
+            const deleteBtn = document.getElementById('confirmDeleteBtn');
+            const originalText = deleteBtn.textContent;
+
+            try {
+                deleteBtn.disabled = true;
+                deleteBtn.textContent = 'Deleting...';
+
+                const authData = getAuthData();
+                if (!authData) return;
+
+                const response = await fetch(`${BASE_API_URL}/fitness-tracker/vitals/${currentDeletingVitalId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${authData.token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || 'Failed to delete vital record');
+                }
+
+                // Show success message
+                document.getElementById('deleteModalMessage').innerHTML = 
+                    '<div class="message success">Vital record deleted successfully!</div>';
+
+                // Refresh data after a short delay
+                setTimeout(async () => {
+                    closeDeleteModal();
+                    await refreshData();
+                }, 1500);
+
+            } catch (error) {
+                console.error('Error deleting vital:', error);
+                document.getElementById('deleteModalMessage').innerHTML = 
+                    `<div class="message error">Error: ${error.message}</div>`;
+            } finally {
+                deleteBtn.disabled = false;
+                deleteBtn.textContent = originalText;
+            }
+        }
+
+        // Refresh data function
+        async function refreshData() {
+            const authData = getAuthData();
+            if (!authData) return;
+            
+            await fetchFitnessData(authData.token);
+        }
+
+        // Close modals when clicking outside
+        window.addEventListener('click', function(event) {
+            const editModal = document.getElementById('editModal');
+            const deleteModal = document.getElementById('deleteModal');
+            
+            if (event.target === editModal) {
+                closeEditModal();
+            }
+            if (event.target === deleteModal) {
+                closeDeleteModal();
+            }
+        });
+
+        // Show/hide loading
+        function showLoading(show) {
+            document.getElementById('loadingDiv').style.display = show ? 'block' : 'none';
+        }
+
+        // Show/hide error
+        function showError(message) {
+            document.getElementById('errorMessage').textContent = message;
+            document.getElementById('errorDiv').style.display = 'block';
+        }
+
+        function hideError() {
+            document.getElementById('errorDiv').style.display = 'none';
+        }
+
+        // Helper function to safely check if a value is valid for toFixed
+        function safeToFixed(value, digits = 1) {
+            if (value === null || value === undefined || isNaN(value)) {
+                return 'N/A';
+            }
+            return parseFloat(value).toFixed(digits);
+        }
+
+        // Update blood sugar display
+        function updateBloodSugarDisplay(bloodSugarData = [], latestVitals = {}) {
+            const dates = bloodSugarData.map(item => new Date(item.Date).toLocaleDateString());
+            const levels = bloodSugarData.map(item => item.AvgBloodSugar);
+
+            const latestDate = latestVitals.lastTakenDateTime ? new Date(latestVitals.lastTakenDateTime) : null;
+
+            document.getElementById('latestBloodSugarDate').textContent = latestDate ? latestDate.toLocaleDateString() : 'N/A';
+            document.getElementById('latestBloodSugarTime').textContent = latestDate ? latestDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'N/A';
+            
+            // Fixed: Safe handling of bloodSugar value
+            const bloodSugarValue = latestVitals.bloodSugar;
+            if (bloodSugarValue !== null && bloodSugarValue !== undefined && !isNaN(bloodSugarValue)) {
+                document.getElementById('latestBloodSugarLevel').textContent = safeToFixed(bloodSugarValue, 1) + ' mmol/L';
+            } else {
+                document.getElementById('latestBloodSugarLevel').textContent = 'N/A';
+            }
+
+            let status = 'N/A';
+            let statusClass = '';
+            if (bloodSugarValue !== null && bloodSugarValue !== undefined && !isNaN(bloodSugarValue)) {
+                if (bloodSugarValue >= 4.0 && bloodSugarValue <= 7.0) { 
+                    status = 'Normal';
+                    statusClass = 'status-normal';
+                } else if (bloodSugarValue < 4.0) {
+                    status = 'Low';
+                    statusClass = 'status-elevated';
+                } else {
+                    status = 'High';
+                    statusClass = 'status-high';
+                }
+            }
+            
+            const statusElement = document.getElementById('bloodSugarRangeStatus');
+            statusElement.textContent = status;
+            statusElement.className = 'vital-value ' + statusClass;
+
+            // Create chart
+            const ctx = document.getElementById('bloodSugarChart').getContext('2d');
+
+            if (bloodSugarChartInstance) {
+                bloodSugarChartInstance.destroy();
+            }
+
+            // Handle empty data
+            if (dates.length === 0 || levels.length === 0) {
+                bloodSugarChartInstance = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['No Data'],
+                        datasets: [{
+                            label: 'Avg Blood Sugar (mmol/L)',
+                            data: [0],
+                            backgroundColor: 'rgba(200, 200, 200, 0.5)',
+                            borderColor: 'rgba(200, 200, 200, 1)',
+                            borderWidth: 2,
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: { enabled: false }
+                        },
+                        scales: {
+                            y: { beginAtZero: true, title: { display: true, text: 'Blood Sugar (mmol/L)' } },
+                            x: { title: { display: true, text: 'Date' } }
+                        }
+                    }
+                });
+                return;
+            }
+
+            bloodSugarChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: dates,
+                    datasets: [{
+                        label: 'Avg Blood Sugar (mmol/L)',
+                        data: levels,
+                        backgroundColor: 'rgba(102, 126, 234, 0.8)',
+                        borderColor: 'rgba(102, 126, 234, 1)',
+                        borderWidth: 2,
+                        borderRadius: 8,
+                        borderSkipped: false,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0,0,0,0.8)',
+                            titleColor: 'white',
+                            bodyColor: 'white',
+                            borderColor: 'rgba(102, 126, 234, 1)',
+                            borderWidth: 1,
+                            callbacks: {
+                                label: function(context) {
+                                    return `${safeToFixed(context.parsed.y, 1)} mmol/L`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Blood Sugar (mmol/L)',
+                                color: '#666',
+                                font: {
+                                    size: 12,
+                                    weight: 'bold'
+                                }
+                            },
+                            grid: {
+                                color: 'rgba(0,0,0,0.1)'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Date',
+                                color: '#666',
+                                font: {
+                                    size: 12,
+                                    weight: 'bold'
+                                }
+                            },
+                            grid: {
+                                display: false
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Update heart rate display
+        function updateHeartRateDisplay(heartRateData = {}) {
+            document.getElementById('latestHeartRate').textContent = heartRateData.latestValue || '0';
+            document.getElementById('minHeartRate').textContent = heartRateData.min || 'N/A';
+            document.getElementById('maxHeartRate').textContent = heartRateData.max || 'N/A';
+            document.getElementById('avgHeartRate').textContent = heartRateData.avg ? Math.round(heartRateData.avg) : 'N/A';
+
+            const latestDateTime = heartRateData.latestDateTime ? new Date(heartRateData.latestDateTime) : null;
+            document.getElementById('heartRateLastTaken').textContent = latestDateTime ? latestDateTime.toLocaleString() : 'N/A';
+
+            const history = heartRateData.history || [];
+            const hrLabels = history.map(item => 
+                new Date(item.dateTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            );
+            const hrValues = history.map(item => item.value);
+
+            const ctx = document.getElementById('heartRateChart').getContext('2d');
+
+            if (heartRateChartInstance) {
+                heartRateChartInstance.destroy();
+            }
+
+            // Handle empty data
+            if (hrLabels.length === 0 || hrValues.length === 0) {
+                heartRateChartInstance = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: ['No Data'],
+                        datasets: [{
+                            label: 'Heart Rate (bpm)',
+                            data: [0],
+                            borderColor: 'rgba(200, 200, 200, 1)',
+                            backgroundColor: 'rgba(200, 200, 200, 0.1)',
+                            tension: 0.4,
+                            fill: true,
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: { enabled: false }
+                        },
+                        scales: {
+                            y: { beginAtZero: true, title: { display: true, text: 'Heart Rate (bpm)' } },
+                            x: { title: { display: true, text: 'Time' } }
+                        }
+                    }
+                });
+                return;
+            }
+
+            heartRateChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: hrLabels,
+                    datasets: [{
+                        label: 'Heart Rate (bpm)',
+                        data: hrValues,
+                        borderColor: '#dc3545',
+                        backgroundColor: 'rgba(220, 53, 69, 0.1)',
+                        tension: 0.4,
+                        fill: true,
+                        pointRadius: 4,
+                        pointBackgroundColor: '#dc3545',
+                        pointBorderColor: 'white',
+                        pointBorderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0,0,0,0.8)',
+                            titleColor: 'white',
+                            bodyColor: 'white',
+                            borderColor: '#dc3545',
+                            borderWidth: 1,
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.parsed.y} bpm`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Heart Rate (bpm)',
+                                color: '#666',
+                                font: {
+                                    size: 12,
+                                    weight: 'bold'
+                                }
+                            },
+                            grid: {
+                                color: 'rgba(0,0,0,0.1)'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Time',
+                                color: '#666',
+                                font: {
+                                    size: 12,
+                                    weight: 'bold'
+                                }
+                            },
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                maxRotation: 45,
+                                minRotation: 45,
+                                autoSkip: true,
+                                maxTicksLimit: 8
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Update blood pressure display
+        function updateBloodPressureDisplay(bloodPressureData = {}) {
+            document.getElementById('bpSys').textContent = bloodPressureData.sys || 'N/A';
+            document.getElementById('bpDia').textContent = bloodPressureData.dia || 'N/A';
+            document.getElementById('bpPulse').textContent = bloodPressureData.pulse || 'N/A';
+
+            const lastTakenDateTime = bloodPressureData.lastTakenDateTime ? new Date(bloodPressureData.lastTakenDateTime) : null;
+            document.getElementById('bpLastTaken').textContent = lastTakenDateTime ? lastTakenDateTime.toLocaleString() : 'N/A';
+
+            let status = 'N/A';
+            let statusClass = '';
+            if (bloodPressureData.sys !== null && bloodPressureData.sys !== undefined && 
+                bloodPressureData.dia !== null && bloodPressureData.dia !== undefined &&
+                !isNaN(bloodPressureData.sys) && !isNaN(bloodPressureData.dia)) {
+                if (bloodPressureData.sys < 120 && bloodPressureData.dia < 80) {
+                    status = 'Normal';
+                    statusClass = 'status-normal';
+                } else if ((bloodPressureData.sys >= 120 && bloodPressureData.sys <= 129) && bloodPressureData.dia < 80) {
+                    status = 'Elevated';
+                    statusClass = 'status-elevated';
+                } else if ((bloodPressureData.sys >= 130 && bloodPressureData.sys <= 139) || (bloodPressureData.dia >= 80 && bloodPressureData.dia <= 89)) {
+                    status = 'High Blood Pressure (Stage 1)';
+                    statusClass = 'status-high';
+                } else if (bloodPressureData.sys >= 140 || bloodPressureData.dia >= 90) {
+                    status = 'High Blood Pressure (Stage 2)';
+                    statusClass = 'status-high';
+                } else {
+                    status = 'Crisis (Seek medical attention!)';
+                    statusClass = 'status-crisis';
+                }
+            }
+            
+            const bpStatusElement = document.getElementById('bpStatus');
+            bpStatusElement.textContent = `Blood Pressure: ${status}`;
+            bpStatusElement.className = `status-indicator ${statusClass}`;
+        }
+
+         function addNewReading() {
+            window.location.href = "createreading.html";
+        }
+
+        function exportData() {
+            // Export user's fitness data
+            exportVitalsData();
+        }
+
+        // Export vitals data as CSV
+        async function exportVitalsData() {
+            try {
+                const authData = getAuthData();
+                if (!authData) return;
+
+                const response = await fetch(`${BASE_API_URL}/fitness-tracker/vitals`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${authData.token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch vitals data');
+                }
+
+                const data = await response.json();
+                
+                if (!data.data || data.data.length === 0) {
+                    alert('No vitals data available to export.');
+                    return;
+                }
+
+                // Convert to CSV
+                const csvData = convertToCSV(data.data);
+                
+                // Download CSV file
+                downloadCSV(csvData, `vitals_data_${new Date().toISOString().split('T')[0]}.csv`);
+                
+            } catch (error) {
+                console.error('Error exporting data:', error);
+                alert('Failed to export data. Please try again.');
+            }
+        }
+
+        // Convert JSON data to CSV format
+        function convertToCSV(data) {
+            if (!data || data.length === 0) return '';
+            
+            const headers = ['Date', 'Time', 'Heart Rate (bpm)', 'Systolic BP (mmHg)', 'Diastolic BP (mmHg)', 'Blood Sugar (mmol/L)', 'Sleep Hours'];
+            
+            const csvRows = [headers.join(',')];
+            
+            data.forEach(record => {
+                const date = new Date(record.ReadingDateTime);
+                const row = [
+                    date.toLocaleDateString(),
+                    date.toLocaleTimeString(),
+                    record.HeartRate || '',
+                    record.BloodPressureSYS || '',
+                    record.BloodPressureDIA || '',
+                    record.BloodSugar || '',
+                    record.SleepHours || ''
+                ];
+                csvRows.push(row.join(','));
+            });
+            
+            return csvRows.join('\n');
+        }
+
+        // Download CSV file
+        function downloadCSV(csvData, filename) {
+            const blob = new Blob([csvData], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            
+            if (link.download !== undefined) {
+                const url = URL.createObjectURL(blob);
+                link.setAttribute('href', url);
+                link.setAttribute('download', filename);
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+        }
+    </script>
+</body>
+</html>

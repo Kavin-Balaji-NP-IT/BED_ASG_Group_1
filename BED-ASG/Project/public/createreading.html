@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add New Reading - SeniorsLah</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            color: #333;
+        }
+
+        header {
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(10px);
+            color: #333;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .back-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .back-btn:hover {
+            background: #5a6fd8;
+            transform: translateY(-2px);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 1.8em;
+            color: #333;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #666;
+        }
+
+        main {
+            padding: 30px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .form-container {
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            padding: 40px;
+            margin-bottom: 30px;
+        }
+
+        .form-title {
+            color: #333;
+            margin: 0 0 30px 0;
+            font-size: 2em;
+            text-align: center;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 15px;
+        }
+
+        .form-section {
+            margin-bottom: 30px;
+            padding: 25px;
+            border-radius: 15px;
+            background: rgba(102, 126, 234, 0.05);
+            border: 2px solid rgba(102, 126, 234, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-icon {
+            font-size: 1.5em;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        input[type="number"],
+        input[type="date"],
+        input[type="time"],
+        input[type="datetime-local"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        input[type="number"]:focus,
+        input[type="date"]:focus,
+        input[type="time"]:focus,
+        input[type="datetime-local"]:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .input-group {
+            position: relative;
+        }
+
+        .input-unit {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+            font-size: 14px;
+            font-weight: 500;
+            pointer-events: none;
+        }
+
+        .input-with-unit input {
+            padding-right: 60px;
+        }
+
+        .range-indicator {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+            font-style: italic;
+        }
+
+        .submit-section {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 2px dashed #e1e5e9;
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 200px;
+            justify-content: center;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .submit-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .loading-spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid transparent;
+            border-top: 2px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .success-message {
+            background: rgba(212, 237, 218, 0.9);
+            color: #155724;
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border: 1px solid #c3e6cb;
+            display: none;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .error-message {
+            background: rgba(248, 215, 218, 0.9);
+            color: #721c24;
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border: 1px solid #f5c6cb;
+            display: none;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .quick-fill {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+
+        .quick-fill-btn {
+            background: rgba(102, 126, 234, 0.1);
+            color: #667eea;
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            padding: 5px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .quick-fill-btn:hover {
+            background: rgba(102, 126, 234, 0.2);
+            border-color: rgba(102, 126, 234, 0.5);
+        }
+
+        .datetime-section {
+            background: rgba(255, 193, 7, 0.05);
+            border-color: rgba(255, 193, 7, 0.2);
+        }
+
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            main {
+                padding: 20px;
+            }
+
+            .form-container {
+                padding: 25px;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .quick-fill {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-left">
+            <button class="back-btn" onclick="goBack()">
+                ← Back
+            </button>
+            <h1>Add New Reading</h1>
+        </div>
+        <div class="user-info">
+            <span>Welcome, <span id="userName">User</span></span>
+        </div>
+    </header>
+
+    <main>
+        <div class="form-container">
+            <h2 class="form-title">📊 Record New Vital Signs</h2>
+
+            <div class="success-message" id="successMessage">
+                <span>✅</span>
+                <span id="successText">Reading saved successfully!</span>
+            </div>
+
+            <div class="error-message" id="errorMessage">
+                <span>❌</span>
+                <span id="errorText">Error saving reading</span>
+            </div>
+
+            <form id="vitalsForm">
+                <!-- Date & Time Section -->
+                <div class="form-section datetime-section">
+                    <div class="section-title">
+                        <span class="section-icon">📅</span>
+                        Date & Time
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="readingDateTime">Reading Date & Time</label>
+                            <input type="datetime-local" id="readingDateTime" name="readingDateTime" required>
+                            <div class="quick-fill">
+                                <button type="button" class="quick-fill-btn" onclick="setCurrentDateTime()">Set to Now</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Heart Rate Section -->
+                <div class="form-section">
+                    <div class="section-title">
+                        <span class="section-icon">❤️</span>
+                        Heart Rate
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="heartRate">Heart Rate</label>
+                            <div class="input-group input-with-unit">
+                                <input type="number" id="heartRate" name="heartRate" min="30" max="220" placeholder="Enter heart rate">
+                                <span class="input-unit">bpm</span>
+                            </div>
+                            <div class="range-indicator">Normal range: 60-100 bpm (resting)</div>
+                            <div class="quick-fill">
+                                <button type="button" class="quick-fill-btn" onclick="setQuickValue('heartRate', 72)">Average (72)</button>
+                                <button type="button" class="quick-fill-btn" onclick="setQuickValue('heartRate', 80)">Active (80)</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Blood Pressure Section -->
+                <div class="form-section">
+                    <div class="section-title">
+                        <span class="section-icon">🩺</span>
+                        Blood Pressure
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="bloodPressureSYS">Systolic Pressure</label>
+                            <div class="input-group input-with-unit">
+                                <input type="number" id="bloodPressureSYS" name="bloodPressureSYS" min="70" max="250" placeholder="Enter systolic">
+                                <span class="input-unit">mmHg</span>
+                            </div>
+                            <div class="range-indicator">Normal: less than 120 mmHg</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="bloodPressureDIA">Diastolic Pressure</label>
+                            <div class="input-group input-with-unit">
+                                <input type="number" id="bloodPressureDIA" name="bloodPressureDIA" min="40" max="150" placeholder="Enter diastolic">
+                                <span class="input-unit">mmHg</span>
+                            </div>
+                            <div class="range-indicator">Normal: less than 80 mmHg</div>
+                        </div>
+                    </div>
+                    <div class="quick-fill">
+                        <button type="button" class="quick-fill-btn" onclick="setBloodPressure(110, 70)">Normal (110/70)</button>
+                        <button type="button" class="quick-fill-btn" onclick="setBloodPressure(120, 80)">Pre-hypertension (120/80)</button>
+                    </div>
+                </div>
+
+                <!-- Blood Sugar Section -->
+                <div class="form-section">
+                    <div class="section-title">
+                        <span class="section-icon">🩸</span>
+                        Blood Sugar
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="bloodSugar">Blood Sugar Level</label>
+                            <div class="input-group input-with-unit">
+                                <input type="number" id="bloodSugar" name="bloodSugar" min="2.0" max="25.0" step="0.1" placeholder="Enter blood sugar">
+                                <span class="input-unit">mmol/L</span>
+                            </div>
+                            <div class="range-indicator">Normal range: 4.0-7.0 mmol/L</div>
+                            <div class="quick-fill">
+                                <button type="button" class="quick-fill-btn" onclick="setQuickValue('bloodSugar', 5.5)">Normal (5.5)</button>
+                                <button type="button" class="quick-fill-btn" onclick="setQuickValue('bloodSugar', 6.5)">Pre-meal (6.5)</button>
+                                <button type="button" class="quick-fill-btn" onclick="setQuickValue('bloodSugar', 8.0)">Post-meal (8.0)</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sleep Section -->
+                <div class="form-section">
+                    <div class="section-title">
+                        <span class="section-icon">😴</span>
+                        Sleep
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="sleepHours">Sleep Hours</label>
+                            <div class="input-group input-with-unit">
+                                <input type="number" id="sleepHours" name="sleepHours" min="0" max="24" step="0.5" placeholder="Enter sleep hours">
+                                <span class="input-unit">hours</span>
+                            </div>
+                            <div class="range-indicator">Recommended: 7-9 hours for adults</div>
+                            <div class="quick-fill">
+                                <button type="button" class="quick-fill-btn" onclick="setQuickValue('sleepHours', 7)">7 hours</button>
+                                <button type="button" class="quick-fill-btn" onclick="setQuickValue('sleepHours', 8)">8 hours</button>
+                                <button type="button" class="quick-fill-btn" onclick="setQuickValue('sleepHours', 6.5)">6.5 hours</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="submit-section">
+                    <button type="submit" class="submit-btn" id="submitBtn">
+                        <span id="submitText">💾 Save Reading</span>
+                        <div class="loading-spinner" id="loadingSpinner" style="display: none;"></div>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <script>
+        const BASE_API_URL = 'http://localhost:3000/api';
+        let currentUser = null;
+
+        // Get authentication token and user info
+        function getAuthData() {
+            const token = localStorage.getItem("authToken");
+            const userData = localStorage.getItem("currentUser");
+            
+            if (!token || !userData) {
+                window.location.href = "menu.html";
+                return null;
+            }
+            
+            try {
+                return {
+                    token: token,
+                    user: JSON.parse(userData)
+                };
+            } catch (error) {
+                console.error("Error parsing user data:", error);
+                window.location.href = "menu.html";
+                return null;
+            }
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', () => {
+            const authData = getAuthData();
+            if (!authData) return;
+            
+            currentUser = authData.user;
+            document.getElementById('userName').textContent = currentUser.name || currentUser.email || 'User';
+            
+            // Set current date and time as default
+            setCurrentDateTime();
+        });
+
+        // Back button functionality
+        function goBack() {
+            window.location.href = "fitness-tracker.html";
+        }
+
+        // Set current date and time
+        function setCurrentDateTime() {
+            const now = new Date();
+            // Format for datetime-local input (YYYY-MM-DDTHH:MM)
+            const formattedDateTime = now.getFullYear() + '-' + 
+                                    String(now.getMonth() + 1).padStart(2, '0') + '-' + 
+                                    String(now.getDate()).padStart(2, '0') + 'T' + 
+                                    String(now.getHours()).padStart(2, '0') + ':' + 
+                                    String(now.getMinutes()).padStart(2, '0');
+            
+            document.getElementById('readingDateTime').value = formattedDateTime;
+        }
+
+        // Set quick values for individual fields
+        function setQuickValue(fieldId, value) {
+            document.getElementById(fieldId).value = value;
+        }
+
+        // Set blood pressure values
+        function setBloodPressure(sys, dia) {
+            document.getElementById('bloodPressureSYS').value = sys;
+            document.getElementById('bloodPressureDIA').value = dia;
+        }
+
+        // Show success message
+        function showSuccess(message) {
+            document.getElementById('successText').textContent = message;
+            document.getElementById('successMessage').style.display = 'flex';
+            document.getElementById('errorMessage').style.display = 'none';
+            
+            // Auto-hide after 5 seconds
+            setTimeout(() => {
+                document.getElementById('successMessage').style.display = 'none';
+            }, 5000);
+        }
+
+        // Show error message
+        function showError(message) {
+            document.getElementById('errorText').textContent = message;
+            document.getElementById('errorMessage').style.display = 'flex';
+            document.getElementById('successMessage').style.display = 'none';
+        }
+
+        // Set loading state
+        function setLoading(isLoading) {
+            const submitBtn = document.getElementById('submitBtn');
+            const submitText = document.getElementById('submitText');
+            const loadingSpinner = document.getElementById('loadingSpinner');
+            
+            if (isLoading) {
+                submitBtn.disabled = true;
+                submitText.style.display = 'none';
+                loadingSpinner.style.display = 'block';
+            } else {
+                submitBtn.disabled = false;
+                submitText.style.display = 'flex';
+                loadingSpinner.style.display = 'none';
+            }
+        }
+
+        // Handle form submission
+        document.getElementById('vitalsForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const authData = getAuthData();
+            if (!authData) return;
+            
+            const formData = new FormData(e.target);
+            const readingData = {};
+            
+            // Get form values
+            const readingDateTime = formData.get('readingDateTime');
+            const heartRate = formData.get('heartRate');
+            const bloodPressureSYS = formData.get('bloodPressureSYS');
+            const bloodPressureDIA = formData.get('bloodPressureDIA');
+            const bloodSugar = formData.get('bloodSugar');
+            const sleepHours = formData.get('sleepHours');
+            
+            // Validate that we have at least one measurement
+            if (!heartRate && !bloodPressureSYS && !bloodPressureDIA && !bloodSugar && !sleepHours) {
+                showError('Please enter at least one vital sign measurement.');
+                return;
+            }
+            
+            if (!readingDateTime) {
+                showError('Please select a date and time for the reading.');
+                return;
+            }
+            
+            // Build the data object with only non-empty values
+            readingData.ReadingDateTime = readingDateTime;
+            
+            if (heartRate) readingData.HeartRate = parseInt(heartRate);
+            if (bloodPressureSYS) readingData.BloodPressureSYS = parseInt(bloodPressureSYS);
+            if (bloodPressureDIA) readingData.BloodPressureDIA = parseInt(bloodPressureDIA);
+            if (bloodSugar) readingData.BloodSugar = parseFloat(bloodSugar);
+            if (sleepHours) readingData.SleepHours = parseFloat(sleepHours);
+            
+            console.log('Sending reading data:', readingData);
+            
+            try {
+                setLoading(true);
+                
+                // You can change this endpoint to match your existing API
+                const response = await fetch(`${BASE_API_URL}/fitness-tracker/vitals`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${authData.token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(readingData)
+                });
+                
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        throw new Error("Authentication failed. Please log in again.");
+                    }
+                    const errorText = await response.text();
+                    throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+                }
+                
+                const result = await response.json();
+                console.log('Reading saved successfully:', result);
+                
+                showSuccess('Reading saved successfully! You can add another reading or go back to view your data.');
+                
+                // Reset form except for datetime
+                document.getElementById('vitalsForm').reset();
+                setCurrentDateTime();
+                
+            } catch (error) {
+                console.error('Error saving reading:', error);
+                showError(error.message || 'Failed to save reading. Please try again.');
+                
+                if (error.message.includes("Authentication failed")) {
+                    setTimeout(() => {
+                        window.location.href = "menu.html";
+                    }, 2000);
+                }
+            } finally {
+                setLoading(false);
+            }
+        });
+    </script>
+</body>
+</html>
