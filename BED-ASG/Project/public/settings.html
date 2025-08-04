@@ -566,27 +566,56 @@
   };
 
   // Initialize settings
-  document.addEventListener('DOMContentLoaded', function() {
-    loadUserData();
-    loadSettings();
+  document.addEventListener('DOMContentLoaded', async function() {
+    await loadUserData();
+    await loadSettings();
     applySettings();
     setupEventListeners();
   });
 
-  function loadUserData() {
-    const userData = localStorage.getItem('currentUser');
+  async function loadUserData() {
+    const userData = window.localStorage.getItem('currentUser');
     if (userData) {
-      currentUser = JSON.parse(userData);
-      populateProfileForm();
-    } else {
-      // Try to get user data from token if no stored user data
-      const token = localStorage.getItem('authToken');
+      try {
+        currentUser = JSON.parse(userData);
+        populateProfileForm();
+      } catch (error) {
+        console.error('❌ Error parsing user data:', error);
+        currentUser = null;
+      }
+    }
+    
+    if (!currentUser) {
+      // Try to get user data from token
+      const token = window.localStorage.getItem('authToken');
       if (!token) {
         alert('Please log in to access settings');
         window.location.href = 'menu.html';
         return;
       }
-      // You could fetch user profile here if needed
+      
+      try {
+        const response = await fetch(`${apiBaseUrl}/auth/profile`, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+        
+        if (response.ok) {
+          const userData = await response.json();
+          currentUser = userData.user || userData;
+          window.localStorage.setItem('currentUser', JSON.stringify(currentUser));
+          populateProfileForm();
+        } else {
+          throw new Error('Failed to load user profile');
+        }
+      } catch (error) {
+        console.error('❌ Error loading user profile:', error);
+        alert('Failed to load user profile. Please log in again.');
+        window.location.href = 'menu.html';
+      }
     }
   }
 
@@ -601,9 +630,14 @@
   }
 
   async function loadSettings() {
+    console.log('🔄 Loading settings...');
+    
+    // Get user-specific settings key
+    const userSettingsKey = getUserSettingsKey();
+    
     try {
       // First try to load from server
-      const token = localStorage.getItem('authToken');
+      const token = window.localStorage.getItem('authToken');
       if (token) {
         const response = await fetch(`${apiBaseUrl}/api/settings`, {
           method: 'GET',
@@ -615,23 +649,45 @@
 
         if (response.ok) {
           const serverSettings = await response.json();
-          currentSettings = { ...currentSettings, ...serverSettings };
-          console.log('✅ Settings loaded from server:', currentSettings);
-        } else {
-          console.log('⚠️ Failed to load settings from server, using local storage');
+          if (serverSettings && Object.keys(serverSettings).length > 0) {
+            currentSettings = { ...currentSettings, ...serverSettings };
+            console.log('✅ Settings loaded from server:', currentSettings);
+            // Save to localStorage as backup with user-specific key
+            saveSettingsLocal();
+            updateUI();
+            return;
+          }
         }
       }
     } catch (error) {
       console.error('❌ Error loading settings from server:', error);
     }
 
-    // Fallback to localStorage
-    const savedSettings = localStorage.getItem('userSettings');
+    // Fallback to localStorage with user-specific key
+    const savedSettings = window.localStorage.getItem(userSettingsKey);
     if (savedSettings) {
-      currentSettings = { ...currentSettings, ...JSON.parse(savedSettings) };
+      try {
+        const parsedSettings = JSON.parse(savedSettings);
+        currentSettings = { ...currentSettings, ...parsedSettings };
+        console.log('✅ Settings loaded from localStorage:', currentSettings);
+      } catch (error) {
+        console.error('❌ Error parsing saved settings:', error);
+      }
+    } else {
+      console.log('⚠️ No saved settings found, using defaults');
     }
     
-    // Update UI with current settings
+    updateUI();
+  }
+
+  function getUserSettingsKey() {
+    // Create user-specific settings key to prevent cross-user contamination
+    const userEmail = currentUser?.email || 'default';
+    return `userSettings_${userEmail}`;
+  }
+
+  function updateUI() {
+    // Update UI elements with current settings
     document.getElementById('themeSelect').value = currentSettings.theme;
     document.getElementById('fontSizeSelect').value = currentSettings.fontSize;
     document.getElementById('soundSelect').value = currentSettings.notificationSound;
@@ -641,6 +697,8 @@
   }
 
   function applySettings() {
+    console.log('🎨 Applying settings:', currentSettings);
+    
     // Apply theme
     if (currentSettings.theme === 'dark') {
       document.body.classList.add('dark-theme');
@@ -651,11 +709,14 @@
     // Apply font size
     document.body.className = document.body.className.replace(/font-\w+/g, '');
     document.body.classList.add(`font-${currentSettings.fontSize}`);
+    
+    console.log('✅ Settings applied. Current classes:', document.body.className);
   }
 
   function setupEventListeners() {
     // Theme change
     document.getElementById('themeSelect').addEventListener('change', async function(e) {
+      console.log('🎨 Theme changed to:', e.target.value);
       currentSettings.theme = e.target.value;
       await saveSettingsToServer();
       applySettings();
@@ -663,6 +724,7 @@
 
     // Font size change
     document.getElementById('fontSizeSelect').addEventListener('change', async function(e) {
+      console.log('📝 Font size changed to:', e.target.value);
       currentSettings.fontSize = e.target.value;
       await saveSettingsToServer();
       applySettings();
@@ -670,6 +732,7 @@
 
     // Sound change
     document.getElementById('soundSelect').addEventListener('change', async function(e) {
+      console.log('🔊 Sound changed to:', e.target.value);
       currentSettings.notificationSound = e.target.value;
       await saveSettingsToServer();
     });
@@ -702,7 +765,7 @@
 
   async function saveSettingsToServer() {
     try {
-      const token = localStorage.getItem('authToken');
+      const token = window.localStorage.getItem('authToken');
       if (!token) {
         console.warn('⚠️ No auth token, saving to localStorage only');
         saveSettingsLocal();
@@ -741,8 +804,9 @@
   }
 
   function saveSettingsLocal() {
-    localStorage.setItem('userSettings', JSON.stringify(currentSettings));
-    console.log('💾 Settings saved to localStorage as fallback');
+    const userSettingsKey = getUserSettingsKey();
+    window.localStorage.setItem(userSettingsKey, JSON.stringify(currentSettings));
+    console.log('💾 Settings saved to localStorage with key:', userSettingsKey);
   }
 
   async function updateProfile(e) {
@@ -758,14 +822,13 @@
     };
 
     try {
-      const token = localStorage.getItem('authToken');
+      const token = window.localStorage.getItem('authToken');
       if (!token) {
         throw new Error('No authentication token found. Please log in again.');
       }
 
       console.log('🔄 Updating profile:', profileData);
 
-      // Use the correct settings profile endpoint
       const response = await fetch(`${apiBaseUrl}/api/settings/profile`, {
         method: 'PUT',
         headers: {
@@ -781,7 +844,7 @@
         // Update current user data
         if (result.profile) {
           currentUser = { ...currentUser, ...result.profile };
-          localStorage.setItem('currentUser', JSON.stringify(currentUser));
+          window.localStorage.setItem('currentUser', JSON.stringify(currentUser));
         }
         showMessage('profileMessage', 'Profile updated successfully!', true);
       } else {
@@ -822,7 +885,7 @@
     }
 
     try {
-      const token = localStorage.getItem('authToken');
+      const token = window.localStorage.getItem('authToken');
       if (!token) {
         throw new Error('No authentication token found. Please log in again.');
       }
@@ -855,7 +918,7 @@
 
   async function exportData() {
     try {
-      const token = localStorage.getItem('authToken');
+      const token = window.localStorage.getItem('authToken');
       if (!token) {
         alert('Please log in to export data');
         return;
@@ -907,7 +970,7 @@
 
   async function deleteAccount() {
     try {
-      const token = localStorage.getItem('authToken');
+      const token = window.localStorage.getItem('authToken');
       if (!token) {
         alert('Please log in to delete account');
         return;
@@ -921,7 +984,7 @@
       });
 
       if (response.ok) {
-        localStorage.clear();
+        window.localStorage.clear();
         alert('Your account has been successfully deleted.');
         window.location.href = 'menu.html';
       } else {
@@ -952,6 +1015,16 @@
     const messageDiv = document.getElementById(elementId);
     messageDiv.style.display = 'none';
   }
+
+  // Clear settings when user logs out (call this from menu.html)
+  function clearUserSettings() {
+    const userSettingsKey = getUserSettingsKey();
+    window.localStorage.removeItem(userSettingsKey);
+    console.log('🗑️ Cleared user settings for logout');
+  }
+
+  // Make function available globally for menu.html to call
+  window.clearUserSettings = clearUserSettings;
 </script>
 
 </body>
