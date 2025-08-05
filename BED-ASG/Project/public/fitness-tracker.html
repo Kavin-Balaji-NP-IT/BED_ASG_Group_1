@@ -3,34 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fitness Tracker - SeniorsLah</title>
+    <title>Fitness Tracker - Mokesell Health</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         * {
             box-sizing: border-box;
         }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        html, body {
             margin: 0;
             padding: 0;
-            min-height: 100vh;
-            color: #333;
+            height: 100%;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: all 0.3s ease;
         }
 
+        /* Theme Variables - Same as menu.html */
+        :root {
+            --bg-color: #f3fdf6;
+            --card-bg: white;
+            --text-color: #333;
+            --primary-color: #388e3c;
+            --secondary-color: #66bb6a;
+            --border-color: #a5d6a7;
+            --shadow: 0 4px 10px rgba(0,0,0,0.07);
+            --hover-shadow: 0 8px 20px rgba(0,0,0,0.12);
+            --modal-bg: white;
+            --modal-overlay: rgba(0,0,0,0.5);
+        }
+
+        .dark-theme {
+            --bg-color: #1a1a1a;
+            --card-bg: #2d2d2d;
+            --text-color: #e0e0e0;
+            --primary-color: #4caf50;
+            --secondary-color: #81c784;
+            --border-color: #4caf50;
+            --shadow: 0 4px 10px rgba(0,0,0,0.3);
+            --hover-shadow: 0 8px 20px rgba(0,0,0,0.4);
+            --modal-bg: #2d2d2d;
+            --modal-overlay: rgba(0,0,0,0.7);
+        }
+
+        body {
+            background: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Font Size Classes - Same as menu.html */
+        .font-small { font-size: 14px; }
+        .font-medium { font-size: 16px; }
+        .font-large { font-size: 18px; }
+        .font-extra-large { font-size: 20px; }
+
+        /* HEADER - Same as menu.html */
         header {
-            background: rgba(255,255,255,0.95);
-            backdrop-filter: blur(10px);
-            color: #333;
-            padding: 20px;
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 25px 40px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-            position: sticky;
-            top: 0;
-            z-index: 100;
+            box-shadow: var(--shadow);
+            animation: slideInDown 1s ease-out;
+            flex-shrink: 0;
         }
 
         .header-left {
@@ -39,70 +78,118 @@
             gap: 15px;
         }
 
-        .back-btn {
-            background: #667eea;
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 8px;
+        .header-left img {
+            width: 40px;
+        }
+
+        .header-left h1 {
+            font-size: 28px;
+            font-weight: 600;
+            margin: 0;
             cursor: pointer;
-            font-size: 16px;
-            transition: all 0.3s ease;
+        }
+
+        .header-right {
             display: flex;
             align-items: center;
-            gap: 8px;
-        }
-
-        .back-btn:hover {
-            background: #5a6fd8;
-            transform: translateY(-2px);
-        }
-
-        header h1 {
-            margin: 0;
-            font-size: 1.8em;
-            color: #333;
+            gap: 15px;
         }
 
         .user-info {
             display: flex;
             align-items: center;
             gap: 10px;
-            color: #666;
+            font-size: 16px;
         }
 
-        main {
+        .back-btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 2px solid white;
+            padding: 8px 16px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .back-btn:hover {
+            background: white;
+            color: var(--primary-color);
+            transform: translateY(-2px);
+        }
+
+        /* MAIN CONTAINER */
+        .container {
+            flex: 1;
             padding: 30px;
             max-width: 1400px;
             margin: 0 auto;
+            width: 100%;
+            animation: fadeIn 1.2s ease-in;
         }
 
+        .page-title {
+            text-align: center;
+            margin-bottom: 40px;
+            color: var(--primary-color);
+        }
+
+        .page-title h2 {
+            font-size: 32px;
+            margin: 0 0 10px 0;
+            font-weight: 700;
+        }
+
+        .page-title p {
+            font-size: 16px;
+            color: var(--text-color);
+            opacity: 0.7;
+            margin: 0;
+        }
+
+        /* CARDS - Similar to menu.html widgets */
         .dashboard-grid {
             display: grid;
             grid-template-columns: 2fr 1fr;
-            gap: 30px;
+            gap: 25px;
             margin-bottom: 30px;
         }
 
         .card {
-            background: rgba(255,255,255,0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
-            padding: 30px;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            background: var(--card-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+            position: relative;
         }
 
         .card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+            box-shadow: var(--hover-shadow);
+            border-color: var(--secondary-color);
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border-radius: 16px 0 0 16px;
         }
 
         .card h2 {
-            color: #333;
+            color: var(--primary-color);
             margin: 0 0 20px 0;
             font-size: 1.4em;
-            border-bottom: 3px solid #667eea;
+            border-bottom: 3px solid var(--primary-color);
             padding-bottom: 10px;
             display: flex;
             align-items: center;
@@ -137,7 +224,7 @@
         }
 
         .vital-item {
-            background: rgba(102, 126, 234, 0.1);
+            background: rgba(56, 142, 60, 0.1);
             padding: 15px;
             border-radius: 12px;
             text-align: center;
@@ -146,20 +233,21 @@
         }
 
         .vital-item:hover {
-            border-color: #667eea;
-            background: rgba(102, 126, 234, 0.2);
+            border-color: var(--primary-color);
+            background: rgba(56, 142, 60, 0.2);
         }
 
         .vital-label {
             font-size: 0.9em;
-            color: #666;
+            color: var(--text-color);
+            opacity: 0.7;
             margin-bottom: 5px;
         }
 
         .vital-value {
             font-size: 1.3em;
             font-weight: bold;
-            color: #333;
+            color: var(--text-color);
         }
 
         .heart-rate-section {
@@ -226,10 +314,10 @@
         }
 
         .bp-value {
-            background: white;
+            background: var(--card-bg);
             padding: 15px 25px;
             border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            box-shadow: var(--shadow);
             min-width: 80px;
             text-align: center;
         }
@@ -249,28 +337,32 @@
 
         .last-taken {
             font-size: 0.85em;
-            color: #666;
+            color: var(--text-color);
+            opacity: 0.6;
             text-align: center;
             margin-top: 15px;
             padding-top: 15px;
-            border-top: 1px dashed #ddd;
+            border-top: 1px dashed var(--border-color);
         }
 
+        /* LOADING */
         .loading {
             text-align: center;
-            padding: 40px;
-            color: white;
-            font-size: 1.2em;
+            padding: 60px;
+            font-size: 1.2rem;
+            color: var(--primary-color);
         }
 
-        .spinner {
-            border: 4px solid rgba(255,255,255,0.3);
-            border-top: 4px solid white;
-            border-radius: 50%;
+        .loading::before {
+            content: '';
+            display: inline-block;
             width: 40px;
             height: 40px;
+            border: 4px solid var(--border-color);
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
             animation: spin 1s linear infinite;
-            margin: 0 auto 20px;
+            margin-bottom: 20px;
         }
 
         @keyframes spin {
@@ -279,15 +371,16 @@
         }
 
         .error-message {
-            background: rgba(248, 215, 218, 0.9);
-            color: #721c24;
+            background: rgba(244, 67, 54, 0.1);
+            color: #f44336;
             padding: 20px;
             border-radius: 12px;
             text-align: center;
             margin: 20px 0;
-            border: 1px solid #f5c6cb;
+            border: 2px solid #f44336;
         }
 
+        /* QUICK ACTIONS */
         .quick-actions {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -296,7 +389,7 @@
         }
 
         .action-btn {
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
             color: white;
             border: none;
             padding: 15px 25px;
@@ -313,10 +406,10 @@
 
         .action-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+            box-shadow: var(--hover-shadow);
         }
 
-        /* Vitals History Section */
+        /* VITALS HISTORY */
         .vitals-history-section {
             grid-column: span 2;
             margin-top: 30px;
@@ -326,17 +419,17 @@
             max-height: 400px;
             overflow-y: auto;
             border-radius: 12px;
-            border: 1px solid #e0e0e0;
+            border: 2px solid var(--border-color);
         }
 
         .vitals-table {
             width: 100%;
             border-collapse: collapse;
-            background: white;
+            background: var(--card-bg);
         }
 
         .vitals-table th {
-            background: #667eea;
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
             color: white;
             padding: 15px 10px;
             text-align: left;
@@ -348,12 +441,12 @@
 
         .vitals-table td {
             padding: 12px 10px;
-            border-bottom: 1px solid #e0e0e0;
+            border-bottom: 1px solid var(--border-color);
             vertical-align: middle;
         }
 
         .vitals-table tbody tr:hover {
-            background: rgba(102, 126, 234, 0.1);
+            background: rgba(56, 142, 60, 0.1);
         }
 
         .action-buttons {
@@ -372,12 +465,12 @@
         }
 
         .edit-btn {
-            background: #28a745;
+            background: var(--primary-color);
             color: white;
         }
 
         .edit-btn:hover {
-            background: #218838;
+            background: var(--secondary-color);
             transform: translateY(-1px);
         }
 
@@ -391,7 +484,7 @@
             transform: translateY(-1px);
         }
 
-        /* Modal Styles */
+        /* MODAL STYLES - Same as menu.html */
         .modal {
             display: none;
             position: fixed;
@@ -400,39 +493,34 @@
             top: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.5);
-            backdrop-filter: blur(5px);
+            background-color: var(--modal-overlay);
+            animation: fadeIn 0.3s ease;
         }
 
         .modal-content {
-            background: white;
+            background-color: var(--modal-bg);
             margin: 5% auto;
-            padding: 30px;
-            border-radius: 20px;
+            padding: 0;
+            border-radius: 15px;
             width: 90%;
             max-width: 500px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            position: relative;
-            animation: modalSlideIn 0.3s ease;
-        }
-
-        @keyframes modalSlideIn {
-            from { transform: translateY(-50px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
+            box-shadow: var(--hover-shadow);
+            animation: slideInUp 0.3s ease;
         }
 
         .modal-header {
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 20px;
+            border-radius: 15px 15px 0 0;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 25px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid #667eea;
         }
 
         .modal-header h3 {
             margin: 0;
-            color: #333;
+            color: white;
             font-size: 1.5em;
         }
 
@@ -441,7 +529,7 @@
             border: none;
             font-size: 24px;
             cursor: pointer;
-            color: #666;
+            color: white;
             padding: 0;
             width: 30px;
             height: 30px;
@@ -453,8 +541,11 @@
         }
 
         .close-btn:hover {
-            background: #f0f0f0;
-            color: #333;
+            background: rgba(255,255,255,0.2);
+        }
+
+        .modal-body {
+            padding: 30px;
         }
 
         .form-group {
@@ -465,22 +556,24 @@
             display: block;
             margin-bottom: 8px;
             font-weight: 600;
-            color: #333;
+            color: var(--text-color);
         }
 
         .form-group input, .form-group select {
             width: 100%;
             padding: 12px;
-            border: 2px solid #e0e0e0;
+            border: 2px solid var(--border-color);
             border-radius: 8px;
             font-size: 16px;
             transition: border-color 0.3s ease;
+            background: var(--card-bg);
+            color: var(--text-color);
         }
 
         .form-group input:focus, .form-group select:focus {
             outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(56, 142, 60, 0.1);
         }
 
         .modal-actions {
@@ -501,13 +594,13 @@
         }
 
         .btn-primary {
-            background: #667eea;
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
             color: white;
         }
 
         .btn-primary:hover {
-            background: #5a6fd8;
             transform: translateY(-2px);
+            box-shadow: var(--hover-shadow);
         }
 
         .btn-secondary {
@@ -526,7 +619,7 @@
             transform: none;
         }
 
-        /* Success/Error Messages */
+        /* SUCCESS/ERROR MESSAGES */
         .message {
             padding: 15px;
             border-radius: 8px;
@@ -535,17 +628,34 @@
         }
 
         .message.success {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
+            background: rgba(76, 175, 80, 0.1);
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
         }
 
         .message.error {
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
+            background: rgba(231, 76, 60, 0.1);
+            color: #e74c3c;
+            border: 1px solid #e74c3c;
         }
 
+        /* ANIMATIONS - Same as menu.html */
+        @keyframes fadeIn {
+            from {opacity: 0;}
+            to {opacity: 1;}
+        }
+
+        @keyframes slideInDown {
+            from {transform: translateY(-100%);}
+            to {transform: translateY(0);}
+        }
+
+        @keyframes slideInUp {
+            from {transform: translateY(50px); opacity: 0;}
+            to {transform: translateY(0); opacity: 1;}
+        }
+
+        /* RESPONSIVE */
         @media (max-width: 1024px) {
             .dashboard-grid {
                 grid-template-columns: 1fr;
@@ -563,7 +673,12 @@
                 text-align: center;
             }
 
-            main {
+            .header-left {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .container {
                 padding: 20px;
             }
 
@@ -594,27 +709,34 @@
             .vitals-table th, .vitals-table td {
                 padding: 8px 6px;
             }
+
+            .page-title h2 {
+                font-size: 24px;
+            }
         }
     </style>
 </head>
 <body>
     <header>
         <div class="header-left">
-            <button class="back-btn" onclick="goBack()">
-                ← Back
-            </button>
+            <img src="https://img.icons8.com/ios-filled/50/activity-monitor.png" alt="Fitness Icon" />
             <h1>Fitness Tracker</h1>
         </div>
-        <div class="user-info">
-            <span>Welcome, <span id="userName">User</span></span>
+        <div class="header-right">
+            <div class="user-info">
+                <span>Welcome, <span id="userName">User</span>!</span>
+            </div>
+            <a href="menu.html" class="back-btn">← Back to Dashboard</a>
         </div>
     </header>
 
-    <main>
-        <div id="loadingDiv" class="loading">
-            <div class="spinner"></div>
-            Loading your health data...
+    <div class="container">
+        <div class="page-title">
+            <h2>🏃‍♂️ Health & Fitness Dashboard</h2>
+            <p>Monitor your vital signs and track your health journey</p>
         </div>
+
+        <div id="loadingDiv" class="loading">Loading your health data...</div>
 
         <div id="errorDiv" class="error-message" style="display: none;">
             <strong>Error loading data:</strong> <span id="errorMessage"></span>
@@ -695,16 +817,16 @@
                 </h2>
                 <div class="bp-reading">
                     <div>
-                        <div style="font-size: 0.8em; color: #666; margin-bottom: 5px;">SYSTOLIC</div>
+                        <div style="font-size: 0.8em; opacity: 0.7; margin-bottom: 5px;">SYSTOLIC</div>
                         <div class="bp-value" id="bpSys">N/A</div>
                     </div>
-                    <div style="font-size: 2em; color: #666;">/</div>
+                    <div style="font-size: 2em; opacity: 0.6;">/</div>
                     <div>
-                        <div style="font-size: 0.8em; color: #666; margin-bottom: 5px;">DIASTOLIC</div>
+                        <div style="font-size: 0.8em; opacity: 0.7; margin-bottom: 5px;">DIASTOLIC</div>
                         <div class="bp-value" id="bpDia">N/A</div>
                     </div>
                     <div>
-                        <div style="font-size: 0.8em; color: #666; margin-bottom: 5px;">PULSE</div>
+                        <div style="font-size: 0.8em; opacity: 0.7; margin-bottom: 5px;">PULSE</div>
                         <div class="bp-value" id="bpPulse">N/A</div>
                     </div>
                 </div>
@@ -720,10 +842,7 @@
                     <span class="card-icon">📊</span>
                     Recent Vitals History
                 </h2>
-                <div id="vitalsHistoryLoading" class="loading" style="display: none;">
-                    <div class="spinner"></div>
-                    Loading vitals history...
-                </div>
+                <div id="vitalsHistoryLoading" class="loading" style="display: none;">Loading vitals history...</div>
                 <div class="vitals-table-container">
                     <table class="vitals-table">
                         <thead>
@@ -756,7 +875,7 @@
                 </button>
             </div>
         </div>
-    </main>
+    </div>
 
     <!-- Edit Modal -->
     <div id="editModal" class="modal">
@@ -765,33 +884,35 @@
                 <h3>Edit Vitals Reading</h3>
                 <button class="close-btn" onclick="closeEditModal()">&times;</button>
             </div>
-            <div id="editModalMessage"></div>
-            <form id="editVitalsForm">
-                <div class="form-group">
-                    <label for="editHeartRate">Heart Rate (bpm)</label>
-                    <input type="number" id="editHeartRate" name="heartRate" min="30" max="220">
-                </div>
-                <div class="form-group">
-                    <label for="editBloodPressureSYS">Systolic Blood Pressure (mmHg)</label>
-                    <input type="number" id="editBloodPressureSYS" name="bloodPressureSYS" min="70" max="250">
-                </div>
-                <div class="form-group">
-                    <label for="editBloodPressureDIA">Diastolic Blood Pressure (mmHg)</label>
-                    <input type="number" id="editBloodPressureDIA" name="bloodPressureDIA" min="40" max="150">
-                </div>
-                <div class="form-group">
-                    <label for="editBloodSugar">Blood Sugar (mmol/L)</label>
-                    <input type="number" id="editBloodSugar" name="bloodSugar" min="2" max="30" step="0.1">
-                </div>
-                <div class="form-group">
-                    <label for="editSleepHours">Sleep Hours</label>
-                    <input type="number" id="editSleepHours" name="sleepHours" min="0" max="24" step="0.5">
-                </div>
-                <div class="modal-actions">
-                    <button type="button" class="btn-secondary" onclick="closeEditModal()">Cancel</button>
-                    <button type="submit" class="btn-primary" id="saveEditBtn">Save Changes</button>
-                </div>
-            </form>
+            <div class="modal-body">
+                <div id="editModalMessage"></div>
+                <form id="editVitalsForm">
+                    <div class="form-group">
+                        <label for="editHeartRate">Heart Rate (bpm)</label>
+                        <input type="number" id="editHeartRate" name="heartRate" min="30" max="220">
+                    </div>
+                    <div class="form-group">
+                        <label for="editBloodPressureSYS">Systolic Blood Pressure (mmHg)</label>
+                        <input type="number" id="editBloodPressureSYS" name="bloodPressureSYS" min="70" max="250">
+                    </div>
+                    <div class="form-group">
+                        <label for="editBloodPressureDIA">Diastolic Blood Pressure (mmHg)</label>
+                        <input type="number" id="editBloodPressureDIA" name="bloodPressureDIA" min="40" max="150">
+                    </div>
+                    <div class="form-group">
+                        <label for="editBloodSugar">Blood Sugar (mmol/L)</label>
+                        <input type="number" id="editBloodSugar" name="bloodSugar" min="2" max="30" step="0.1">
+                    </div>
+                    <div class="form-group">
+                        <label for="editSleepHours">Sleep Hours</label>
+                        <input type="number" id="editSleepHours" name="sleepHours" min="0" max="24" step="0.5">
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" class="btn-secondary" onclick="closeEditModal()">Cancel</button>
+                        <button type="submit" class="btn-primary" id="saveEditBtn">Save Changes</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 
@@ -802,11 +923,13 @@
                 <h3>Confirm Delete</h3>
                 <button class="close-btn" onclick="closeDeleteModal()">&times;</button>
             </div>
-            <div id="deleteModalMessage"></div>
-            <p>Are you sure you want to delete this vitals reading? This action cannot be undone.</p>
-            <div class="modal-actions">
-                <button type="button" class="btn-secondary" onclick="closeDeleteModal()">Cancel</button>
-                <button type="button" class="btn-primary" id="confirmDeleteBtn" style="background: #dc3545;" onclick="confirmDelete()">Delete</button>
+            <div class="modal-body">
+                <div id="deleteModalMessage"></div>
+                <p>Are you sure you want to delete this vitals reading? This action cannot be undone.</p>
+                <div class="modal-actions">
+                    <button type="button" class="btn-secondary" onclick="closeDeleteModal()">Cancel</button>
+                    <button type="button" class="btn-primary" id="confirmDeleteBtn" style="background: #dc3545;" onclick="confirmDelete()">Delete</button>
+                </div>
             </div>
         </div>
     </div>
@@ -818,6 +941,25 @@
         let currentUser = null;
         let currentEditingVitalId = null;
         let currentDeletingVitalId = null;
+
+        // Load and apply settings - Same as menu.html
+        function loadAndApplySettings() {
+            const userData = localStorage.getItem('currentUser');
+            const userEmail = userData ? JSON.parse(userData).email : 'default';
+            const savedSettings = localStorage.getItem(`userSettings_${userEmail}`);
+            
+            if (savedSettings) {
+                const settings = JSON.parse(savedSettings);
+                
+                // Apply theme
+                if (settings.theme === 'dark') {
+                    document.body.classList.add('dark-theme');
+                }
+                
+                // Apply font size
+                document.body.classList.add(`font-${settings.fontSize || 'medium'}`);
+            }
+        }
 
         // Get authentication token and user info
         function getAuthData() {
@@ -843,6 +985,8 @@
 
         // Initialize page
         document.addEventListener('DOMContentLoaded', () => {
+            loadAndApplySettings();
+            
             const authData = getAuthData();
             if (!authData) return;
             
@@ -851,11 +995,6 @@
             
             fetchFitnessData(authData.token);
         });
-
-        // Back button functionality
-        function goBack() {
-            window.location.href = "menu.html";
-        }
 
         // Fetch fitness data from API
         async function fetchFitnessData(token) {
@@ -955,7 +1094,7 @@
                     <tr>
                         <td>
                             <div>${date.toLocaleDateString()}</div>
-                            <div style="font-size: 0.8em; color: #666;">${date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>
+                            <div style="font-size: 0.8em; opacity: 0.6;">${date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>
                         </td>
                         <td>${heartRate}</td>
                         <td>${bloodPressure}</td>
@@ -1269,8 +1408,8 @@
                     datasets: [{
                         label: 'Avg Blood Sugar (mmol/L)',
                         data: levels,
-                        backgroundColor: 'rgba(102, 126, 234, 0.8)',
-                        borderColor: 'rgba(102, 126, 234, 1)',
+                        backgroundColor: 'rgba(56, 142, 60, 0.8)',
+                        borderColor: 'rgba(56, 142, 60, 1)',
                         borderWidth: 2,
                         borderRadius: 8,
                         borderSkipped: false,
@@ -1287,7 +1426,7 @@
                             backgroundColor: 'rgba(0,0,0,0.8)',
                             titleColor: 'white',
                             bodyColor: 'white',
-                            borderColor: 'rgba(102, 126, 234, 1)',
+                            borderColor: 'rgba(56, 142, 60, 1)',
                             borderWidth: 1,
                             callbacks: {
                                 label: function(context) {
@@ -1499,7 +1638,7 @@
             bpStatusElement.className = `status-indicator ${statusClass}`;
         }
 
-         function addNewReading() {
+        function addNewReading() {
             window.location.href = "createreading.html";
         }
 
