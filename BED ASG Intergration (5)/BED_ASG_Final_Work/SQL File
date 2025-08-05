@@ -1,0 +1,229 @@
+-- COMPLETE DATABASE TABLE REPLACEMENT
+-- This will drop ALL existing tables and recreate them with the fixes
+
+USE BEDSPM;
+GO
+
+-- Step 1: Drop all existing tables (in correct order due to foreign keys)
+DROP TABLE IF EXISTS DietPlan;
+DROP TABLE IF EXISTS Settings;
+DROP TABLE IF EXISTS Notifications;
+DROP TABLE IF EXISTS Vitals;
+DROP TABLE IF EXISTS MedicalHistory;
+DROP TABLE IF EXISTS MedicationTracker;
+DROP TABLE IF EXISTS Medications;
+DROP TABLE IF EXISTS Appointments;
+DROP TABLE IF EXISTS Users;
+GO
+
+-- Step 2: Recreate all tables with fixes
+
+-- Users Table
+CREATE TABLE Users (
+    UserID INT PRIMARY KEY IDENTITY(1,1),
+    Name VARCHAR(100),
+    Email VARCHAR(100) UNIQUE,
+    PasswordHash VARCHAR(255),
+    DateOfBirth DATE,
+    Gender VARCHAR(10),
+    HealthConditions TEXT
+);
+
+-- Appointments Table
+CREATE TABLE Appointments (
+    AppointmentID INT PRIMARY KEY IDENTITY(1,1),
+    UserID INT,
+    AppointmentDate DATE,
+    AppointmentTime TIME,
+    Location VARCHAR(255),
+    DoctorName VARCHAR(100),
+    Description TEXT,
+    FOREIGN KEY (UserID) REFERENCES Users(UserID)
+);
+
+-- Medications Table
+CREATE TABLE Medications (
+    MedicationID INT PRIMARY KEY IDENTITY(1,1),
+    UserID INT,
+    Name VARCHAR(100),
+    Dosage VARCHAR(50),
+    Frequency VARCHAR(50),
+    StartDate DATE,
+    EndDate DATE,
+    Notes TEXT,
+    FOREIGN KEY (UserID) REFERENCES Users(UserID)
+);
+
+-- Medication Tracker Table
+CREATE TABLE MedicationTracker (
+    TrackerID INT PRIMARY KEY IDENTITY(1,1),
+    MedicationID INT,
+    TakenDate DATE,
+    TakenTime TIME,
+    Taken BIT,
+    FOREIGN KEY (MedicationID) REFERENCES Medications(MedicationID)
+);
+
+-- Medical History Table
+CREATE TABLE MedicalHistory (
+    HistoryID INT PRIMARY KEY IDENTITY(1,1),
+    UserID INT,
+    Diagnosis VARCHAR(255),
+    Allergies TEXT,
+    Treatments TEXT,
+    RecordDate DATE,
+    FOREIGN KEY (UserID) REFERENCES Users(UserID)
+);
+
+-- Vitals Table
+CREATE TABLE Vitals (
+    VitalID INT PRIMARY KEY IDENTITY(1,1),
+    UserID INT,
+    ReadingDateTime DATETIME,
+    HeartRate INT,
+    BloodPressureSYS INT,
+    BloodPressureDIA INT,
+    BloodSugar FLOAT,
+    SleepHours FLOAT,
+    FOREIGN KEY (UserID) REFERENCES Users(UserID)
+);
+
+-- Notifications Table
+CREATE TABLE Notifications (
+    NotificationID INT PRIMARY KEY IDENTITY(1,1),
+    UserID INT,
+    Type VARCHAR(20),
+    Message TEXT,
+    NotifyTime DATETIME,
+    RepeatInterval VARCHAR(50),
+    IsMuted BIT DEFAULT 0,
+    FOREIGN KEY (UserID) REFERENCES Users(UserID)
+);
+
+-- FIXED Settings Table (with the missing columns)
+CREATE TABLE Settings (
+    SettingID INT PRIMARY KEY IDENTITY(1,1),
+    UserID INT,
+    Theme VARCHAR(20) DEFAULT 'light',
+    FontSize VARCHAR(20) DEFAULT 'medium',
+    NotificationSound VARCHAR(100) DEFAULT 'classic-bell',
+    MedicationReminders BIT DEFAULT 1,
+    AppointmentReminders BIT DEFAULT 1,
+    CreatedAt DATETIME DEFAULT GETDATE(),
+    UpdatedAt DATETIME DEFAULT GETDATE(),
+    FOREIGN KEY (UserID) REFERENCES Users(UserID)
+);
+
+-- Diet Plan Table
+CREATE TABLE DietPlan (
+    MealID INT PRIMARY KEY IDENTITY(1,1),
+    UserID INT,
+    MealName VARCHAR(100),
+    Calories INT,
+    MealType VARCHAR(50), -- e.g., Breakfast, Lunch, Dinner, Snack
+    MealDate DATE,
+    Notes TEXT,
+    FOREIGN KEY (UserID) REFERENCES Users(UserID)
+);
+GO
+
+-- Step 3: Insert all sample data (including test users with proper password hashes)
+
+INSERT INTO Users (Name, Email, PasswordHash, DateOfBirth, Gender, HealthConditions)
+VALUES
+('Nadella Bhaveesh Sai', 'bhaveesh@example.com', '$2b$10$N9qo8uLOickgx2ZMRZoMye.Eg7ZCx/2NyGTJGJJ6qW8e8FfhUQhGe', '1955-07-10', 'Male', 'None'),
+('Li Yun Yi Kerwin', 'kerwin@example.com', '$2b$10$N9qo8uLOickgx2ZMRZoMye.Eg7ZCx/2NyGTJGJJ6qW8e8FfhUQhGe', '1953-11-03', 'Male', 'Hypertension'),
+('Kamalakkannan Kavin Balaji', 'kavin@example.com', '$2b$10$N9qo8uLOickgx2ZMRZoMye.Eg7ZCx/2NyGTJGJJ6qW8e8FfhUQhGe', '1957-03-22', 'Male', 'Diabetes'),
+('Sakthivel Murugan Pranesh', 'pranesh@example.com', '$2b$10$N9qo8uLOickgx2ZMRZoMye.Eg7ZCx/2NyGTJGJJ6qW8e8FfhUQhGe', '1951-12-15', 'Male', 'Arthritis'),
+('Gerick Yi Weizhao', 'gerick@example.com', '$2b$10$N9qo8uLOickgx2ZMRZoMye.Eg7ZCx/2NyGTJGJJ6qW8e8FfhUQhGe', '1950-06-01', 'Male', 'Hypertension, Diabetes'),
+('Test User', 'test@example.com', '$2b$10$N9qo8uLOickgx2ZMRZoMye.Eg7ZCx/2NyGTJGJJ6qW8e8FfhUQhGe', '1990-01-01', 'Male', 'None'),
+('John Doe', 'john@example.com', '$2b$10$N9qo8uLOickgx2ZMRZoMye.Eg7ZCx/2NyGTJGJJ6qW8e8FfhUQhGe', '1985-05-15', 'Male', 'None'),
+('Jane Smith', 'jane@example.com', '$2b$10$N9qo8uLOickgx2ZMRZoMye.Eg7ZCx/2NyGTJGJJ6qW8e8FfhUQhGe', '1988-08-20', 'Female', 'None'),
+('Alice Johnson', 'alice@example.com', '$2b$10$N9qo8uLOickgx2ZMRZoMye.Eg7ZCx/2NyGTJGJJ6qW8e8FfhUQhGe', '1992-12-03', 'Female', 'None'),
+('Bob Wilson', 'bob@example.com', '$2b$10$N9qo8uLOickgx2ZMRZoMye.Eg7ZCx/2NyGTJGJJ6qW8e8FfhUQhGe', '1987-03-10', 'Male', 'None'),
+('Carol Davis', 'carol@example.com', '$2b$10$N9qo8uLOickgx2ZMRZoMye.Eg7ZCx/2NyGTJGJJ6qW8e8FfhUQhGe', '1991-07-25', 'Female', 'None'),
+('David Brown', 'david@example.com', '$2b$10$N9qo8uLOickgx2ZMRZoMye.Eg7ZCx/2NyGTJGJJ6qW8e8FfhUQhGe', '1983-11-15', 'Male', 'None');
+
+INSERT INTO Appointments (UserID, AppointmentDate, AppointmentTime, Location, DoctorName, Description)
+VALUES
+(1, '2025-06-20', '14:30:00', 'ABC Clinic', 'Dr. Tan Mei Lin', 'General checkup'),
+(2, '2025-07-02', '10:00:00', 'HeartCare Centre', 'Dr. Lim', 'Follow-up for blood pressure'),
+(3, '2025-07-05', '09:15:00', 'PolyMed', 'Dr. Suresh', 'Diabetes consultation');
+
+INSERT INTO Medications (UserID, Name, Dosage, Frequency, StartDate, EndDate, Notes)
+VALUES
+(2, 'Amlodipine', '5mg', 'Once a day', '2025-06-01', '2025-08-01', 'For high blood pressure'),
+(3, 'Metformin', '500mg', 'Twice a day', '2025-06-01', NULL, 'Ongoing for diabetes'),
+(4, 'Ibuprofen', '200mg', 'Three times a day', '2025-06-10', '2025-06-20', 'Arthritis pain relief');
+
+INSERT INTO MedicationTracker (MedicationID, TakenDate, TakenTime, Taken)
+VALUES
+(1, '2025-07-13', '08:00:00', 1),
+(2, '2025-07-13', '08:00:00', 1),
+(2, '2025-07-13', '20:00:00', 0),
+(3, '2025-07-13', '12:00:00', 1);
+
+INSERT INTO MedicalHistory (UserID, Diagnosis, Allergies, Treatments, RecordDate)
+VALUES
+(2, 'Hypertension', 'None', 'Amlodipine therapy', '2025-01-05'),
+(3, 'Diabetes Type 2', 'None', 'Metformin', '2024-12-10'),
+(4, 'Arthritis', 'NSAID sensitivity', 'Physical therapy and Ibuprofen', '2025-03-12');
+
+INSERT INTO Vitals (UserID, ReadingDateTime, HeartRate, BloodPressureSYS, BloodPressureDIA, BloodSugar, SleepHours)
+VALUES
+(5, '2025-07-13 07:45:00', 76, 139, 69, 4.2, 6.5),
+(2, '2025-07-12 08:00:00', 72, 145, 78, 5.3, 7),
+(3, '2025-07-12 08:15:00', 80, 120, 80, 6.1, 6);
+
+INSERT INTO Notifications (UserID, Type, Message, NotifyTime, RepeatInterval, IsMuted)
+VALUES
+(2, 'Medication', 'Take Amlodipine 5mg', '2025-07-14 08:00:00', 'Daily', 0),
+(3, 'Appointment', 'Upcoming diabetes consultation', '2025-07-04 18:00:00', 'None', 0);
+
+-- FIXED Settings data with new columns
+INSERT INTO Settings (UserID, Theme, FontSize, NotificationSound, MedicationReminders, AppointmentReminders)
+VALUES
+(1, 'light', 'large', 'classic-bell', 1, 1),
+(2, 'dark', 'medium', 'gentle-ping', 1, 0),
+(3, 'light', 'extra-large', 'soft-chime', 0, 1),
+(6, 'light', 'medium', 'classic-bell', 1, 1),  -- test@example.com
+(7, 'dark', 'large', 'gentle-ping', 1, 1),     -- john@example.com  
+(8, 'light', 'medium', 'soft-chime', 1, 1),   -- jane@example.com
+(9, 'light', 'small', 'classic-bell', 1, 1),  -- alice@example.com
+(10, 'dark', 'medium', 'gentle-ping', 1, 1),  -- bob@example.com
+(11, 'light', 'large', 'soft-chime', 1, 1),   -- carol@example.com
+(12, 'light', 'medium', 'classic-bell', 1, 1); -- david@example.com (UserID 12 from your test)
+
+INSERT INTO DietPlan (UserID, MealName, Calories, MealType, MealDate, Notes)
+VALUES
+(1, 'Oatmeal with Bananas', 250, 'Breakfast', '2025-07-13', 'Low sugar, high fiber'),
+(1, 'Grilled Chicken Salad', 450, 'Lunch', '2025-07-13', 'No dressing'),
+(2, 'Tofu Stir Fry', 400, 'Dinner', '2025-07-13', 'Low salt'),
+(3, 'Egg Sandwich', 300, 'Breakfast', '2025-07-13', 'Light mayo used'),
+(3, 'Brown Rice and Veg Curry', 500, 'Lunch', '2025-07-13', 'Low oil'),
+(4, 'Fruit Smoothie', 180, 'Snack', '2025-07-13', 'Includes banana, berries, and yogurt'),
+(5, 'Baked Salmon with Quinoa', 550, 'Dinner', '2025-07-13', 'Omega-3 rich meal');
+GO
+
+-- Step 4: Verify the fix worked
+PRINT 'Tables recreated successfully!';
+
+-- Check Settings table structure
+SELECT 'Settings Table Structure:' AS Info;
+SELECT COLUMN_NAME, DATA_TYPE, IS_NULLABLE, COLUMN_DEFAULT
+FROM INFORMATION_SCHEMA.COLUMNS
+WHERE TABLE_NAME = 'Settings'
+ORDER BY ORDINAL_POSITION;
+
+-- Check if user 12 exists and has settings
+SELECT 'User 12 Settings:' AS Info;
+SELECT * FROM Settings WHERE UserID = 12;
+
+-- Show all users for login testing
+SELECT 'Available Test Users:' AS Info;
+SELECT UserID, Name, Email FROM Users WHERE Email LIKE '%@example.com';
+
+PRINT 'Database replacement completed! Settings should now work.';
+PRINT 'You can login with: test@example.com / password123';
+PRINT 'Or any of the other test accounts with the same password.';
+GO

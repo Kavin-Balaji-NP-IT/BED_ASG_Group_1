@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add New Medication - Mokesell Health</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        /* Theme Variables - Same as menu.html */
+        :root {
+            --bg-color: #f3fdf6;
+            --card-bg: white;
+            --text-color: #333;
+            --primary-color: #388e3c;
+            --secondary-color: #66bb6a;
+            --border-color: #a5d6a7;
+            --shadow: 0 4px 10px rgba(0,0,0,0.07);
+            --hover-shadow: 0 8px 20px rgba(0,0,0,0.12);
+            --modal-bg: white;
+            --modal-overlay: rgba(0,0,0,0.5);
+        }
+
+        .dark-theme {
+            --bg-color: #1a1a1a;
+            --card-bg: #2d2d2d;
+            --text-color: #e0e0e0;
+            --primary-color: #4caf50;
+            --secondary-color: #81c784;
+            --border-color: #4caf50;
+            --shadow: 0 4px 10px rgba(0,0,0,0.3);
+            --hover-shadow: 0 8px 20px rgba(0,0,0,0.4);
+            --modal-bg: #2d2d2d;
+            --modal-overlay: rgba(0,0,0,0.7);
+        }
+
+        body {
+            background: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Font Size Classes */
+        .font-small { font-size: 14px; }
+        .font-medium { font-size: 16px; }
+        .font-large { font-size: 18px; }
+        .font-extra-large { font-size: 20px; }
+
+        /* HEADER - Same as menu.html */
+        header {
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 25px 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: var(--shadow);
+            animation: slideInDown 1s ease-out;
+            flex-shrink: 0;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-left img {
+            width: 40px;
+            filter: invert(1);
+        }
+
+        .header-left h1 {
+            font-size: 28px;
+            font-weight: 600;
+            margin: 0;
+            cursor: pointer;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 16px;
+        }
+
+        .back-btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 2px solid white;
+            padding: 8px 16px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .back-btn:hover {
+            background: white;
+            color: var(--primary-color);
+            transform: translateY(-2px);
+        }
+
+        /* MAIN CONTAINER */
+        .container {
+            flex: 1;
+            padding: 30px;
+            max-width: 800px;
+            margin: 0 auto;
+            width: 100%;
+            animation: fadeIn 1.2s ease-in;
+        }
+
+        .page-title {
+            text-align: center;
+            margin-bottom: 40px;
+            color: var(--primary-color);
+        }
+
+        .page-title h2 {
+            font-size: 32px;
+            margin: 0 0 10px 0;
+            font-weight: 700;
+        }
+
+        .page-title p {
+            font-size: 16px;
+            color: var(--text-color);
+            opacity: 0.7;
+            margin: 0;
+        }
+
+        /* FORM CARD - Same styling as menu.html widgets */
+        .form-card {
+            background-color: var(--card-bg);
+            border: 2px solid var(--border-color);
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .form-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--hover-shadow);
+            border-color: var(--secondary-color);
+        }
+
+        .form-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border-radius: 16px 0 0 16px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text-color);
+            font-size: 14px;
+        }
+
+        .required {
+            color: #e53e3e;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: var(--card-bg);
+            color: var(--text-color);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(56, 142, 60, 0.1);
+        }
+
+        .form-control:invalid {
+            border-color: #e53e3e;
+        }
+
+        textarea.form-control {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 2px dashed var(--border-color);
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            color: white;
+            font-size: 16px;
+            padding: 15px 30px;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--hover-shadow);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.2);
+            color: var(--text-color);
+            border: 2px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background: var(--border-color);
+            color: white;
+        }
+
+        .help-text {
+            font-size: 12px;
+            color: var(--text-color);
+            opacity: 0.6;
+            margin-top: 5px;
+        }
+
+        .message {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .message.success {
+            background: rgba(76, 175, 80, 0.1);
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+        }
+
+        .message.error {
+            background: rgba(231, 76, 60, 0.1);
+            color: #e74c3c;
+            border: 1px solid #e74c3c;
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--modal-overlay);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .loading-spinner {
+            background: var(--modal-bg);
+            padding: 30px;
+            border-radius: 16px;
+            text-align: center;
+            max-width: 80%;
+            color: var(--text-color);
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--border-color);
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        /* ANIMATIONS - Same as menu.html */
+        @keyframes fadeIn {
+            from {opacity: 0;}
+            to {opacity: 1;}
+        }
+
+        @keyframes slideInDown {
+            from {transform: translateY(-100%);}
+            to {transform: translateY(0);}
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            .header-left {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .form-actions {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .container {
+                padding: 20px;
+            }
+
+            .form-card {
+                padding: 25px;
+            }
+
+            .page-title h2 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-left">
+            <img src="https://img.icons8.com/ios-filled/50/pill.png" alt="Medicine Icon" />
+            <h1>➕ Add New Medication</h1>
+        </div>
+        <div class="header-right">
+            <div class="user-info">
+                <span>Welcome, <span id="userName">User</span>!</span>
+            </div>
+            <a href="dosage.html" class="back-btn">← Back to Medications</a>
+            <a href="menu.html" class="back-btn">🏠 Dashboard</a>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="page-title">
+            <h2>💊 Add New Medication</h2>
+            <p>Enter your medication details to track your health journey</p>
+        </div>
+
+        <div class="form-card">
+            <div id="error-message" class="message error" style="display: none;"></div>
+            <div id="success-message" class="message success" style="display: none;"></div>
+
+            <form id="medication-form">
+                <div class="form-group">
+                    <label for="name">
+                        Medication Name <span class="required">*</span>
+                    </label>
+                    <input 
+                        type="text" 
+                        id="name" 
+                        name="Name" 
+                        class="form-control" 
+                        required 
+                        maxlength="100"
+                        placeholder="e.g., Aspirin, Lisinopril, Metformin"
+                    >
+                    <div class="help-text">Enter the full name of your medication</div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="dosage">
+                            Dosage <span class="required">*</span>
+                        </label>
+                        <input 
+                            type="text" 
+                            id="dosage" 
+                            name="Dosage" 
+                            class="form-control" 
+                            required 
+                            maxlength="50"
+                            placeholder="e.g., 10mg, 5ml, 1 tablet"
+                        >
+                        <div class="help-text">Include amount and unit</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="frequency">
+                            Frequency <span class="required">*</span>
+                        </label>
+                        <input 
+                            type="text" 
+                            id="frequency" 
+                            name="Frequency" 
+                            class="form-control" 
+                            required 
+                            maxlength="50"
+                            placeholder="e.g., Once daily, Twice daily, Every 8 hours"
+                        >
+                        <div class="help-text">How often to take this medication</div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="startDate">
+                            Start Date <span class="required">*</span>
+                        </label>
+                        <input 
+                            type="date" 
+                            id="startDate" 
+                            name="StartDate" 
+                            class="form-control" 
+                            required
+                        >
+                        <div class="help-text">When you started taking this medication</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="endDate">
+                            End Date (Optional)
+                        </label>
+                        <input 
+                            type="date" 
+                            id="endDate" 
+                            name="EndDate" 
+                            class="form-control"
+                        >
+                        <div class="help-text">Leave blank if ongoing</div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="notes">
+                        Notes (Optional)
+                    </label>
+                    <textarea 
+                        id="notes" 
+                        name="Notes" 
+                        class="form-control" 
+                        maxlength="500"
+                        placeholder="Any additional notes about this medication, side effects, or special instructions..."
+                        rows="4"
+                    ></textarea>
+                    <div class="help-text">Maximum 500 characters</div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary" id="submit-btn">
+                        💾 Save Medication
+                    </button>
+                    <a href="dosage.html" class="btn btn-secondary">
+                        Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="loading-overlay" id="loading-overlay">
+        <div class="loading-spinner">
+            <div class="spinner"></div>
+            <h3 id="loading-text">Adding medication...</h3>
+            <p>Please wait while we save your medication.</p>
+        </div>
+    </div>
+
+    <script>
+        // Load and apply settings - Same as menu.html
+        function loadAndApplySettings() {
+            const userData = localStorage.getItem('currentUser');
+            const userEmail = userData ? JSON.parse(userData).email : 'default';
+            const savedSettings = localStorage.getItem(`userSettings_${userEmail}`);
+            
+            if (savedSettings) {
+                const settings = JSON.parse(savedSettings);
+                
+                // Apply theme
+                if (settings.theme === 'dark') {
+                    document.body.classList.add('dark-theme');
+                }
+                
+                // Apply font size
+                document.body.classList.add(`font-${settings.fontSize || 'medium'}`);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            loadAndApplySettings();
+            
+            // Set default start date to today
+            const today = new Date();
+            document.getElementById('startDate').valueAsDate = today;
+            
+            // Form submission
+            document.getElementById('medication-form').addEventListener('submit', handleSubmit);
+            
+            // Date validation
+            document.getElementById('endDate').addEventListener('change', validateEndDate);
+            document.getElementById('startDate').addEventListener('change', validateEndDate);
+            
+            // Check authentication
+            checkAuth();
+            
+            // Load user info
+            const userData = localStorage.getItem('currentUser');
+            if (userData) {
+                try {
+                    const user = JSON.parse(userData);
+                    document.getElementById('userName').textContent = user.name || user.email || 'User';
+                } catch (error) {
+                    console.error('Error parsing user data:', error);
+                }
+            }
+        });
+        
+        function checkAuth() {
+            const token = localStorage.getItem('authToken');
+            if (!token) {
+                window.location.href = 'menu.html';
+            }
+        }
+        
+        function validateEndDate() {
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+            
+            if (endDate && new Date(endDate) < new Date(startDate)) {
+                document.getElementById('endDate').setCustomValidity('End date must be after start date');
+            } else {
+                document.getElementById('endDate').setCustomValidity('');
+            }
+        }
+        
+        async function handleSubmit(event) {
+            event.preventDefault();
+            
+            const form = event.target;
+            const submitBtn = document.getElementById('submit-btn');
+            const loadingOverlay = document.getElementById('loading-overlay');
+            const loadingText = document.getElementById('loading-text');
+            
+            // Validate form
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+            
+            // Collect form data
+            const formData = new FormData(form);
+            const medicationData = {};
+            
+            for (let [key, value] of formData.entries()) {
+                if (value.trim()) {
+                    medicationData[key] = value.trim();
+                }
+            }
+            
+            // Show loading state
+            submitBtn.disabled = true;
+            submitBtn.textContent = '⏳ Saving...';
+            loadingText.textContent = 'Adding medication...';
+            loadingOverlay.style.display = 'flex';
+            
+            try {
+                const token = localStorage.getItem('authToken');
+                const response = await fetch('http://localhost:3000/api/medications', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(medicationData)
+                });
+                
+                if (response.status === 401) {
+                    localStorage.removeItem('authToken');
+                    localStorage.removeItem('currentUser');
+                    window.location.href = 'menu.html';
+                    return;
+                }
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    showSuccess('Medication added successfully! Redirecting...');
+                    setTimeout(() => {
+                        window.location.href = 'dosage.html';
+                    }, 2000);
+                } else {
+                    showError(result.message || 'Failed to add medication');
+                }
+                
+            } catch (error) {
+                console.error('Error adding medication:', error);
+                showError('An error occurred while adding the medication. Please try again.');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = '💾 Save Medication';
+                loadingOverlay.style.display = 'none';
+            }
+        }
+        
+        function showError(message) {
+            const errorElement = document.getElementById('error-message');
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+            document.getElementById('success-message').style.display = 'none';
+            
+            // Scroll to error
+            errorElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+        
+        function showSuccess(message) {
+            const successElement = document.getElementById('success-message');
+            successElement.textContent = message;
+            successElement.style.display = 'block';
+            document.getElementById('error-message').style.display = 'none';
+            
+            // Scroll to success
+            successElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    </script>
+</body>
+</html>

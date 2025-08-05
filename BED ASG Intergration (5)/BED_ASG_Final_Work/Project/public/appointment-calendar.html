@@ -1,0 +1,1371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Appointment Calendar - Mokesell Health</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      transition: all 0.3s ease;
+    }
+
+    /* Theme Variables */
+    :root {
+      --bg-color: #f3fdf6;
+      --card-bg: white;
+      --text-color: #333;
+      --primary-color: #388e3c;
+      --secondary-color: #66bb6a;
+      --border-color: #a5d6a7;
+      --shadow: 0 4px 10px rgba(0,0,0,0.07);
+      --hover-shadow: 0 8px 20px rgba(0,0,0,0.12);
+      --modal-bg: white;
+      --modal-overlay: rgba(0,0,0,0.5);
+      --weekend-bg: #f8f9fa;
+      --today-bg: #e3f2fd;
+      --appointment-bg: #c8e6c9;
+      --past-date: #e0e0e0;
+    }
+
+    .dark-theme {
+      --bg-color: #1a1a1a;
+      --card-bg: #2d2d2d;
+      --text-color: #e0e0e0;
+      --primary-color: #4caf50;
+      --secondary-color: #81c784;
+      --border-color: #4caf50;
+      --shadow: 0 4px 10px rgba(0,0,0,0.3);
+      --hover-shadow: 0 8px 20px rgba(0,0,0,0.4);
+      --modal-bg: #2d2d2d;
+      --modal-overlay: rgba(0,0,0,0.7);
+      --weekend-bg: #3a3a3a;
+      --today-bg: #1e3a8a;
+      --appointment-bg: #065f46;
+      --past-date: #555;
+    }
+
+    body {
+      background: var(--bg-color);
+      color: var(--text-color);
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Font Size Classes */
+    .font-small { font-size: 14px; }
+    .font-medium { font-size: 16px; }
+    .font-large { font-size: 18px; }
+    .font-extra-large { font-size: 20px; }
+
+    /* HEADER */
+    header {
+      background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+      color: white;
+      padding: 25px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: var(--shadow);
+      animation: slideInDown 1s ease-out;
+      flex-shrink: 0;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .header-left img {
+      width: 40px;
+      filter: invert(1);
+    }
+
+    .header-left h1 {
+      font-size: 28px;
+      font-weight: 600;
+      margin: 0;
+      cursor: pointer;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 16px;
+    }
+
+    .back-btn {
+      background: rgba(255,255,255,0.2);
+      color: white;
+      border: 2px solid white;
+      padding: 8px 16px;
+      border-radius: 25px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      text-decoration: none;
+    }
+
+    .back-btn:hover {
+      background: white;
+      color: var(--primary-color);
+      transform: translateY(-2px);
+    }
+
+    /* MAIN CONTAINER */
+    .container {
+      flex: 1;
+      padding: 30px;
+      max-width: 1400px;
+      margin: 0 auto;
+      width: 100%;
+      animation: fadeIn 1s ease-in;
+    }
+
+    .page-title {
+      text-align: center;
+      margin-bottom: 30px;
+      color: var(--primary-color);
+    }
+
+    .page-title h2 {
+      font-size: 32px;
+      margin: 0 0 10px 0;
+      font-weight: 700;
+    }
+
+    .page-title p {
+      font-size: 16px;
+      color: var(--text-color);
+      opacity: 0.7;
+      margin: 0;
+    }
+
+    /* CALENDAR HEADER */
+    .calendar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+      background: var(--card-bg);
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: var(--shadow);
+      border: 2px solid var(--border-color);
+    }
+
+    .calendar-nav {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .nav-btn {
+      background: var(--primary-color);
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 18px;
+      transition: all 0.3s ease;
+      width: 45px;
+      height: 45px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .nav-btn:hover {
+      background: var(--secondary-color);
+      transform: scale(1.1);
+    }
+
+    .current-month {
+      font-size: 24px;
+      font-weight: 600;
+      color: var(--primary-color);
+      min-width: 200px;
+      text-align: center;
+    }
+
+    .calendar-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .action-btn {
+      background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 25px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+
+    .action-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--hover-shadow);
+    }
+
+    .today-btn {
+      background: #2196f3;
+    }
+
+    .today-btn:hover {
+      background: #1976d2;
+    }
+
+    /* CALENDAR GRID */
+    .calendar-container {
+      background: var(--card-bg);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+      border: 2px solid var(--border-color);
+      overflow: hidden;
+      animation: slideInUp 0.6s ease-out;
+    }
+
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+    }
+
+    .calendar-day-header {
+      background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+      color: white;
+      padding: 15px 10px;
+      text-align: center;
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .calendar-day {
+      min-height: 120px;
+      border: 1px solid var(--border-color);
+      padding: 8px;
+      position: relative;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      background: var(--card-bg);
+    }
+
+    .calendar-day:hover {
+      background: var(--today-bg);
+      transform: scale(1.02);
+      z-index: 1;
+      box-shadow: var(--hover-shadow);
+    }
+
+    .calendar-day.weekend {
+      background: var(--weekend-bg) !important;
+    }
+
+    .calendar-day.has-appointments {
+      background: var(--appointment-bg) !important;
+      border-left: 4px solid var(--primary-color);
+    }
+
+    .calendar-day.weekend.has-appointments {
+      background: linear-gradient(135deg, var(--weekend-bg) 0%, var(--appointment-bg) 100%) !important;
+    }
+
+    .calendar-day.today {
+      background: var(--today-bg) !important;
+      border: 3px solid var(--primary-color) !important;
+      font-weight: bold;
+    }
+
+    .calendar-day.other-month {
+      opacity: 0.3;
+      background: var(--past-date);
+    }
+
+    .calendar-day.past {
+      opacity: 0.6;
+    }
+
+    .day-number {
+      font-weight: 600;
+      font-size: 16px;
+      margin-bottom: 5px;
+      color: var(--text-color);
+    }
+
+    .today .day-number {
+      color: var(--primary-color);
+      font-weight: 700;
+      font-size: 18px;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    }
+
+    .today .day-number::after {
+      content: ' 📍';
+      font-size: 12px;
+    }
+
+    .appointments-list {
+      max-height: 80px;
+      overflow-y: auto;
+      scrollbar-width: thin;
+    }
+
+    .appointment-item {
+      background: var(--appointment-bg);
+      color: var(--text-color);
+      padding: 4px 6px;
+      margin: 2px 0;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border-left: 3px solid var(--primary-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .appointment-item:hover {
+      background: var(--primary-color);
+      color: white;
+      transform: translateX(2px);
+    }
+
+    .appointment-time {
+      font-weight: 600;
+      opacity: 0.8;
+    }
+
+    .appointment-overflow {
+      background: rgba(56, 142, 60, 0.1);
+      color: var(--primary-color);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 10px;
+      text-align: center;
+      cursor: pointer;
+      border: 1px solid var(--primary-color);
+    }
+
+    .appointment-overflow:hover {
+      background: var(--primary-color);
+      color: white;
+    }
+
+    /* APPOINTMENT DETAILS MODAL */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: var(--modal-overlay);
+      animation: fadeIn 0.3s ease;
+    }
+
+    .modal-content {
+      background-color: var(--modal-bg);
+      margin: 3% auto;
+      padding: 0;
+      border-radius: 20px;
+      width: 90%;
+      max-width: 600px;
+      box-shadow: var(--hover-shadow);
+      animation: slideInUp 0.3s ease;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .modal-header {
+      background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+      color: white;
+      padding: 25px;
+      border-radius: 20px 20px 0 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-header h3 {
+      margin: 0;
+      font-size: 22px;
+      font-weight: 600;
+    }
+
+    .close {
+      color: white;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+      line-height: 1;
+      transition: opacity 0.3s ease;
+    }
+
+    .close:hover {
+      opacity: 0.7;
+    }
+
+    .modal-body {
+      padding: 30px;
+    }
+
+    .appointment-details {
+      margin-bottom: 20px;
+    }
+
+    .appointment-card {
+      background: linear-gradient(135deg, var(--card-bg), rgba(255,255,255,0.5));
+      border: 2px solid var(--border-color);
+      padding: 20px;
+      margin-bottom: 15px;
+      border-radius: 16px;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .appointment-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 5px;
+      height: 100%;
+      background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    }
+
+    .appointment-date {
+      color: var(--primary-color);
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .appointment-description {
+      color: var(--text-color);
+      font-size: 16px;
+      margin-bottom: 15px;
+      line-height: 1.5;
+    }
+
+    .appointment-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 25px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .btn-edit {
+      background: #2196f3;
+      color: white;
+    }
+
+    .btn-edit:hover {
+      background: #1976d2;
+      transform: translateY(-2px);
+    }
+
+    .btn-delete {
+      background: #f44336;
+      color: white;
+    }
+
+    .btn-delete:hover {
+      background: #d32f2f;
+      transform: translateY(-2px);
+    }
+
+    .btn-close {
+      background: #666;
+      color: white;
+    }
+
+    .btn-close:hover {
+      background: #555;
+      transform: translateY(-2px);
+    }
+
+    /* FORM STYLES */
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--text-color);
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .form-group input,
+    .form-group textarea {
+      width: 100%;
+      padding: 15px;
+      border: 2px solid var(--border-color);
+      border-radius: 12px;
+      font-size: 16px;
+      transition: all 0.3s ease;
+      background: var(--card-bg);
+      color: var(--text-color);
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(56, 142, 60, 0.1);
+    }
+
+    .form-group textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    .submit-btn {
+      background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+      color: white;
+      border: none;
+      padding: 15px 30px;
+      border-radius: 25px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 0 auto;
+    }
+
+    .submit-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--hover-shadow);
+    }
+
+    .submit-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    /* MESSAGES */
+    .message {
+      padding: 15px 20px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      font-weight: 500;
+      display: none;
+      animation: slideInDown 0.3s ease;
+    }
+
+    .message.success {
+      background: rgba(76, 175, 80, 0.1);
+      color: var(--primary-color);
+      border: 2px solid var(--primary-color);
+    }
+
+    .message.error {
+      background: rgba(244, 67, 54, 0.1);
+      color: #f44336;
+      border: 2px solid #f44336;
+    }
+
+    /* LEGEND */
+    .calendar-legend {
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      margin-top: 20px;
+      padding: 15px;
+      background: var(--card-bg);
+      border-radius: 15px;
+      box-shadow: var(--shadow);
+      border: 2px solid var(--border-color);
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      color: var(--text-color);
+    }
+
+    .legend-color {
+      width: 16px;
+      height: 16px;
+      border-radius: 4px;
+      border: 1px solid var(--border-color);
+    }
+
+    .legend-today { background: var(--today-bg); }
+    .legend-appointment { background: var(--appointment-bg); }
+    .legend-weekend { background: var(--weekend-bg); }
+
+    /* ANIMATIONS */
+    @keyframes fadeIn {
+      from {opacity: 0;}
+      to {opacity: 1;}
+    }
+
+    @keyframes slideInDown {
+      from {transform: translateY(-30px); opacity: 0;}
+      to {transform: translateY(0); opacity: 1;}
+    }
+
+    @keyframes slideInUp {
+      from {transform: translateY(30px); opacity: 0;}
+      to {transform: translateY(0); opacity: 1;}
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 1024px) {
+      .calendar-header {
+        flex-direction: column;
+        gap: 15px;
+      }
+
+      .calendar-nav {
+        gap: 15px;
+      }
+
+      .current-month {
+        font-size: 20px;
+      }
+
+      .calendar-day {
+        min-height: 100px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 15px;
+      }
+
+      header {
+        padding: 15px 20px;
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+      }
+
+      .header-left {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .calendar-header {
+        padding: 15px;
+      }
+
+      .calendar-nav {
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .current-month {
+        font-size: 18px;
+        min-width: auto;
+      }
+
+      .calendar-actions {
+        flex-direction: column;
+      }
+
+      .calendar-day {
+        min-height: 80px;
+        padding: 5px;
+      }
+
+      .day-number {
+        font-size: 14px;
+      }
+
+      .appointment-item {
+        font-size: 10px;
+        padding: 3px 5px;
+      }
+
+      .modal-content {
+        margin: 5% auto;
+        width: 95%;
+      }
+
+      .modal-body {
+        padding: 20px;
+      }
+
+      .calendar-legend {
+        flex-direction: column;
+        gap: 10px;
+        align-items: center;
+      }
+
+      .legend-item {
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-left">
+      <img src="https://img.icons8.com/ios-filled/50/calendar.png" alt="Calendar Icon" />
+      <h1>Appointment Calendar</h1>
+    </div>
+    <div class="header-right">
+      <div class="user-info" id="userInfo">
+        <span>Welcome, <span id="userName">User</span>!</span>
+      </div>
+      <a href="menu.html" class="back-btn">← Back to Dashboard</a>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="page-title">
+      <h2>🗓️ Your Appointment Calendar</h2>
+      <p>View and manage all your healthcare appointments in one place</p>
+      <div id="appointmentCount" style="margin-top: 10px; font-size: 14px; color: var(--primary-color); font-weight: 600;"></div>
+    </div>
+
+    <div id="message" class="message"></div>
+
+    <!-- Calendar Header -->
+    <div class="calendar-header">
+      <div class="calendar-nav">
+        <button class="nav-btn" id="prevMonth">‹</button>
+        <div class="current-month" id="currentMonth">Loading...</div>
+        <button class="nav-btn" id="nextMonth">›</button>
+      </div>
+      <div class="calendar-actions">
+        <button class="action-btn today-btn" id="todayBtn">📅 Today</button>
+        <button class="action-btn" id="newAppointmentBtn">➕ New Appointment</button>
+      </div>
+    </div>
+
+    <!-- Calendar Grid -->
+    <div class="calendar-container">
+      <div class="calendar-grid" id="calendar">
+        <!-- Calendar will be rendered here -->
+      </div>
+    </div>
+
+    <!-- Calendar Legend -->
+    <div class="calendar-legend">
+      <div class="legend-item">
+        <div class="legend-color legend-today"></div>
+        <span>Today</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color legend-appointment"></div>
+        <span>Has Appointments</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color legend-weekend"></div>
+        <span>Weekend</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Appointment Details Modal -->
+  <div id="appointmentModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="modalTitle">📅 Appointments</h3>
+        <span class="close" onclick="closeModal()">&times;</span>
+      </div>
+      <div class="modal-body">
+        <div id="appointmentDetails">
+          <!-- Appointment details will be loaded here -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- New/Edit Appointment Modal -->
+  <div id="editModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="editModalTitle">➕ New Appointment</h3>
+        <span class="close" onclick="closeEditModal()">&times;</span>
+      </div>
+      <div class="modal-body">
+        <form id="appointmentForm">
+          <div class="form-group">
+            <label for="appointmentDate">📅 Date & Time *</label>
+            <input type="datetime-local" id="appointmentDate" name="appointmentDate" required>
+          </div>
+          <div class="form-group">
+            <label for="description">📋 Description *</label>
+            <textarea id="description" name="description" placeholder="Describe the purpose of your appointment..." required maxlength="255"></textarea>
+            <small style="color: var(--text-color); opacity: 0.6; font-size: 12px;">Maximum 255 characters</small>
+          </div>
+          <button type="submit" class="submit-btn" id="submitBtn">
+            ➕ Create Appointment
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+<script>
+  let currentUser = null;
+  let currentDate = new Date();
+  let currentEditId = null;
+  let isEditMode = false;
+
+  const monthNames = [
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'
+  ];
+
+  const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+  // Load settings and apply theme
+  function loadAndApplySettings() {
+    const userData = localStorage.getItem('currentUser');
+    const userEmail = userData ? JSON.parse(userData).email : 'default';
+    const savedSettings = localStorage.getItem(`userSettings_${userEmail}`);
+    
+    if (savedSettings) {
+      const settings = JSON.parse(savedSettings);
+      
+      // Apply theme
+      if (settings.theme === 'dark') {
+        document.body.classList.add('dark-theme');
+      }
+      
+      // Apply font size
+      document.body.classList.add(`font-${settings.fontSize || 'medium'}`);
+    }
+  }
+
+  // Check authentication on page load
+  window.addEventListener('DOMContentLoaded', function() {
+    loadAndApplySettings();
+    
+    const token = getStoredToken();
+    if (!token) {
+      window.location.href = 'menu.html';
+      return;
+    }
+    
+    try {
+      const payload = parseJwt(token);
+      currentUser = {
+        id: payload.userId,
+        name: payload.name,
+        email: payload.email
+      };
+      
+      document.getElementById('userName').textContent = currentUser.name || 'User';
+    } catch (error) {
+      console.error('Error parsing token:', error);
+      window.location.href = 'menu.html';
+      return;
+    }
+    
+    initializeCalendar();
+    setupEventListeners();
+  });
+
+  function parseJwt(token) {
+    try {
+      return JSON.parse(atob(token.split('.')[1]));
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function getStoredToken() {
+    return localStorage.getItem('authToken');
+  }
+
+  function getStoredAppointments() {
+    if (!currentUser) return [];
+    
+    const userKey = `appointments_${currentUser.id}`;
+    const stored = localStorage.getItem(userKey);
+    return stored ? JSON.parse(stored) : [];
+  }
+
+  function setStoredAppointments(appointments) {
+    if (!currentUser) return;
+    
+    const userKey = `appointments_${currentUser.id}`;
+    localStorage.setItem(userKey, JSON.stringify(appointments));
+  }
+
+  function setupEventListeners() {
+    document.getElementById('prevMonth').addEventListener('click', () => {
+      currentDate.setMonth(currentDate.getMonth() - 1);
+      renderCalendar();
+    });
+
+    document.getElementById('nextMonth').addEventListener('click', () => {
+      currentDate.setMonth(currentDate.getMonth() + 1);
+      renderCalendar();
+    });
+
+    document.getElementById('todayBtn').addEventListener('click', () => {
+      currentDate = new Date();
+      renderCalendar();
+    });
+
+    document.getElementById('newAppointmentBtn').addEventListener('click', () => {
+      openEditModal();
+    });
+
+    document.getElementById('appointmentForm').addEventListener('submit', handleFormSubmit);
+  }
+
+  function initializeCalendar() {
+    // Test appointments loading
+    testAppointmentsLoading();
+    renderCalendar();
+  }
+
+  function renderCalendar() {
+    const calendar = document.getElementById('calendar');
+    const currentMonth = document.getElementById('currentMonth');
+    
+    // Update month display
+    currentMonth.textContent = `${monthNames[currentDate.getMonth()]} ${currentDate.getFullYear()}`;
+    
+    // Clear calendar
+    calendar.innerHTML = '';
+    
+    // Add day headers
+    dayNames.forEach(day => {
+      const dayHeader = document.createElement('div');
+      dayHeader.className = 'calendar-day-header';
+      dayHeader.textContent = day;
+      calendar.appendChild(dayHeader);
+    });
+    
+    // Get first day of month and number of days
+    const firstDay = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+    const lastDay = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+    const daysInMonth = lastDay.getDate();
+    const startingDay = firstDay.getDay();
+    
+    // Add empty cells for days before month starts
+    for (let i = 0; i < startingDay; i++) {
+      const emptyDay = document.createElement('div');
+      emptyDay.className = 'calendar-day other-month';
+      calendar.appendChild(emptyDay);
+    }
+    
+    // Add days of month
+    const today = new Date();
+    const appointments = getStoredAppointments();
+    
+    console.log('Rendering calendar with appointments:', appointments); // Debug log
+    
+    for (let day = 1; day <= daysInMonth; day++) {
+      const dayElement = document.createElement('div');
+      dayElement.className = 'calendar-day';
+      
+      const currentDayDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
+      const isToday = isSameDay(currentDayDate, today);
+      const isPast = currentDayDate < today && !isToday;
+      const isWeekend = currentDayDate.getDay() === 0 || currentDayDate.getDay() === 6;
+      
+      // Appointments for this day
+      const dayAppointments = appointments.filter(app => {
+        const appDate = new Date(app.appointmentDate);
+        return isSameDay(appDate, currentDayDate);
+      }).sort((a, b) => new Date(a.appointmentDate) - new Date(b.appointmentDate));
+      
+      const hasAppointments = dayAppointments.length > 0;
+      
+      // Add classes based on day properties
+      if (isWeekend) dayElement.classList.add('weekend');
+      if (hasAppointments) dayElement.classList.add('has-appointments');
+      if (isToday) dayElement.classList.add('today');
+      if (isPast) dayElement.classList.add('past');
+      
+      // Day number
+      const dayNumber = document.createElement('div');
+      dayNumber.className = 'day-number';
+      dayNumber.textContent = day;
+      dayElement.appendChild(dayNumber);
+      
+      if (hasAppointments) {
+        const appointmentsList = document.createElement('div');
+        appointmentsList.className = 'appointments-list';
+        
+        // Show up to 3 appointments, then show "X more" if there are more
+        const maxVisible = 3;
+        const visibleAppointments = dayAppointments.slice(0, maxVisible);
+        
+        visibleAppointments.forEach(appointment => {
+          const appointmentItem = document.createElement('div');
+          appointmentItem.className = 'appointment-item';
+          
+          const time = new Date(appointment.appointmentDate).toLocaleTimeString('en-US', {
+            hour: '2-digit',
+            minute: '2-digit'
+          });
+          
+          const description = appointment.description.length > 20 
+            ? appointment.description.substring(0, 20) + '...' 
+            : appointment.description;
+          
+          appointmentItem.innerHTML = `
+            <span class="appointment-time">${time}</span>
+            <span>${description}</span>
+          `;
+          
+          appointmentItem.addEventListener('click', (e) => {
+            e.stopPropagation();
+            showAppointmentDetails(currentDayDate, dayAppointments);
+          });
+          
+          appointmentsList.appendChild(appointmentItem);
+        });
+        
+        // Show overflow indicator
+        if (dayAppointments.length > maxVisible) {
+          const overflow = document.createElement('div');
+          overflow.className = 'appointment-overflow';
+          overflow.textContent = `+${dayAppointments.length - maxVisible} more`;
+          overflow.addEventListener('click', (e) => {
+            e.stopPropagation();
+            showAppointmentDetails(currentDayDate, dayAppointments);
+          });
+          appointmentsList.appendChild(overflow);
+        }
+        
+        dayElement.appendChild(appointmentsList);
+      }
+      
+      // Click handler for empty days (to create new appointment)
+      dayElement.addEventListener('click', () => {
+        if (!isPast) {
+          openEditModal(currentDayDate);
+        }
+      });
+      
+      calendar.appendChild(dayElement);
+    }
+    
+    // Debug: Show total appointments found
+    const appointmentCountDiv = document.getElementById('appointmentCount');
+    if (appointments.length > 0) {
+      appointmentCountDiv.textContent = `📊 Total appointments: ${appointments.length}`;
+      appointmentCountDiv.style.display = 'block';
+    } else {
+      appointmentCountDiv.textContent = '📊 No appointments found. Create some in the Appointment Slots page first!';
+      appointmentCountDiv.style.display = 'block';
+    }
+    console.log(`Total appointments found: ${appointments.length}`);
+  }
+
+  function isSameDay(date1, date2) {
+    if (!date1 || !date2) return false;
+    
+    const d1 = new Date(date1);
+    const d2 = new Date(date2);
+    
+    return d1.getFullYear() === d2.getFullYear() &&
+           d1.getMonth() === d2.getMonth() &&
+           d1.getDate() === d2.getDate();
+  }
+
+  // Test function to verify appointments loading
+  function testAppointmentsLoading() {
+    const appointments = getStoredAppointments();
+    console.log('=== APPOINTMENT LOADING TEST ===');
+    console.log('Current User:', currentUser);
+    console.log('Storage Key:', `appointments_${currentUser?.id}`);
+    console.log('Raw localStorage data:', localStorage.getItem(`appointments_${currentUser?.id}`));
+    console.log('Parsed appointments:', appointments);
+    console.log('Total appointments:', appointments.length);
+    
+    if (appointments.length > 0) {
+      console.log('Sample appointment dates:');
+      appointments.forEach((app, index) => {
+        console.log(`${index + 1}. ${app.appointmentDate} - ${app.description}`);
+      });
+    }
+    console.log('=== END TEST ===');
+  }
+
+  function showAppointmentDetails(date, appointments) {
+    const modal = document.getElementById('appointmentModal');
+    const modalTitle = document.getElementById('modalTitle');
+    const appointmentDetails = document.getElementById('appointmentDetails');
+    
+    const formattedDate = date.toLocaleDateString('en-US', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+    
+    modalTitle.textContent = `📅 Appointments for ${formattedDate}`;
+    
+    appointmentDetails.innerHTML = appointments.map(appointment => {
+      const appointmentDate = new Date(appointment.appointmentDate);
+      const formattedTime = appointmentDate.toLocaleTimeString('en-US', {
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+      
+      return `
+        <div class="appointment-card">
+          <div class="appointment-date">
+            🕐 ${formattedTime}
+          </div>
+          <div class="appointment-description">
+            ${appointment.description}
+          </div>
+          <div class="appointment-actions">
+            <button class="btn btn-edit" onclick="editAppointment(${appointment.appointmentId}, '${appointment.appointmentDate}', '${appointment.description.replace(/'/g, "\\'")}')">
+              ✏️ Edit
+            </button>
+            <button class="btn btn-delete" onclick="deleteAppointment(${appointment.appointmentId})">
+              🗑️ Delete
+            </button>
+          </div>
+        </div>
+      `;
+    }).join('');
+    
+    // Add close button
+    appointmentDetails.innerHTML += `
+      <div style="text-align: center; margin-top: 20px;">
+        <button class="btn btn-close" onclick="closeModal()">Close</button>
+      </div>
+    `;
+    
+    modal.style.display = 'block';
+  }
+
+  function openEditModal(date = null) {
+    const modal = document.getElementById('editModal');
+    const form = document.getElementById('appointmentForm');
+    const dateInput = document.getElementById('appointmentDate');
+    const modalTitle = document.getElementById('editModalTitle');
+    const submitBtn = document.getElementById('submitBtn');
+    
+    isEditMode = false;
+    currentEditId = null;
+    
+    form.reset();
+    modalTitle.textContent = '➕ New Appointment';
+    submitBtn.innerHTML = '➕ Create Appointment';
+    
+    if (date) {
+      // Set date to clicked day at current time or next hour
+      const now = new Date();
+      const appointmentDateTime = new Date(date);
+      appointmentDateTime.setHours(now.getHours() + 1, 0, 0, 0);
+      
+      const localISOTime = new Date(appointmentDateTime.getTime() - appointmentDateTime.getTimezoneOffset() * 60000)
+        .toISOString().slice(0, 16);
+      dateInput.value = localISOTime;
+    } else {
+      // Set minimum date to now
+      const now = new Date();
+      const localISOTime = new Date(now.getTime() - now.getTimezoneOffset() * 60000)
+        .toISOString().slice(0, 16);
+      dateInput.min = localISOTime;
+    }
+    
+    modal.style.display = 'block';
+  }
+
+  function editAppointment(id, date, description) {
+    const modal = document.getElementById('editModal');
+    const form = document.getElementById('appointmentForm');
+    const dateInput = document.getElementById('appointmentDate');
+    const descriptionInput = document.getElementById('description');
+    const modalTitle = document.getElementById('editModalTitle');
+    const submitBtn = document.getElementById('submitBtn');
+    
+    isEditMode = true;
+    currentEditId = id;
+    
+    modalTitle.textContent = '✏️ Edit Appointment';
+    submitBtn.innerHTML = '💾 Update Appointment';
+    
+    const localDate = new Date(date);
+    const localISOTime = new Date(localDate.getTime() - localDate.getTimezoneOffset() * 60000)
+      .toISOString().slice(0, 16);
+    
+    dateInput.value = localISOTime;
+    descriptionInput.value = description;
+    
+    // Set minimum date to now for future edits
+    const now = new Date();
+    const nowLocalISOTime = new Date(now.getTime() - now.getTimezoneOffset() * 60000)
+      .toISOString().slice(0, 16);
+    dateInput.min = nowLocalISOTime;
+    
+    // Close appointment details modal first
+    closeModal();
+    
+    modal.style.display = 'block';
+  }
+
+  async function deleteAppointment(id) {
+    if (!confirm('Are you sure you want to delete this appointment?')) {
+      return;
+    }
+    
+    try {
+      const appointments = getStoredAppointments();
+      const filteredAppointments = appointments.filter(app => 
+        !(app.appointmentId === id && (!app.userId || app.userId === currentUser.id))
+      );
+      
+      if (filteredAppointments.length === appointments.length) {
+        throw new Error('Appointment not found');
+      }
+      
+      setStoredAppointments(filteredAppointments);
+      
+      showMessage('✅ Appointment deleted successfully!', true);
+      renderCalendar();
+      closeModal();
+      
+    } catch (error) {
+      console.error('Error deleting appointment:', error);
+      showMessage(`❌ Error: ${error.message}`, false);
+    }
+  }
+
+  async function handleFormSubmit(e) {
+    e.preventDefault();
+    
+    const submitBtn = document.getElementById('submitBtn');
+    const originalText = submitBtn.innerHTML;
+    submitBtn.disabled = true;
+    submitBtn.textContent = isEditMode ? '⏳ Updating...' : '⏳ Creating...';
+    
+    const appointmentDate = document.getElementById('appointmentDate').value;
+    const description = document.getElementById('description').value.trim();
+    
+    try {
+      const appointments = getStoredAppointments();
+      
+      if (isEditMode && currentEditId) {
+        // Update existing appointment
+        const appointmentIndex = appointments.findIndex(app => 
+          app.appointmentId === currentEditId && 
+          (!app.userId || app.userId === currentUser.id)
+        );
+        
+        if (appointmentIndex === -1) {
+          throw new Error('Appointment not found');
+        }
+        
+        appointments[appointmentIndex].appointmentDate = appointmentDate;
+        appointments[appointmentIndex].description = description;
+        
+        showMessage('✅ Appointment updated successfully!', true);
+      } else {
+        // Create new appointment
+        const newAppointment = {
+          appointmentId: Date.now(),
+          userId: currentUser.id,
+          appointmentDate: appointmentDate,
+          description: description,
+          createdAt: new Date().toISOString()
+        };
+        
+        appointments.push(newAppointment);
+        showMessage('✅ Appointment created successfully!', true);
+      }
+      
+      setStoredAppointments(appointments);
+      renderCalendar();
+      closeEditModal();
+      
+    } catch (error) {
+      console.error('Error saving appointment:', error);
+      showMessage(`❌ Error: ${error.message}`, false);
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = originalText;
+    }
+  }
+
+  function closeModal() {
+    document.getElementById('appointmentModal').style.display = 'none';
+  }
+
+  function closeEditModal() {
+    document.getElementById('editModal').style.display = 'none';
+    isEditMode = false;
+    currentEditId = null;
+  }
+
+  function showMessage(text, isSuccess = true) {
+    const messageDiv = document.getElementById('message');
+    messageDiv.textContent = text;
+    messageDiv.className = `message ${isSuccess ? 'success' : 'error'}`;
+    messageDiv.style.display = 'block';
+    
+    setTimeout(() => {
+      messageDiv.style.display = 'none';
+    }, 5000);
+  }
+
+  // Close modals when clicking outside
+  window.onclick = function(event) {
+    const appointmentModal = document.getElementById('appointmentModal');
+    const editModal = document.getElementById('editModal');
+    
+    if (event.target === appointmentModal) {
+      closeModal();
+    }
+    if (event.target === editModal) {
+      closeEditModal();
+    }
+  }
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Settings - Mokesell Health Dashboard</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      transition: all 0.3s ease;
+    }
+
+    /* Theme Variables */
+    :root {
+      --bg-color: #f3fdf6;
+      --card-bg: white;
+      --text-color: #333;
+      --primary-color: #388e3c;
+      --secondary-color: #66bb6a;
+      --border-color: #a5d6a7;
+      --shadow: 0 4px 10px rgba(0,0,0,0.07);
+      --hover-shadow: 0 8px 20px rgba(0,0,0,0.12);
+    }
+
+    .dark-theme {
+      --bg-color: #1a1a1a;
+      --card-bg: #2d2d2d;
+      --text-color: #e0e0e0;
+      --primary-color: #4caf50;
+      --secondary-color: #81c784;
+      --border-color: #4caf50;
+      --shadow: 0 4px 10px rgba(0,0,0,0.3);
+      --hover-shadow: 0 8px 20px rgba(0,0,0,0.4);
+    }
+
+    body {
+      background: var(--bg-color);
+      color: var(--text-color);
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Font Size Classes */
+    .font-small { font-size: 14px; }
+    .font-medium { font-size: 16px; }
+    .font-large { font-size: 18px; }
+    .font-extra-large { font-size: 20px; }
+
+    /* HEADER */
+    header {
+      background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+      color: white;
+      padding: 25px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: var(--shadow);
+      animation: slideInDown 1s ease-out;
+      flex-shrink: 0;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .header-left img {
+      width: 40px;
+    }
+
+    .header-left h1 {
+      font-size: 28px;
+      font-weight: 600;
+      margin: 0;
+      cursor: pointer;
+    }
+
+    .back-btn {
+      background: rgba(255,255,255,0.2);
+      color: white;
+      border: 2px solid white;
+      padding: 8px 16px;
+      border-radius: 25px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      text-decoration: none;
+    }
+
+    .back-btn:hover {
+      background: white;
+      color: var(--primary-color);
+    }
+
+    /* CONTAINER */
+    .container {
+      flex: 1;
+      padding: 30px;
+      animation: fadeIn 1.2s ease-in;
+      min-height: 0;
+    }
+
+    .settings-container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .settings-section {
+      background: var(--card-bg);
+      border: 2px solid var(--border-color);
+      border-radius: 16px;
+      margin-bottom: 25px;
+      padding: 25px;
+      box-shadow: var(--shadow);
+      transition: all 0.3s ease;
+    }
+
+    .settings-section:hover {
+      box-shadow: var(--hover-shadow);
+    }
+
+    .section-title {
+      color: var(--primary-color);
+      font-size: 22px;
+      font-weight: 600;
+      margin: 0 0 20px 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .section-icon {
+      font-size: 24px;
+    }
+
+    .setting-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 0;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .setting-item:last-child {
+      border-bottom: none;
+    }
+
+    .setting-label {
+      flex: 1;
+    }
+
+    .setting-label h4 {
+      margin: 0 0 5px 0;
+      font-size: 16px;
+      font-weight: 500;
+    }
+
+    .setting-label p {
+      margin: 0;
+      font-size: 14px;
+      opacity: 0.7;
+    }
+
+    .setting-control {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 200px;
+      justify-content: flex-end;
+    }
+
+    /* Form Controls */
+    select, input {
+      background: var(--card-bg);
+      color: var(--text-color);
+      border: 2px solid var(--border-color);
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-size: 14px;
+      transition: all 0.3s ease;
+      width: 100%;
+    }
+
+    select:focus, input:focus {
+      outline: none;
+      border-color: var(--primary-color);
+    }
+
+    /* Toggle Switch */
+    .toggle-switch {
+      position: relative;
+      width: 50px;
+      height: 24px;
+      background: #ccc;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .toggle-switch.active {
+      background: var(--primary-color);
+    }
+
+    .toggle-slider {
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 20px;
+      height: 20px;
+      background: white;
+      border-radius: 50%;
+      transition: transform 0.3s ease;
+    }
+
+    .toggle-switch.active .toggle-slider {
+      transform: translateX(26px);
+    }
+
+    /* Buttons */
+    .btn {
+      background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-right: 10px;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--hover-shadow);
+    }
+
+    .btn-danger {
+      background: linear-gradient(to right, #e74c3c, #c0392b);
+    }
+
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* Profile Section */
+    .profile-info {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 500;
+      color: var(--text-color);
+    }
+
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid var(--border-color);
+      border-radius: 8px;
+      background: var(--card-bg);
+      color: var(--text-color);
+      font-size: 14px;
+      transition: border-color 0.3s ease;
+      resize: vertical;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: var(--primary-color);
+    }
+
+    /* Messages */
+    .message {
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      text-align: center;
+      font-weight: 500;
+    }
+
+    .message.success {
+      background-color: rgba(76, 175, 80, 0.1);
+      color: var(--primary-color);
+      border: 1px solid var(--primary-color);
+    }
+
+    .message.error {
+      background-color: rgba(231, 76, 60, 0.1);
+      color: #e74c3c;
+      border: 1px solid #e74c3c;
+    }
+
+    .message.warning {
+      background-color: rgba(255, 152, 0, 0.1);
+      color: #ff9800;
+      border: 1px solid #ff9800;
+    }
+
+    /* Notification Schedule Section */
+    .notification-schedule {
+      margin-top: 20px;
+      padding: 20px;
+      background: rgba(76, 175, 80, 0.05);
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+    }
+
+    .notification-schedule h5 {
+      margin: 0 0 15px 0;
+      color: var(--primary-color);
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .schedule-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      padding: 15px;
+      background: var(--card-bg);
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+    }
+
+    .schedule-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .schedule-item-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .schedule-item-label {
+      font-weight: 500;
+      color: var(--text-color);
+    }
+
+    .time-input {
+      width: 100px;
+      padding: 6px 8px;
+      border: 2px solid var(--border-color);
+      border-radius: 6px;
+      background: var(--card-bg);
+      color: var(--text-color);
+      font-size: 14px;
+    }
+
+    .add-schedule-btn {
+      background: var(--secondary-color);
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+
+    .add-schedule-btn:hover {
+      background: var(--primary-color);
+      transform: translateY(-1px);
+    }
+
+    .remove-schedule-btn {
+      background: #e74c3c;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+
+    .remove-schedule-btn:hover {
+      background: #c0392b;
+    }
+
+    .remove-schedule-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* Test Notification Button */
+    .test-notification-btn {
+      background: #2196f3;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+
+    .test-notification-btn:hover {
+      background: #1976d2;
+      transform: translateY(-1px);
+    }
+
+    /* ANIMATIONS */
+    @keyframes fadeIn {
+      from {opacity: 0;}
+      to {opacity: 1;}
+    }
+
+    @keyframes slideInDown {
+      from {transform: translateY(-100%);}
+      to {transform: translateY(0);}
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 768px) {
+      .container {
+        padding: 15px;
+      }
+
+      .profile-info {
+        grid-template-columns: 1fr;
+      }
+
+      .setting-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+      }
+
+      .setting-control {
+        width: 100%;
+        justify-content: flex-start;
+        min-width: auto;
+      }
+
+      header {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+      }
+
+      .header-left {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .schedule-item {
+        flex-direction: column;
+        gap: 10px;
+        align-items: flex-start;
+      }
+
+      .schedule-item-controls {
+        width: 100%;
+        justify-content: space-between;
+      }
+
+      .time-input {
+        flex: 1;
+        max-width: 150px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-left">
+      <img src="https://img.icons8.com/ios-filled/50/user.png" alt="Settings Icon" />
+      <h1>Settings</h1>
+    </div>
+    <a href="menu.html" class="back-btn">← Back to Dashboard</a>
+  </header>
+
+  <div class="container">
+    <div class="settings-container">
+      
+      <!-- Appearance Settings -->
+      <div class="settings-section">
+        <h2 class="section-title">
+          <span class="section-icon">🎨</span>
+          Appearance
+        </h2>
+        <div id="appearanceMessage" class="message" style="display: none;"></div>
+        <div class="setting-item">
+          <div class="setting-label">
+            <h4>Theme</h4>
+            <p>Choose your preferred color scheme</p>
+          </div>
+          <div class="setting-control">
+            <select id="themeSelect">
+              <option value="light">Light</option>
+              <option value="dark">Dark</option>
+            </select>
+          </div>
+        </div>
+        <div class="setting-item">
+          <div class="setting-label">
+            <h4>Font Size</h4>
+            <p>Adjust text size for better readability</p>
+          </div>
+          <div class="setting-control">
+            <select id="fontSizeSelect">
+              <option value="small">Small</option>
+              <option value="medium">Medium</option>
+              <option value="large">Large</option>
+              <option value="extra-large">Extra Large</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Notification Settings -->
+      <div class="settings-section">
+        <h2 class="section-title">
+          <span class="section-icon">🔔</span>
+          Notifications
+        </h2>
+        <div id="notificationMessage" class="message" style="display: none;"></div>
+        
+        <div class="setting-item">
+          <div class="setting-label">
+            <h4>Browser Notifications Permission</h4>
+            <p id="permissionStatus">Check notification permission status</p>
+          </div>
+          <div class="setting-control">
+            <button class="btn" id="requestPermissionBtn" onclick="requestNotificationPermission()">Enable Notifications</button>
+          </div>
+        </div>
+
+        <div class="setting-item">
+          <div class="setting-label">
+            <h4>Medication Reminders</h4>
+            <p>Get notified when it's time to take your medication</p>
+          </div>
+          <div class="setting-control">
+            <div class="toggle-switch active" id="medicationToggle">
+              <div class="toggle-slider"></div>
+            </div>
+            <button class="test-notification-btn" onclick="testMedicationNotification()">Test</button>
+          </div>
+        </div>
+
+        <div id="medicationSchedule" class="notification-schedule" style="display: none;">
+          <h5>Medication Schedule</h5>
+          <div id="medicationTimes">
+          </div>
+          <div style="margin-top: 15px;">
+            <button class="add-schedule-btn" onclick="addMedicationTime()">+ Add Time</button>
+          </div>
+        </div>
+
+        <div class="setting-item">
+          <div class="setting-label">
+            <h4>Appointment Reminders</h4>
+            <p>Receive alerts for upcoming appointments</p>
+          </div>
+          <div class="setting-control">
+            <div class="toggle-switch active" id="appointmentToggle">
+              <div class="toggle-slider"></div>
+            </div>
+            <button class="test-notification-btn" onclick="testAppointmentNotification()">Test</button>
+          </div>
+        </div>
+
+        <div class="setting-item">
+          <div class="setting-label">
+            <h4>Notification Sound</h4>
+            <p>Choose your notification sound</p>
+          </div>
+          <div class="setting-control">
+            <select id="soundSelect">
+              <option value="classic-bell">Classic Bell</option>
+              <option value="gentle-ping">Gentle Ping</option>
+              <option value="soft-chime">Soft Chime</option>
+              <option value="none">Silent</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="setting-item">
+          <div class="setting-label">
+            <h4>Daily Health Check Reminder</h4>
+            <p>Get reminded to check in with your health daily</p>
+          </div>
+          <div class="setting-control">
+            <div class="toggle-switch" id="dailyReminderToggle">
+              <div class="toggle-slider"></div>
+            </div>
+            <input type="time" id="dailyReminderTime" value="09:00" class="time-input">
+          </div>
+        </div>
+      </div>
+
+      <!-- Profile Settings -->
+      <div class="settings-section">
+        <h2 class="section-title">
+          <span class="section-icon">👤</span>
+          Profile Information
+        </h2>
+        <div id="profileMessage" class="message" style="display: none;"></div>
+        <form id="profileForm">
+          <div class="profile-info">
+            <div class="form-group">
+              <label for="profileName">Full Name</label>
+              <input type="text" id="profileName" name="name" required>
+            </div>
+            <div class="form-group">
+              <label for="profileEmail">Email</label>
+              <input type="email" id="profileEmail" name="email" required>
+            </div>
+          </div>
+          <div class="profile-info">
+            <div class="form-group">
+              <label for="profileDOB">Date of Birth</label>
+              <input type="date" id="profileDOB" name="dateOfBirth">
+            </div>
+            <div class="form-group">
+              <label for="profileGender">Gender</label>
+              <select id="profileGender" name="gender">
+                <option value="">Select Gender</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="profileHealth">Health Conditions</label>
+            <textarea id="profileHealth" name="healthConditions" rows="3" placeholder="List any health conditions, allergies, or medical notes..."></textarea>
+          </div>
+          <button type="submit" class="btn">Update Profile</button>
+        </form>
+      </div>
+
+      <!-- Privacy & Security -->
+      <div class="settings-section">
+        <h2 class="section-title">
+          <span class="section-icon">🔒</span>
+          Privacy & Security
+        </h2>
+        <div class="setting-item">
+          <div class="setting-label">
+            <h4>Change Password</h4>
+            <p>Update your account password</p>
+          </div>
+          <div class="setting-control">
+            <button class="btn" onclick="showPasswordForm()">Change Password</button>
+          </div>
+        </div>
+        <div id="passwordForm" style="display: none; margin-top: 20px;">
+          <div id="passwordMessage" class="message" style="display: none;"></div>
+          <div class="form-group">
+            <label for="currentPassword">Current Password</label>
+            <input type="password" id="currentPassword" required>
+          </div>
+          <div class="form-group">
+            <label for="newPassword">New Password</label>
+            <input type="password" id="newPassword" minlength="6" required>
+          </div>
+          <div class="form-group">
+            <label for="confirmPassword">Confirm New Password</label>
+            <input type="password" id="confirmPassword" minlength="6" required>
+          </div>
+          <button type="button" class="btn" onclick="updatePassword()">Update Password</button>
+          <button type="button" class="btn" style="background: #666;" onclick="hidePasswordForm()">Cancel</button>
+        </div>
+      </div>
+
+      <!-- Data Management -->
+      <div class="settings-section">
+        <h2 class="section-title">
+          <span class="section-icon">💾</span>
+          Data Management
+        </h2>
+        <div class="setting-item">
+          <div class="setting-label">
+            <h4>Export Data</h4>
+            <p>Download your health data as a backup</p>
+          </div>
+          <div class="setting-control">
+            <button class="btn" onclick="exportData()">Export Data</button>
+          </div>
+        </div>
+        <div class="setting-item">
+          <div class="setting-label">
+            <h4>Delete Account</h4>
+            <p>Permanently delete your account and all data</p>
+          </div>
+          <div class="setting-control">
+            <button class="btn btn-danger" onclick="confirmDeleteAccount()">Delete Account</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+<script>
+  const apiBaseUrl = "http://localhost:3000";
+  let currentUser = null;
+  let currentSettings = {
+    theme: 'light',
+    fontSize: 'medium',
+    notificationSound: 'classic-bell',
+    medicationReminders: true,
+    appointmentReminders: true,
+    dailyReminder: false,
+    dailyReminderTime: '09:00',
+    medicationTimes: ['08:00', '20:00']
+  };
+
+  // Notification management variables
+  let notificationTimers = [];
+  let notificationPermissionGranted = false;
+
+  // Initialize settings
+  document.addEventListener('DOMContentLoaded', async function() {
+    await loadUserData();
+    await loadSettings();
+    await checkNotificationPermission();
+    applySettings();
+    setupEventListeners();
+    initializeNotificationSchedule();
+    startNotificationScheduler();
+  });
+
+  // ===== NOTIFICATION SYSTEM =====
+  
+  async function checkNotificationPermission() {
+    if (!('Notification' in window)) {
+      showMessage('notificationMessage', 'This browser does not support notifications', false);
+      document.getElementById('requestPermissionBtn').disabled = true;
+      document.getElementById('permissionStatus').textContent = 'Notifications not supported in this browser';
+      return false;
+    }
+
+    const permission = Notification.permission;
+    let statusText = '';
+    let btnText = 'Enable Notifications';
+    
+    switch (permission) {
+      case 'granted':
+        notificationPermissionGranted = true;
+        statusText = '✅ Notifications are enabled';
+        btnText = 'Notifications Enabled';
+        document.getElementById('requestPermissionBtn').disabled = true;
+        document.getElementById('requestPermissionBtn').style.background = '#4caf50';
+        break;
+      case 'denied':
+        statusText = '❌ Notifications are blocked. Please enable them in your browser settings.';
+        btnText = 'Notifications Blocked';
+        document.getElementById('requestPermissionBtn').disabled = true;
+        break;
+      case 'default':
+        statusText = '⚠️ Click to enable notifications';
+        break;
+    }
+    
+    document.getElementById('permissionStatus').textContent = statusText;
+    document.getElementById('requestPermissionBtn').textContent = btnText;
+    
+    return notificationPermissionGranted;
+  }
+
+  async function requestNotificationPermission() {
+    try {
+      const permission = await Notification.requestPermission();
+      await checkNotificationPermission();
+      
+      if (permission === 'granted') {
+        showMessage('notificationMessage', 'Notifications enabled successfully!', true);
+        // Show a welcome notification
+        showNotification('Welcome!', 'Notifications are now enabled for Mokesell Health Dashboard', 'https://img.icons8.com/color/48/health-checkup.png');
+      } else {
+        showMessage('notificationMessage', 'Notifications were not enabled. You can enable them later in your browser settings.', false);
+      }
+    } catch (error) {
+      console.error('Error requesting notification permission:', error);
+      showMessage('notificationMessage', 'Error requesting notification permission', false);
+    }
+  }
+
+  function showNotification(title, body, icon = 'https://img.icons8.com/color/48/health-checkup.png', tag = null) {
+    if (!notificationPermissionGranted || Notification.permission !== 'granted') {
+      console.log('Notifications not permitted');
+      return;
+    }
+
+    try {
+      const notification = new Notification(title, {
+        body: body,
+        icon: icon,
+        tag: tag,
+        requireInteraction: false,
+        silent: currentSettings.notificationSound === 'none'
+      });
+
+      // Play custom sound if not silent
+      if (currentSettings.notificationSound !== 'none') {
+        playNotificationSound();
+      }
+
+      // Auto-close after 5 seconds
+      setTimeout(() => {
+        notification.close();
+      }, 5000);
+
+      notification.onclick = function() {
+        window.focus();
+        notification.close();
+      };
+
+      console.log('Notification shown:', title);
+    } catch (error) {
+      console.error('Error showing notification:', error);
+    }
+  }
+
+  function playNotificationSound() {
+    // Create audio context for different sounds
+    try {
+      const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      let frequency;
+      
+      switch (currentSettings.notificationSound) {
+        case 'classic-bell':
+          frequency = 800;
+          break;
+        case 'gentle-ping':
+          frequency = 600;
+          break;
+        case 'soft-chime':
+          frequency = 1000;
+          break;
+        default:
+          return; // Silent
+      }
+
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+      
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+      
+      oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
+      oscillator.type = 'sine';
+      
+      gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+      
+      oscillator.start(audioContext.currentTime);
+      oscillator.stop(audioContext.currentTime + 0.5);
+    } catch (error) {
+      console.error('Error playing notification sound:', error);
+    }
+  }
+
+  function testMedicationNotification() {
+    showNotification(
+      '💊 Medication Reminder',
+      'Time to take your medication! Don\'t forget to stay healthy.',
+      'https://img.icons8.com/color/48/pill.png',
+      'medication-test'
+    );
+  }
+
+  function testAppointmentNotification() {
+    showNotification(
+      '📅 Appointment Reminder',
+      'You have an upcoming appointment in 30 minutes. Please prepare accordingly.',
+      'https://img.icons8.com/color/48/calendar.png',
+      'appointment-test'
+    );
+  }
+
+  function startNotificationScheduler() {
+    // Clear existing timers
+    notificationTimers.forEach(timer => clearTimeout(timer));
+    notificationTimers = [];
+
+    if (!notificationPermissionGranted) {
+      console.log('Notifications not permitted, scheduler not started');
+      return;
+    }
+
+    // Schedule daily reminder
+    if (currentSettings.dailyReminder) {
+      scheduleDailyReminder();
+    }
+
+    // Schedule medication reminders
+    if (currentSettings.medicationReminders && currentSettings.medicationTimes) {
+      currentSettings.medicationTimes.forEach(time => {
+        scheduleMedicationReminder(time);
+      });
+    }
+
+    console.log('Notification scheduler started');
+  }
+
+  function scheduleDailyReminder() {
+    const now = new Date();
+    const reminderTime = new Date();
+    const [hours, minutes] = currentSettings.dailyReminderTime.split(':');
+    
+    reminderTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+    
+    // If time has passed today, schedule for tomorrow
+    if (reminderTime <= now) {
+      reminderTime.setDate(reminderTime.getDate() + 1);
+    }
+    
+    const delay = reminderTime.getTime() - now.getTime();
+    
+    const timer = setTimeout(() => {
+      showNotification(
+        '🏥 Daily Health Check',
+        'How are you feeling today? Don\'t forget to log your health status!',
+        'https://img.icons8.com/color/48/health-checkup.png',
+        'daily-reminder'
+      );
+      // Reschedule for next day
+      scheduleDailyReminder();
+    }, delay);
+    
+    notificationTimers.push(timer);
+    console.log(`Daily reminder scheduled for ${reminderTime.toLocaleString()}`);
+  }
+
+  function scheduleMedicationReminder(time) {
+    const now = new Date();
+    const medicationTime = new Date();
+    const [hours, minutes] = time.split(':');
+    
+    medicationTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+    
+    // If time has passed today, schedule for tomorrow
+    if (medicationTime <= now) {
+      medicationTime.setDate(medicationTime.getDate() + 1);
+    }
+    
+    const delay = medicationTime.getTime() - now.getTime();
+    
+    const timer = setTimeout(() => {
+      showNotification(
+        '💊 Medication Time',
+        `Time to take your medication scheduled for ${time}`,
+        'https://img.icons8.com/color/48/pill.png',
+        `medication-${time}`
+      );
+      // Reschedule for next day
+      scheduleMedicationReminder(time);
+    }, delay);
+    
+    notificationTimers.push(timer);
+    console.log(`Medication reminder scheduled for ${medicationTime.toLocaleString()}`);
+  }
+
+  function initializeNotificationSchedule() {
+    updateMedicationScheduleDisplay();
+    
+    // Show/hide medication schedule based on toggle
+    const medicationToggle = document.getElementById('medicationToggle');
+    const medicationSchedule = document.getElementById('medicationSchedule');
+    
+    if (medicationToggle.classList.contains('active')) {
+      medicationSchedule.style.display = 'block';
+    }
+  }
+
+  function updateMedicationScheduleDisplay() {
+    const container = document.getElementById('medicationTimes');
+    container.innerHTML = '';
+    
+    currentSettings.medicationTimes.forEach((time, index) => {
+      const scheduleItem = document.createElement('div');
+      scheduleItem.className = 'schedule-item';
+      scheduleItem.innerHTML = `
+        <span class="schedule-item-label">Medication ${index + 1}:</span>
+        <div class="schedule-item-controls">
+          <input type="time" value="${time}" onchange="updateMedicationTime(${index}, this.value)" class="time-input">
+          <button class="remove-schedule-btn" onclick="removeMedicationTime(${index})" ${currentSettings.medicationTimes.length <= 1 ? 'disabled' : ''}>Remove</button>
+        </div>
+      `;
+      container.appendChild(scheduleItem);
+    });
+  }
+
+  function addMedicationTime() {
+    currentSettings.medicationTimes.push('12:00');
+    updateMedicationScheduleDisplay();
+    saveSettingsToServer();
+    startNotificationScheduler(); // Restart scheduler with new times
+  }
+
+  function removeMedicationTime(index) {
+    if (currentSettings.medicationTimes.length > 1) {
+      currentSettings.medicationTimes.splice(index, 1);
+      updateMedicationScheduleDisplay();
+      saveSettingsToServer();
+      startNotificationScheduler(); // Restart scheduler with updated times
+    }
+  }
+
+  function updateMedicationTime(index, newTime) {
+    currentSettings.medicationTimes[index] = newTime;
+    saveSettingsToServer();
+    startNotificationScheduler(); // Restart scheduler with updated times
+  }
+
+  // ===== ORIGINAL SETTINGS FUNCTIONALITY =====
+
+  async function loadUserData() {
+    const userData = window.localStorage.getItem('currentUser');
+    if (userData) {
+      try {
+        currentUser = JSON.parse(userData);
+        populateProfileForm();
+      } catch (error) {
+        console.error('❌ Error parsing user data:', error);
+        currentUser = null;
+      }
+    }
+    
+    if (!currentUser) {
+      // For demo purposes, create a mock user
+      currentUser = {
+        name: 'Demo User',
+        email: 'demo@mokesell.com',
+        dateOfBirth: '',
+        gender: '',
+        healthConditions: ''
+      };
+      populateProfileForm();
+    }
+  }
+
+  function populateProfileForm() {
+    if (currentUser) {
+      document.getElementById('profileName').value = currentUser.name || '';
+      document.getElementById('profileEmail').value = currentUser.email || '';
+      document.getElementById('profileDOB').value = currentUser.dateOfBirth || '';
+      document.getElementById('profileGender').value = currentUser.gender || '';
+      document.getElementById('profileHealth').value = currentUser.healthConditions || '';
+    }
+  }
+
+  async function loadSettings() {
+    console.log('🔄 Loading settings...');
+    
+    const userSettingsKey = getUserSettingsKey();
+    const savedSettings = window.localStorage.getItem(userSettingsKey);
+    
+    if (savedSettings) {
+      try {
+        const parsedSettings = JSON.parse(savedSettings);
+        currentSettings = { ...currentSettings, ...parsedSettings };
+        console.log('✅ Settings loaded from localStorage:', currentSettings);
+      } catch (error) {
+        console.error('❌ Error parsing saved settings:', error);
+      }
+    } else {
+      console.log('⚠️ No saved settings found, using defaults');
+    }
+    
+    updateUI();
+  }
+
+  function getUserSettingsKey() {
+    const userEmail = currentUser?.email || 'default';
+    return `userSettings_${userEmail}`;
+  }
+
+  function updateUI() {
+    document.getElementById('themeSelect').value = currentSettings.theme;
+    document.getElementById('fontSizeSelect').value = currentSettings.fontSize;
+    document.getElementById('soundSelect').value = currentSettings.notificationSound;
+    document.getElementById('dailyReminderTime').value = currentSettings.dailyReminderTime;
+    
+    updateToggle('medicationToggle', currentSettings.medicationReminders);
+    updateToggle('appointmentToggle', currentSettings.appointmentReminders);
+    updateToggle('dailyReminderToggle', currentSettings.dailyReminder);
+  }
+
+  function applySettings() {
+    console.log('🎨 Applying settings:', currentSettings);
+    
+    if (currentSettings.theme === 'dark') {
+      document.body.classList.add('dark-theme');
+    } else {
+      document.body.classList.remove('dark-theme');
+    }
+
+    document.body.className = document.body.className.replace(/font-\w+/g, '');
+    document.body.classList.add(`font-${currentSettings.fontSize}`);
+    
+    console.log('✅ Settings applied. Current classes:', document.body.className);
+  }
+
+  function setupEventListeners() {
+    // Theme change
+    document.getElementById('themeSelect').addEventListener('change', async function(e) {
+      currentSettings.theme = e.target.value;
+      await saveSettingsToServer();
+      applySettings();
+    });
+
+    // Font size change
+    document.getElementById('fontSizeSelect').addEventListener('change', async function(e) {
+      currentSettings.fontSize = e.target.value;
+      await saveSettingsToServer();
+      applySettings();
+    });
+
+    // Sound change
+    document.getElementById('soundSelect').addEventListener('change', async function(e) {
+      currentSettings.notificationSound = e.target.value;
+      await saveSettingsToServer();
+    });
+
+    // Daily reminder time change
+    document.getElementById('dailyReminderTime').addEventListener('change', async function(e) {
+      currentSettings.dailyReminderTime = e.target.value;
+      await saveSettingsToServer();
+      startNotificationScheduler();
+    });
+
+    // Toggle switches
+    document.getElementById('medicationToggle').addEventListener('click', async function() {
+      currentSettings.medicationReminders = !currentSettings.medicationReminders;
+      updateToggle('medicationToggle', currentSettings.medicationReminders);
+      
+      const medicationSchedule = document.getElementById('medicationSchedule');
+      medicationSchedule.style.display = currentSettings.medicationReminders ? 'block' : 'none';
+      
+      await saveSettingsToServer();
+      startNotificationScheduler();
+    });
+
+    document.getElementById('appointmentToggle').addEventListener('click', async function() {
+      currentSettings.appointmentReminders = !currentSettings.appointmentReminders;
+      updateToggle('appointmentToggle', currentSettings.appointmentReminders);
+      await saveSettingsToServer();
+    });
+
+    document.getElementById('dailyReminderToggle').addEventListener('click', async function() {
+      currentSettings.dailyReminder = !currentSettings.dailyReminder;
+      updateToggle('dailyReminderToggle', currentSettings.dailyReminder);
+      await saveSettingsToServer();
+      startNotificationScheduler();
+    });
+
+    // Profile form
+    document.getElementById('profileForm').addEventListener('submit', updateProfile);
+  }
+
+  function updateToggle(toggleId, isActive) {
+    const toggle = document.getElementById(toggleId);
+    if (isActive) {
+      toggle.classList.add('active');
+    } else {
+      toggle.classList.remove('active');
+    }
+  }
+
+  async function saveSettingsToServer() {
+    try {
+      console.log('💾 Saving settings:', currentSettings);
+      showMessage('notificationMessage', 'Settings saved successfully!', true);
+      saveSettingsLocal();
+    } catch (error) {
+      console.error('❌ Error saving settings:', error);
+      showMessage('notificationMessage', 'Settings saved locally', true);
+      saveSettingsLocal();
+    }
+  }
+
+  function saveSettingsLocal() {
+    const userSettingsKey = getUserSettingsKey();
+    window.localStorage.setItem(userSettingsKey, JSON.stringify(currentSettings));
+    console.log('💾 Settings saved to localStorage with key:', userSettingsKey);
+  }
+
+  async function updateProfile(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(e.target);
+    const profileData = {
+      name: formData.get('name'),
+      email: formData.get('email'),
+      dateOfBirth: formData.get('dateOfBirth') || null,
+      gender: formData.get('gender') || null,
+      healthConditions: formData.get('healthConditions') || null
+    };
+
+    try {
+      currentUser = { ...currentUser, ...profileData };
+      window.localStorage.setItem('currentUser', JSON.stringify(currentUser));
+      showMessage('profileMessage', 'Profile updated successfully!', true);
+    } catch (error) {
+      console.error('❌ Error updating profile:', error);
+      showMessage('profileMessage', 'Error updating profile: ' + error.message, false);
+    }
+  }
+
+  function showPasswordForm() {
+    document.getElementById('passwordForm').style.display = 'block';
+  }
+
+  function hidePasswordForm() {
+    document.getElementById('passwordForm').style.display = 'none';
+    document.getElementById('currentPassword').value = '';
+    document.getElementById('newPassword').value = '';
+    document.getElementById('confirmPassword').value = '';
+    hideMessage('passwordMessage');
+  }
+
+  async function updatePassword() {
+    const currentPassword = document.getElementById('currentPassword').value;
+    const newPassword = document.getElementById('newPassword').value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
+
+    if (newPassword !== confirmPassword) {
+      showMessage('passwordMessage', 'New passwords do not match!', false);
+      return;
+    }
+
+    if (newPassword.length < 6) {
+      showMessage('passwordMessage', 'Password must be at least 6 characters long!', false);
+      return;
+    }
+
+    try {
+      showMessage('passwordMessage', 'Password updated successfully!', true);
+      setTimeout(hidePasswordForm, 2000);
+    } catch (error) {
+      console.error('❌ Error updating password:', error);
+      showMessage('passwordMessage', 'Error updating password: ' + error.message, false);
+    }
+  }
+
+  async function exportData() {
+    try {
+      const userData = {
+        profile: currentUser,
+        settings: currentSettings,
+        exportDate: new Date().toISOString()
+      };
+      
+      const dataStr = JSON.stringify(userData, null, 2);
+      const dataBlob = new Blob([dataStr], {type: 'application/json'});
+      
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(dataBlob);
+      link.download = `mokesell-health-data-${new Date().toISOString().split('T')[0]}.json`;
+      link.click();
+      
+      alert('Your data has been exported successfully!');
+    } catch (error) {
+      console.error('❌ Error exporting data:', error);
+      alert('Failed to export data: ' + error.message);
+    }
+  }
+
+  function confirmDeleteAccount() {
+    const confirmation = confirm(
+      'Are you sure you want to delete your account? This action cannot be undone and will permanently delete all your health data.'
+    );
+    
+    if (confirmation) {
+      const secondConfirmation = prompt(
+        'Type "DELETE" to confirm account deletion:'
+      );
+      
+      if (secondConfirmation === 'DELETE') {
+        deleteAccount();
+      }
+    }
+  }
+
+  async function deleteAccount() {
+    try {
+      window.localStorage.clear();
+      alert('Your account has been successfully deleted.');
+      window.location.href = 'menu.html';
+    } catch (error) {
+      console.error('❌ Error deleting account:', error);
+      alert('Failed to delete account: ' + error.message);
+    }
+  }
+
+  function showMessage(elementId, message, isSuccess) {
+    const messageDiv = document.getElementById(elementId);
+    messageDiv.style.display = 'block';
+    messageDiv.textContent = message;
+    messageDiv.className = isSuccess ? 'message success' : 'message error';
+    
+    if (isSuccess) {
+      setTimeout(() => {
+        hideMessage(elementId);
+      }, 3000);
+    }
+  }
+
+  function hideMessage(elementId) {
+    const messageDiv = document.getElementById(elementId);
+    messageDiv.style.display = 'none';
+  }
+
+  function clearUserSettings() {
+    const userSettingsKey = getUserSettingsKey();
+    window.localStorage.removeItem(userSettingsKey);
+    notificationTimers.forEach(timer => clearTimeout(timer));
+    notificationTimers = [];
+    console.log('🗑️ Cleared user settings for logout');
+  }
+
+  window.clearUserSettings = clearUserSettings;
+</script>
+
+</body>
+</html>

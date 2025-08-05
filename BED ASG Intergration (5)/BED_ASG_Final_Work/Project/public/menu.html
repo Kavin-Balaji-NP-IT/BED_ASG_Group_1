@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mokesell Health Dashboard</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      transition: all 0.3s ease;
+    }
+
+    /* Theme Variables */
+    :root {
+      --bg-color: #f3fdf6;
+      --card-bg: white;
+      --text-color: #333;
+      --primary-color: #388e3c;
+      --secondary-color: #66bb6a;
+      --border-color: #a5d6a7;
+      --shadow: 0 4px 10px rgba(0,0,0,0.07);
+      --hover-shadow: 0 8px 20px rgba(0,0,0,0.12);
+      --modal-bg: white;
+      --modal-overlay: rgba(0,0,0,0.5);
+    }
+
+    .dark-theme {
+      --bg-color: #1a1a1a;
+      --card-bg: #2d2d2d;
+      --text-color: #e0e0e0;
+      --primary-color: #4caf50;
+      --secondary-color: #81c784;
+      --border-color: #4caf50;
+      --shadow: 0 4px 10px rgba(0,0,0,0.3);
+      --hover-shadow: 0 8px 20px rgba(0,0,0,0.4);
+      --modal-bg: #2d2d2d;
+      --modal-overlay: rgba(0,0,0,0.7);
+    }
+
+    body {
+      background: var(--bg-color);
+      color: var(--text-color);
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Font Size Classes */
+    .font-small { font-size: 14px; }
+    .font-medium { font-size: 16px; }
+    .font-large { font-size: 18px; }
+    .font-extra-large { font-size: 20px; }
+
+    /* HEADER */
+    header {
+      background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+      color: white;
+      padding: 25px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: var(--shadow);
+      animation: slideInDown 1s ease-out;
+      flex-shrink: 0;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .header-left img {
+      width: 40px;
+    }
+
+    .header-left h1 {
+      font-size: 28px;
+      font-weight: 600;
+      margin: 0;
+      cursor: pointer;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 16px;
+    }
+
+    .auth-buttons {
+      display: flex;
+      gap: 10px;
+    }
+
+    .auth-btn {
+      background: rgba(255,255,255,0.2);
+      color: white;
+      border: 2px solid white;
+      padding: 8px 16px;
+      border-radius: 25px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      text-decoration: none;
+    }
+
+    .auth-btn:hover {
+      background: white;
+      color: var(--primary-color);
+    }
+
+    .logout-btn {
+      background: #e74c3c;
+      border-color: #e74c3c;
+    }
+
+    .logout-btn:hover {
+      background: #c0392b;
+      border-color: #c0392b;
+      color: white;
+    }
+
+    .settings-btn {
+      background: rgba(255,255,255,0.1);
+      color: white;
+      border: 1px solid rgba(255,255,255,0.3);
+      padding: 8px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 18px;
+      transition: all 0.3s ease;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .settings-btn:hover {
+      background: rgba(255,255,255,0.2);
+      transform: rotate(90deg);
+    }
+
+    /* CONTAINER */
+    .container {
+      flex: 1;
+      display: flex;
+      padding: 30px;
+      animation: fadeIn 1.2s ease-in;
+      min-height: 0;
+    }
+
+    /* AUTH MODAL */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: var(--modal-overlay);
+      animation: fadeIn 0.3s ease;
+    }
+
+    .modal-content {
+      background-color: var(--modal-bg);
+      margin: 5% auto;
+      padding: 0;
+      border-radius: 15px;
+      width: 90%;
+      max-width: 400px;
+      box-shadow: var(--hover-shadow);
+      animation: slideInUp 0.3s ease;
+    }
+
+    .modal-header {
+      background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+      color: white;
+      padding: 20px;
+      border-radius: 15px 15px 0 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-header h2 {
+      margin: 0;
+      font-size: 24px;
+    }
+
+    .close {
+      color: white;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+      line-height: 1;
+    }
+
+    .close:hover {
+      opacity: 0.7;
+    }
+
+    .modal-body {
+      padding: 30px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      color: var(--text-color);
+      font-weight: 500;
+    }
+
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid var(--border-color);
+      border-radius: 8px;
+      font-size: 14px;
+      transition: border-color 0.3s ease;
+      resize: vertical;
+      background: var(--card-bg);
+      color: var(--text-color);
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: var(--primary-color);
+    }
+
+    .submit-btn {
+      width: 100%;
+      background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+      color: white;
+      border: none;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+
+    .submit-btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .submit-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .switch-form {
+      text-align: center;
+      margin-top: 20px;
+      color: var(--text-color);
+      opacity: 0.8;
+    }
+
+    .switch-form a {
+      color: var(--primary-color);
+      text-decoration: none;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    .switch-form a:hover {
+      text-decoration: underline;
+    }
+
+    .message {
+      padding: 10px;
+      border-radius: 5px;
+      margin-bottom: 15px;
+      text-align: center;
+      font-weight: 500;
+    }
+
+    .message.success {
+      background-color: rgba(76, 175, 80, 0.1);
+      color: var(--primary-color);
+      border: 1px solid var(--primary-color);
+    }
+
+    .message.error {
+      background-color: rgba(231, 76, 60, 0.1);
+      color: #e74c3c;
+      border: 1px solid #e74c3c;
+    }
+
+    /* WIDGETS */
+    .main-widgets {
+      flex: 1;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 25px;
+      min-height: 100%;
+    }
+
+    .widget {
+      background-color: var(--card-bg);
+      border: 2px solid var(--border-color);
+      padding: 25px;
+      text-align: center;
+      font-weight: bold;
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      min-height: 200px;
+      position: relative;
+      cursor: pointer;
+    }
+
+    .widget:hover {
+      transform: translateY(-8px);
+      box-shadow: var(--hover-shadow);
+    }
+
+    .widget.locked {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .widget.locked:hover {
+      transform: none;
+      box-shadow: var(--shadow);
+    }
+
+    .highlight {
+      border: 3px solid var(--primary-color);
+    }
+
+    .widget h3 {
+      margin: 0;
+      color: var(--primary-color);
+      font-size: 20px;
+    }
+
+    .widget p {
+      margin-top: 10px;
+      font-size: 14px;
+      color: var(--text-color);
+      opacity: 0.8;
+      font-weight: normal;
+      padding: 0 10px;
+    }
+
+    .widget-icon {
+      font-size: 48px;
+      margin-bottom: 15px;
+      opacity: 0.8;
+    }
+
+    .locked-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: var(--card-bg);
+      opacity: 0.9;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      border-radius: 16px;
+      color: var(--text-color);
+    }
+
+    .lock-icon {
+      font-size: 32px;
+      margin-bottom: 10px;
+    }
+
+    .widget.settings {
+      border-color: #ff9800;
+      background: linear-gradient(135deg, rgba(255, 243, 224, 0.3) 0%, var(--card-bg) 100%);
+    }
+
+    .widget.settings h3 {
+      color: #f57c00;
+    }
+
+    .widget.settings:hover {
+      box-shadow: 0 8px 20px rgba(255, 152, 0, 0.2);
+    }
+
+    /* ANIMATIONS */
+    @keyframes fadeIn {
+      from {opacity: 0;}
+      to {opacity: 1;}
+    }
+
+    @keyframes slideInDown {
+      from {transform: translateY(-100%);}
+      to {transform: translateY(0);}
+    }
+
+    @keyframes slideInUp {
+      from {transform: translateY(50px); opacity: 0;}
+      to {transform: translateY(0); opacity: 1;}
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 1024px) {
+      .main-widgets {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .header-right {
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .auth-buttons {
+        flex-direction: column;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .main-widgets {
+        grid-template-columns: 1fr;
+      }
+
+      header {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+      }
+
+      .header-left, .header-right {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .modal-content {
+        margin: 10% auto;
+        width: 95%;
+      }
+
+      .container {
+        padding: 15px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-left">
+      <img src="https://img.icons8.com/ios-filled/50/user.png" alt="Profile Icon" />
+      <h1 id="dietplan">Mokesell Health Dashboard</h1>
+    </div>
+    <div class="header-right">
+      <div id="userInfo" class="user-info" style="display: none;">
+        <span>Welcome, <span id="userName"></span>!</span>
+      </div>
+      <button id="settingsBtn" class="settings-btn" style="display: none;" onclick="navigateToFeature('settings')" title="Settings">
+        ⚙️
+      </button>
+      <div id="authButtons" class="auth-buttons">
+        <button class="auth-btn" onclick="openModal('login')">Login</button>
+        <button class="auth-btn" onclick="openModal('register')">Register</button>
+      </div>
+      <button id="logoutBtn" class="auth-btn logout-btn" style="display: none;" onclick="logout()">Logout</button>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="main-widgets">
+      <div class="widget highlight" onclick="navigateToFeature('appointments')">
+        <div class="widget-icon">📅</div>
+        <h3>Appointment Slots</h3>
+        <p>View and reserve your upcoming consultation windows with your assigned nutritionist or doctor.</p>
+        <div class="locked-overlay" id="appointmentsLock" style="display: none;">
+          <div class="lock-icon">🔒</div>
+          <div>Login Required</div>
+        </div>
+      </div>
+      
+      <div class="widget" onclick="navigateToFeature('medication')">
+        <div class="widget-icon">💊</div>
+        <h3>Dosage Tracker</h3>
+        <p>Manage your medications, set reminders, and track your medication schedule with smart notifications.</p>
+        <div class="locked-overlay" id="medicationLock" style="display: none;">
+          <div class="lock-icon">🔒</div>
+          <div>Login Required</div>
+        </div>
+      </div>
+      
+      <div class="widget" onclick="navigateToFeature('calendar')">
+        <div class="widget-icon">🗓️</div>
+        <h3>Appointment Calendar</h3>
+        <p>Your scheduled health check-ups and reminders. Stay organized and never miss a date.</p>
+        <div class="locked-overlay" id="calendarLock" style="display: none;">
+          <div class="lock-icon">🔒</div>
+          <div>Login Required</div>
+        </div>
+      </div>
+      
+      <div class="widget" onclick="navigateToFeature('fitness')">
+        <div class="widget-icon">🏃‍♂️</div>
+        <h3>Fitness Tracker</h3>
+        <p>Log your steps, activities, and workout progress. Sync with wearables for real-time stats!</p>
+        <div class="locked-overlay" id="fitnessLock" style="display: none;">
+          <div class="lock-icon">🔒</div>
+          <div>Login Required</div>
+        </div>
+      </div>
+      
+      <div class="widget" onclick="navigateToFeature('dietplan')">
+        <div class="widget-icon">🥗</div>
+        <h3>Diet Plan</h3>
+        <p>Explore personalized meal recommendations and monitor your daily nutrition goals.</p>
+        <div class="locked-overlay" id="dietplanLock" style="display: none;">
+          <div class="lock-icon">🔒</div>
+          <div>Login Required</div>
+        </div>
+      </div>
+      
+      <div class="widget settings" onclick="navigateToFeature('settings')">
+        <div class="widget-icon">⚙️</div>
+        <h3>Settings</h3>
+        <p>Customize your dashboard experience, manage notifications, and update your profile settings.</p>
+        <div class="locked-overlay" id="settingsLock" style="display: none;">
+          <div class="lock-icon">🔒</div>
+          <div>Login Required</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Login Modal -->
+  <div id="loginModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Login</h2>
+        <span class="close" onclick="closeModal('loginModal')">&times;</span>
+      </div>
+      <div class="modal-body">
+        <div id="loginMessage" class="message" style="display: none;"></div>
+        <form id="loginForm">
+          <div class="form-group">
+            <label for="loginEmail">Email:</label>
+            <input type="email" id="loginEmail" name="email" required>
+          </div>
+          <div class="form-group">
+            <label for="loginPassword">Password:</label>
+            <input type="password" id="loginPassword" name="password" required minlength="6">
+          </div>
+          <button type="submit" class="submit-btn" id="loginSubmitBtn">Login</button>
+        </form>
+        <div class="switch-form">
+          Don't have an account? <a onclick="switchModal('loginModal', 'registerModal')">Register here</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Register Modal -->
+  <div id="registerModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Register</h2>
+        <span class="close" onclick="closeModal('registerModal')">&times;</span>
+      </div>
+      <div class="modal-body">
+        <div id="registerMessage" class="message" style="display: none;"></div>
+        <form id="registerForm">
+          <div class="form-group">
+            <label for="registerName">Full Name:</label>
+            <input type="text" id="registerName" name="name" required minlength="2" maxlength="100">
+          </div>
+          <div class="form-group">
+            <label for="registerEmail">Email:</label>
+            <input type="email" id="registerEmail" name="email" required>
+          </div>
+          <div class="form-group">
+            <label for="registerPassword">Password:</label>
+            <input type="password" id="registerPassword" name="password" required minlength="6">
+          </div>
+          <div class="form-group">
+            <label for="registerDateOfBirth">Date of Birth (Optional):</label>
+            <input type="date" id="registerDateOfBirth" name="dateOfBirth">
+          </div>
+          <div class="form-group">
+            <label for="registerGender">Gender (Optional):</label>
+            <select id="registerGender" name="gender">
+              <option value="">Select Gender</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="registerHealthConditions">Health Conditions (Optional):</label>
+            <textarea id="registerHealthConditions" name="healthConditions" placeholder="Any existing health conditions or allergies..."></textarea>
+          </div>
+          <button type="submit" class="submit-btn" id="registerSubmitBtn">Register</button>
+        </form>
+        <div class="switch-form">
+          Already have an account? <a onclick="switchModal('registerModal', 'loginModal')">Login here</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+  let currentUser = null;
+  const apiBaseUrl = "http://localhost:3000";
+  let currentSettings = {
+    theme: 'light',
+    fontSize: 'medium',
+    notificationSound: 'classic-bell',
+    medicationReminders: true,
+    appointmentReminders: true
+  };
+
+  // Load and apply settings
+  function loadSettings() {
+    // Load from localStorage
+    const userData = localStorage.getItem('currentUser');
+    const userEmail = userData ? JSON.parse(userData).email : 'default';
+    const savedSettings = localStorage.getItem(`userSettings_${userEmail}`);
+ 
+    if (savedSettings) {
+      currentSettings = { ...currentSettings, ...JSON.parse(savedSettings) };
+    }
+    
+    applySettings();
+  }
+
+  function applySettings() {
+    // Apply theme
+    if (currentSettings.theme === 'dark') {
+      document.body.classList.add('dark-theme');
+    } else {
+      document.body.classList.remove('dark-theme');
+    }
+
+    // Apply font size
+    document.body.className = document.body.className.replace(/font-\w+/g, '');
+    document.body.classList.add(`font-${currentSettings.fontSize}`);
+
+    console.log('✅ Applied settings:', currentSettings);
+  }
+
+  // Open modal by id
+  function openModal(type) {
+    if (type === 'login') {
+      document.getElementById('loginModal').style.display = 'block';
+      clearMessages('login');
+      document.getElementById('loginForm').reset();
+    } else if (type === 'register') {
+      document.getElementById('registerModal').style.display = 'block';
+      clearMessages('register');
+      document.getElementById('registerForm').reset();
+    }
+  }
+
+  // Close modal by id
+  function closeModal(id) {
+    document.getElementById(id).style.display = 'none';
+  }
+
+  // Switch between login and register modals
+  function switchModal(from, to) {
+    closeModal(from);
+    openModal(to.replace('Modal',''));
+  }
+
+  // Clear messages
+  function clearMessages(type) {
+    if(type === 'login'){
+      const msg = document.getElementById('loginMessage');
+      msg.style.display = 'none';
+      msg.innerText = '';
+    } else if(type === 'register'){
+      const msg = document.getElementById('registerMessage');
+      msg.style.display = 'none';
+      msg.innerText = '';
+    }
+  }
+
+  // Show message
+  function showMessage(type, message, isSuccess = true) {
+    const messageDiv = type === 'login' ? document.getElementById('loginMessage') : document.getElementById('registerMessage');
+    messageDiv.style.display = 'block';
+    messageDiv.innerText = message;
+    messageDiv.className = isSuccess ? 'message success' : 'message error';
+  }
+
+  // Register handler
+  document.getElementById('registerForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    clearMessages('register');
+
+    const name = document.getElementById('registerName').value.trim();
+    const email = document.getElementById('registerEmail').value.trim().toLowerCase();
+    const password = document.getElementById('registerPassword').value;
+    const dateOfBirth = document.getElementById('registerDateOfBirth').value;
+    const gender = document.getElementById('registerGender').value;
+    const healthConditions = document.getElementById('registerHealthConditions').value.trim();
+
+    try {
+      const response = await fetch(`${apiBaseUrl}/auth/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, password, dateOfBirth, gender, healthConditions })
+      });
+
+      if (!response.ok) {
+        let errorMsg = 'Registration failed';
+        try {
+          const errorData = await response.json();
+          errorMsg = errorData.message || errorMsg;
+        } catch {}
+        throw new Error(errorMsg);
+      }
+
+      showMessage('register', 'Registration successful! You can now login.', true);
+      this.reset();
+      setTimeout(() => {
+        switchModal('registerModal', 'loginModal');
+      }, 2000);
+    } catch (error) {
+      showMessage('register', error.message, false);
+    }
+  });
+
+  // Login handler
+  document.getElementById('loginForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    clearMessages('login');
+
+    const email = document.getElementById('loginEmail').value.trim().toLowerCase();
+    const password = document.getElementById('loginPassword').value;
+
+    try {
+      const response = await fetch(`${apiBaseUrl}/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+
+      if (!response.ok) {
+        let errorMsg = 'Invalid email or password.';
+        try {
+          const errorData = await response.json();
+          errorMsg = errorData.message || errorMsg;
+        } catch {}
+        throw new Error(errorMsg);
+      }
+
+      const loginData = await response.json();
+      currentUser = loginData.user;
+      
+      localStorage.setItem('authToken', loginData.token);
+      localStorage.setItem('currentUser', JSON.stringify(loginData.user));
+
+      loadSettings();
+      
+      showMessage('login', 'Login successful!', true);
+      this.reset();
+      updateUIForLoggedInUser();
+      closeModal('loginModal');
+    } catch (error) {
+      showMessage('login', error.message, false);
+    }
+  });
+
+  // Logout
+  function logout() {
+    currentUser = null;
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('currentUser');
+    updateUIForLoggedOutUser();
+  }
+
+  // Update UI when logged in
+  function updateUIForLoggedInUser() {
+    document.getElementById('userName').innerText = currentUser.name || currentUser.email || 'User';
+    document.getElementById('userInfo').style.display = 'flex';
+    document.getElementById('authButtons').style.display = 'none';
+    document.getElementById('logoutBtn').style.display = 'inline-block';
+    document.getElementById('settingsBtn').style.display = 'flex';
+
+    document.querySelectorAll('.locked-overlay').forEach(lock => lock.style.display = 'none');
+
+    document.querySelectorAll('.widget').forEach(w => {
+      w.classList.remove('locked');
+      w.style.pointerEvents = 'auto';
+    });
+  }
+
+  // Update UI when logged out
+  function updateUIForLoggedOutUser() {
+    document.getElementById('userInfo').style.display = 'none';
+    document.getElementById('authButtons').style.display = 'flex';
+    document.getElementById('logoutBtn').style.display = 'none';
+    document.getElementById('settingsBtn').style.display = 'none';
+
+    document.querySelectorAll('.locked-overlay').forEach(lock => lock.style.display = 'flex');
+
+    document.querySelectorAll('.widget').forEach(w => {
+      w.classList.add('locked');
+      w.style.pointerEvents = 'none';
+    });
+  }
+
+  // Navigate to feature - Updated with correct paths
+  function navigateToFeature(feature) {
+    if (!currentUser) {
+      openModal('login');
+      return;
+    }
+
+    // Get authentication headers for API calls
+    const authHeaders = {
+      'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
+      'Content-Type': 'application/json'
+    };
+
+    switch(feature) {
+      case 'appointments':
+        window.location.href = 'appointments.html';
+        break;
+      case 'medication':
+        // Navigate to the integrated medication calendar
+        window.location.href = 'dosage.html';
+        break;
+      case 'calendar':
+        window.location.href = 'appointment-calendar.html';
+        break;
+      case 'fitness':
+        window.location.href = 'fitness-tracker.html';
+        break;
+      case 'dietplan':
+        window.location.href = 'dietplan.html';
+        break;
+      case 'settings':
+        window.location.href = 'settings.html';
+        break;
+      default:
+        alert('Feature not implemented yet');
+    }
+  }
+
+
+  // Check authentication on page load
+  window.addEventListener('DOMContentLoaded', function() {
+    // Load settings first
+    loadSettings();
+
+    const token = localStorage.getItem('authToken');
+    const userData = localStorage.getItem('currentUser');
+    
+    if (token && userData) {
+      try {
+        currentUser = JSON.parse(userData);
+        
+        // Verify token is still valid
+        fetch(`${apiBaseUrl}/auth/profile`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        })
+        .then(response => {
+          if (response.ok) {
+            updateUIForLoggedInUser();
+          } else {
+            // Token invalid, clear and show logged out state
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('currentUser');
+            currentUser = null;
+            updateUIForLoggedOutUser();
+          }
+        })
+        .catch(() => {
+          // Network error, but keep local state
+          updateUIForLoggedInUser();
+        });
+        
+      } catch (error) {
+        console.error('Error parsing user data:', error);
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('currentUser');
+        updateUIForLoggedOutUser();
+      }
+    } else {
+      updateUIForLoggedOutUser();
+    }
+  });
+
+  // Close modal when clicking outside
+  window.onclick = function(event) {
+    const loginModal = document.getElementById('loginModal');
+    const registerModal = document.getElementById('registerModal');
+    
+    if (event.target === loginModal) {
+      loginModal.style.display = 'none';
+    }
+    if (event.target === registerModal) {
+      registerModal.style.display = 'none';
+    }
+  }
+
+</script>
+
+</body>
+</html>
